@@ -14,8 +14,8 @@ and then open Terminal:
 
 ### Project Setup
 
-    $ git clone https://github.com/ForceDotComLabs/paper-account-editor.git
-    $ cd paper-account-editor
+    $ git clone https://github.com/ForceDotComLabs/paper-sobject-editor.git
+    $ cd paper-sobject-editor
     $ npm install
     $ bower install
 
