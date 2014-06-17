@@ -18,6 +18,8 @@
     "core-icons": "Polymer/core-icons#~0.3.2",
     "paper-elements": "Polymer/paper-elements#~0.3.2",
     "core-animated-pages": "Polymer/core-animated-pages#~0.3.2",
-    "core-scroll-header-panel": "Polymer/core-scroll-header-panel#~0.3.2"
+    "core-scroll-header-panel": "Polymer/core-scroll-header-panel#~0.3.2",
+    "paper-item": "Polymer/paper-item#~0.3.2",
+    "paper-menu-button": "Polymer/paper-menu-button#~0.3.2"
   }
 }
