@@ -1,0 +1,77 @@
+:host /deep/ core-icon {
+    fill: #fff;
+}
+
+paper-menu-button /deep/ div#overlay {
+    background: white
+}
+
+:host /deep/ paper-input /deep/ .focusedColor {
+  color: #00adef;
+  background-color: #00adef;
+}
+
+:host /deep/ paper-input /deep/ #floatedLabel {
+  color: #00adef;
+}
+
+:host /deep/ .ui-responsive {
+  overflow: hidden;
+}
+
+:host /deep/ .ui-responsive .ui-block:first {
+  clear: left;
+}
+
+:host /deep/ .ui-block {
+  width: 50%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  float: left;
+  min-height: 1px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -ms-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/* preset breakpoint to switch to stacked grid styles below 35em (560px) */
+
+@media all and (max-width: 35em) {
+  :host /deep/ .ui-responsive .ui-block {
+    width: 100%;
+    float: none;
+  }
+}
+
+:host /deep/ .sf-layout-item,
+:host /deep/ .input-block {
+  position: relative;
+  padding-left: 0.875em;
+  padding-right: 0.875em;
+  margin-bottom: 0.875em;
+}
+
+:host /deep/ .sf-layout-item-label,
+:host /deep/ .input-label {
+  /*font-family: "ProximaNovaSoft-Regular";*/
+  margin-bottom: 0.25em;
+}
+
+:host /deep/ .sf-layout-item-label,
+:host /deep/ label {
+  color: #969899;
+  font-size: 0.875rem;
+}
+
+:host /deep/ .sf-layout-section-heading {
+  color: rgb(156, 161, 165);
+  font-size: 0.9em;
+  margin: 15px 0px;
+  text-transform: uppercase;
+  padding: 0 15px;
+  background-color: rgb(228, 231, 231);
+  line-height: 20px;
+  font-weight: bold;
+}

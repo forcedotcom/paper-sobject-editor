@@ -1,0 +1,80 @@
+<polymer-element name="detail-screen" extends="force-route" attributes="sobject recordid">
+    <template>
+        <link rel="stylesheet" href="detail.css"/>
+        <div style="position: absolute; top: 0; bottom: 0; right: 0; left: 0; overflow-y: scroll">
+            <paper-shadow target="{{$.toolbar}}"></paper-shadow>
+
+            <core-toolbar id="toolbar" style="background-color: #00adef;">
+              <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" size="40"></core-icon>
+              <div flex></div>
+              <paper-menu-button icon="more-vert" halign="right">
+                <paper-item label="Save" on-tap="{{doSave}}"></paper-item>
+                <paper-item label="Delete" on-tap="{{doToggleDelete}}"></paper-item>
+              </paper-menu-button>
+            </core-toolbar>
+            <force-paper-detail id="detail" sobject="{{sobject}}" recordid="{{recordid}}" foredit="true"></force-paper-detail>
+        </div>
+    </template>
+    <script>
+      Polymer('detail-screen', {
+        get model() {
+            return (this.$ ? this.$.detail.$.force_sobject : null);
+        },
+        navigateBack: function(ev) {
+            window.history.back();
+        },
+        getSaveOptions: function(mergeMode, cacheMode) {
+            var that = this;
+            return {
+                cacheMode: cacheMode,
+                mergeMode: mergeMode,
+                success: this.navigateBack,
+                error: function(data, err, options) {
+                    var error = new Force.Error(err);
+                    if (error.type == "ConflictError") {
+                        $(that.$.mergeButton).show();
+                        $(that.$.overwriteButton).show();
+                    }
+                }
+            };
+        },
+
+        handleError: function(error) {
+            if (error.type == "ConflictError") {
+                $(this.$.mergeButton).show();
+                $(this.$.overwriteButton).show();
+            }
+        },
+
+        doSave: function() {
+            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED));
+        },
+
+        doSaveMerge: function() {
+            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.MERGE_ACCEPT_YOURS));
+        },
+
+        doSaveOverwrite: function() {
+            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.OVERWRITE));
+        },
+
+        doToggleDelete: function() {
+            var that = this;
+            var force_sobject = this.$.detail.$.force_sobject;
+            if (force_sobject.fields.__locally_deleted__) {
+                force_sobject.fields.__locally_deleted__ = false;
+                force_sobject.save(this.getSaveOptions(null, Force.CACHE_MODE.CACHE_ONLY));
+            }
+            else {
+                force_sobject.destroy({
+                    success: this.navigateBack,
+                    error: function(data, err, options) {
+                        var error = new Force.Error(err);
+                        alert("Failed to delete " + that.sobject + ": " + (error.type === "RestError" ? error.details[0].message : "Remote change detected - delete aborted"));
+                    }
+                });
+            }
+        }
+      })
+    </script>
+</polymer-element>

@@ -1,0 +1,138 @@
+<polymer-element name="sync-status-icon" attributes="recordid, failedids">
+    <template>
+        <template if="{{failed}}">
+            <core-icon icon="error" style="fill: red"></core-icon>
+        </template>
+    </template>
+    <script>
+        Polymer('sync-status-icon', {
+            get failed() {
+                return _.contains(this.failedids, this.recordid);
+            }
+        })
+    </script>
+</polymer-element>
+
+<polymer-element name="sync-screen" extends="force-route" attributes="sobject" on-route-changed="{{viewLoaded}}">
+    <template>
+        <style>
+            :host /deep/ core-icon {
+                fill: #fff;
+            }
+        </style>
+        <div style="position: absolute; top: 0; bottom: 0; right: 0; left: 0; overflow-y: scroll">
+            <paper-shadow target="{{$.toolbar}}"></paper-shadow>
+
+            <core-toolbar id="toolbar" style="background-color: #00adef;">
+              <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" size="40"></core-icon>
+              <div flex></div>
+              <paper-menu-button icon="more-vert" halign="right">
+                <paper-item label="Sync" on-tap="{{doSync}}"></paper-item>
+                <paper-item label="Cancel" on-tap="{{navigateBack}}"></paper-item>
+              </paper-menu-button>
+            </core-toolbar>
+            <force-sobject-collection id="list" sobject="{{sobject}}" querytype="cache" query="{{query}}" on-sync="{{syncComplete}}"></force-sobject-collection>
+            <div id="listview">
+                <template repeat="{{model in $.list.collection.models}}">
+                    <a href="#edit/{{model.id}}" style="text-decoration: none; color: inherit">
+                        <div style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
+                            <div horizontal layout>
+                                <status-icon props="{{model.attributes}}"></status-icon>
+                                <sync-status-icon recordid="{{model.id}}" failedids="{{failedIds}}"></sync-status-icon>
+                                <div flex style="margin-left: 10px">{{model.attributes.Name}}</div>
+                                <core-icon icon="chevron-right" style="fill: black"></core-icon>
+                            </div>
+                        </div>
+                    </a>
+                    <force-sobject sobject="{{sobject}}" recordid="{{model.id}}" mergemode="{{mergemode}}"></force-sobject>
+                </template>
+            </div>
+        </div>
+    </template>
+    <script type="text/javascript">
+    Polymer('sync-screen', {
+        failedIds: [],
+        query: {queryType:"exact", indexPath:"__local__", matchKey:true, order:"ascending", pageSize:25},
+        get mergemode() {
+            return Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED;
+        },
+
+        refresh: function() {
+            this.$.list.fetch();
+        },
+
+        hasLocalChanges: function() {
+            return this.$.list.collection.length > 0;
+        },
+
+        doSync: function() {
+            var that = this;
+            var sobjects = this.$.listview.querySelectorAll('force-sobject');
+
+            this.failedIds = [];
+            var saveOptions = {
+                cacheMode: Force.CACHE_MODE.SERVER_FIRST,
+                success: function() {
+                    that.$.list.fetch();
+                },
+                error: function(model) {
+                    that.failedIds.push(model.id);
+                }
+            }
+
+            _.each(sobjects, function(sobject) {
+                if (sobject.fields['__locally_deleted__'])
+                    sobject.destroy(saveOptions);
+                else sobject.save(saveOptions);
+            });
+        },
+
+        navigateBack: function() {
+            window.history.back();
+        },
+
+        syncComplete: function() {
+            if (!this.hasLocalChanges() && this.path == Backbone.history.fragment) this.navigateBack();
+        },
+
+        viewLoaded: function() {
+            if (!this.hasLocalChanges()) this.navigateBack();  
+        }
+        /*
+        doSync: function() {
+            var that = this;
+            var collection = this.$.list.collection;
+            if (collection.length == 0 || collection.at(0).get("__sync_failed__")) {
+                // we push sync failures back to the end of the list - if we encounter one, it means we are done
+                return;
+            }
+            else {
+                var record = collection.shift();
+
+                var options = {
+                    mergeMode: Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED,
+                    success: function() {
+                        if (collection.length == 0) {
+                            app.router.navigateFirst();
+                        }
+                        else {
+                            that.doSync();
+                        }
+                    },
+                    error: function() {
+                        record = record.set("__sync_failed__", true);
+                        collection.push(record);
+                        that.doSync();
+                    },
+                    fieldlist: _.intersection(_.keys(record.attributes), app.editablefieldlist),
+                    cache: collection.cache,
+                    cacheForOriginals: collection.cacheForOriginals
+                };
+
+                return record.get("__locally_deleted__") ? record.destroy(options) : record.save(null, options);
+            }
+        },
+        */
+    });
+    </script>
+</polymer-element>

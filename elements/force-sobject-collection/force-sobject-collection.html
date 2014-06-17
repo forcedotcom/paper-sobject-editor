@@ -1,0 +1,31 @@
+<!--
+    force-sobject-collection element wraps the SmartSync Force.SObjectCollection into a polymer element.
+    Why: a) Auto manages the offline store for caching.
+    b) Provides a simple DOM based interface to interact with Smartsync.
+    c) Allows other polymer elements to easily comsume smartsync.
+
+    @attributes:
+    sobject: (Required) Type of sobject on which you want to render a list
+    query: (Optional) SOQL/SOSL/SmartSQL statement to fetch the records. Required when querytype is soql, sosl or cache.
+    querytype: (Optional) Default: mru. Type of query (mru, soql, sosl, cache). Required if query attribute is specified.
+    autosync: (Optional) Default: true. Auto synchronize (fetch/save) changes to the model with the remote server/local store. If false, use fetch/save methods to commit changes to server or local store.
+    maxsize: (Optional) Default: -1. If positive
+
+    @methods:
+    fetch: Initiates the fetching of records from the relevant data store (server/offline store).
+    reset: Replaces all the existing contents of the collection and initiates autosync if enabled.
+
+    @events:
+    reset: when the collection's entire contents have been replaced.
+    sync: when the collection has been successfully synced with the server
+    error: when a request to remote server has failed.
+-->
+<link rel="import" href="../../dependencies/polymer/polymer.html">
+<link rel="import" href="../force-app/force-app.html">
+<link rel="import" href="../force-sobject-store/force-sobject-store.html">
+<polymer-element name="force-sobject-collection" attributes="sobject query querytype autosync maxsize">
+    <template>
+        <force-sobject-store id="store" sobject="{{sobject}}"></force-sobject-store>
+    </template>
+    <script src="force-sobject-collection.js"></script>
+</polymer-element>

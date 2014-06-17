@@ -1,0 +1,158 @@
+<!doctype html>
+<!--
+Copyright 2013 The Polymer Authors. All rights reserved.
+Use of this source code is governed by a BSD-style
+license that can be found in the LICENSE file.
+-->
+<html>
+<head>
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+
+	<!-- Platform polyfill import -->
+	<script src="dependencies/platform/platform.js"></script>
+
+	<!-- Local Browser Testing. Mocked cordova and Smartstore -->
+	<script src="dependencies/mobilesdk-shared/test/MockCordova.js"></script>
+	<script src="dependencies/mobilesdk-shared/libs/cordova.force.js"></script>
+	<script src="dependencies/mobilesdk-shared/test/MockSmartStore.js"></script>
+	<!-- End Local Testing -->
+
+
+	<!-- Core Polymer Elements -->
+	<link href="dependencies/core-icons/core-icons.html" rel="import">
+	<link href="dependencies/core-animated-pages/core-animated-pages.html" rel="import">
+	<link href="dependencies/core-animated-pages/transitions/slide-from-right.html" rel="import">
+	<link href="dependencies/core-scroll-header-panel/core-scroll-header-panel.html" rel="import">
+	<link href="dependencies/core-toolbar/core-toolbar.html" rel="import">
+
+	<!-- Paper Elements -->
+	<link href="dependencies/paper-item/paper-item.html" rel="import">
+	<link href="dependencies/paper-shadow/paper-shadow.html" rel="import">
+	<link href="dependencies/paper-menu-button/paper-menu-button.html" rel="import">
+	<link href="dependencies/paper-input/paper-input.html" rel="import">
+	<link href="dependencies/paper-checkbox/paper-checkbox.html" rel="import">
+	<!--link href="dependencies/paper-icon-button/paper-icon-button.html" rel="import"-->
+	<!--link href="dependencies/paper-header-panel/paper-header-panel.html" rel="import"-->
+	
+	
+	<!-- Mobile UI Elements -->
+	<link rel="import" href="elements/force-ui-app/force-ui-app.html">
+	<link rel="import" href="elements/force-ui-search/force-ui-search.html">
+	<link rel="import" href="elements/force-sobject-collection/force-sobject-collection.html">
+	<link rel="import" href="elements/force-route/force-route.html">
+
+	<!-- Account Editor Polymer Elements -->
+	<link rel="import" href="elements-AE/force-paper-detail.html">
+	<link rel="import" href="elements-AE/search-screen.html">
+	<link rel="import" href="elements-AE/sync-screen.html">
+	<link rel="import" href="elements-AE/detail-screen.html">
+	<link rel="import" href="elements-AE/status-icon.html">
+
+
+  	<style shim-shadowdom>
+	    body {
+	      margin: 0;
+	      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+	      font-size: 14px;
+	    }
+  	</style>
+</head>
+
+<body unresolved>
+
+    <polymer-element name="mobile-app" attributes="sobject">
+      <template>
+
+        <style>
+        	core-animated-pages {
+        		position: absolute;
+        		top: 0; bottom: 0;
+        		left: 0; right: 0;
+        	}
+          	core-animated-pages#pages > * {
+            	-webkit-transition-duration: 0.5s;
+            	transition-duration: 0.5s;
+          	}
+        </style>
+
+        <core-animated-pages id="pages" transitions="['slide-from-right']" on-save="{{refresh}}" on-destroy="{{refresh}}">
+
+          <search-screen id="listview" path="" sobject="{{sobject}}" on-route-changed="{{showList}}"></search-screen>
+
+          <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync="{{resetConnection}}"></sync-screen>
+
+          <detail-screen id="detail" sobject="{{sobject}}" path="edit/:recordid" on-route-changed="{{showDetail}}"></detail-screen>
+
+        </core-animated-pages>
+
+        <core-icon id="network_icon" icon="{{cloudicon}}" size="60" style="position: fixed; bottom: 0; right: 0; margin: 10px; fill: green" on-tap="{{toggleConnection}}"></core-icon>
+
+      </template>
+
+      <script>
+        Polymer('mobile-app', {
+          _onlineStatus: true,
+          cloudicon: 'cloud-done',
+          ready: function() {
+            SFDC.isOnline = function() {
+              return this._onlineStatus && !this.$.syncview.hasLocalChanges();
+            }.bind(this);
+
+            /*SFDC.cacheMode = function() {
+            	if (this.$.syncview.hasLocalChanges() || !SFDC.isOnline)
+            		return Force.CACHE_MODE.CACHE_ONLY;
+            	else return Force.CACHE_MODE.SERVER_FIRST;
+            }.bind(this);*/
+          },
+          get onlinestatus() {
+            return this._onlineStatus;
+          },
+          set onlinestatus(newStatus) {
+            this._onlineStatus = newStatus;
+            this.cloudicon = newStatus ? "cloud-done" : "cloud-off";
+            this.$.network_icon.style.fill = newStatus ? 'green' : 'red';
+          },
+          refresh: function() {
+          	this.$.listview.refresh();
+          	this.$.syncview.refresh();
+          },
+          toggleConnection: function() {
+          	if (this.$.pages.selected == 0) {
+	            this.onlinestatus = !this.onlinestatus;
+	            if (this.onlinestatus) {
+	            	window.location.hash = "#sync";
+	            } else this.resetConnection();
+	        }
+          },
+          resetConnection: function() {
+          	this.$.listview.updateConnection();
+          },
+          showList: function(ev) {
+            this.$.pages.selected = 0;
+          },
+          showSync: function(ev) {
+            this.$.pages.selected = 1;
+          },
+          showDetail: function(ev) {
+            this.$.pages.selected = 2;
+          }
+        })
+      </script>
+
+    </polymer-element>
+
+    <mobile-app sobject="Account"></mobile-app>
+
+    <script type="text/javascript">
+      	window.addEventListener('WebComponentsReady', function() {
+          	var creds = {
+            	accessToken: '00DU0000000Hb57!AR0AQBZkoAaR5BkIzmzfz1xtiZqDt220CljrrQyC2BEAmARjs09P0.Bu4Qj7qIAq8YHunWMfpSs48vH3J6SC_.vtfPurRdAC',
+              	instanceUrl: 'https://na12.salesforce.com'
+          	};
+          	Backbone.history.start();
+          	SFDC.launch(creds);
+      	});
+    </script>
+
+</body>
+</html>

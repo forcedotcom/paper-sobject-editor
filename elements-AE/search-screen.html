@@ -1,0 +1,124 @@
+<polymer-element name="search-screen" extends="force-route" attributes="sobject">
+    <template>
+
+        <style>
+
+        	force-ui-search /deep/ paper-input::shadow #floatedLabel {
+	      		display: none;
+		    }
+
+		    force-ui-search /deep/ paper-input::shadow #errorContainer {
+		      	display: none;
+		    }
+
+		    force-ui-search /deep/ #underline {
+		    	background-color: white
+		    }
+		    force-ui-search /deep/ .focusedColor {
+		    	background-color: white
+		    }
+		    force-ui-search /deep/ input {
+		      	color: white;
+		    }
+
+			core-scroll-header-panel {
+				position: absolute;
+				top: 0;
+				right: 0;
+				bottom: 0;
+				left: 0;
+			}
+
+			:host /deep/ core-icon {
+				fill: #fff;
+			}
+
+			/* background for toolbar when it is at its full size */
+			core-scroll-header-panel::shadow #headerBg {
+				background-image: url(banner.png);
+			}
+
+			/* background for toolbar when it is condensed */
+			core-scroll-header-panel::shadow #condensedHeaderBg {
+				background-color: #00adef;
+			}
+
+			core-toolbar {
+				color: #f1f1f1;
+				fill: #f1f1f1;
+			}
+
+			.title {
+				font-size: 40px;
+			}
+
+			.content {
+				padding: 10px 0px;
+			}
+
+        </style>
+
+        <core-scroll-header-panel condenses on-core-header-transform="{{titleTransform}}">
+        	
+        	<paper-shadow target="{{$.toolbar}}"></paper-shadow>
+
+        	<core-toolbar id="toolbar" class="tall">
+
+	            <core-icon id="search-icon" icon="search" on-tap="{{showSearch}}" style="padding:8px"></core-icon>
+	            <div flex>
+	              <force-ui-search id="search" sobject="{{sobject}}" searchfield="Name" on-blur="{{hideSearch}}" style="display:none"></force-ui-search>
+	            </div>
+	            <core-icon id="create-icon" icon="add" style="padding:8px"></core-icon>
+	            <div id="title" class="bottom indent title">Contacts</div>
+
+        	</core-toolbar>
+
+        <div class="content">
+
+            <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}"></force-sobject-collection>
+            <div id="listview">
+              	<template repeat="{{model in $.list.collection.models}}">
+                  	<a href="#edit/{{model.id}}" style="text-decoration: none; color: inherit">
+	                  	<div style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
+	                    	<div horizontal layout>
+		                      	<status-icon props="{{model.attributes}}"></status-icon>
+		                      	<div flex style="margin-left: 10px">{{model.attributes.Name}}</div>
+		                      	<core-icon icon="chevron-right" style="fill: black"></core-icon>
+	                    	</div>
+	                  	</div>
+                  	</a>
+              	</template>
+            </div>
+
+          </div>
+
+        </core-scroll-header-panel>
+
+    </template>
+    <script>
+        Polymer('search-screen', {
+        	updateConnection: function() {
+        		this.$.search.computeQuery();
+        	},
+          	refresh: function() {
+            	this.$.list.fetch();
+          	},
+          	showSearch: function() {
+	            this.$.search.style.display = 'block';
+    	        this.$.search.focusAction();
+    		},
+          	hideSearch: function() {
+            	if (this.$.search.criteria.length == 0) 
+            		this.$.search.style.display = 'none';
+          	},
+          	titleTransform: function(e) {
+	            var d = e.detail;
+	            var m = d.height - d.condensedHeight;
+	            var scale = Math.max(0.75, (m - d.y) / (m / 0.25)  + 0.75);
+	            var titleStyle = this.$.title.style;
+	            titleStyle.webkitTransform = titleStyle.transform =
+	                'scale(' + scale + ') translateZ(0)';
+          	}
+        });
+    </script>
+</polymer-element>

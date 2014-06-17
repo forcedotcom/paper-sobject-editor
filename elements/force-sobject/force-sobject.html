@@ -1,0 +1,33 @@
+<!--
+    force-sobject element wraps the SmartSync Force.SObject into a polymer element.
+    Why: a) Auto manages the offline store for caching.
+    b) Provides a simpler DOM based interface to interact with Smartsync SObject Model.
+    c) Allows other polymer elements to easily comsume smartsync.
+
+    @attributes:
+    sobject: (Required) Type of sobject on which you want to fetch the record
+    recordid: (Required) Id of the record that needs to be fetched.
+    fieldlist: (Optional) Default: All fields. List of field names that need to be fetched for the record.
+    autosync: (Optional) Default: true. Auto synchronize (fetch/save) changes to the model with the remote server/local store. If false, use fetch/save methods to commit changes to server or local store. (TBD: autosync not working for "save" operations)
+    mergemode: (Optional) Default: "Overwrite". The merge model to use when saving record changes to salesforce.
+
+    @methods:
+    fetch: Initiate the fetching of record data from the relevant data store (server/offline store).
+    save: Initiate the saving of record data to the relevant data store (server/offline store).
+    destroy: Initiate the deleting of record data from the relevant data store (server/offline store).
+
+    @events:
+    sync: when the data has been successfully synced with the server.
+    destroy: when a record is deleted.
+    error: when a request to remote server has failed.
+    invalid: when the data validation fails on the client.
+-->
+<link rel="import" href="../../dependencies/polymer/polymer.html">
+<link rel="import" href="../force-app/force-app.html">
+<link rel="import" href="../force-sobject-store/force-sobject-store.html">
+<polymer-element name="force-sobject" attributes="sobject recordid fieldlist autosync mergemode">
+    <template>
+        <force-sobject-store id="store" sobject="{{sobject}}"></force-sobject-store>
+    </template>
+    <script src="force-sobject.js"></script>
+</polymer-element>

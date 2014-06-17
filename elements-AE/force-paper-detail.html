@@ -1,0 +1,130 @@
+<link rel="import" href="../elements/force-ui-detail/force-ui-detail.html">
+<polymer-element name="force-paper-detail" extends="force-ui-detail">
+	<script>
+		(function() {
+			var createTemplateFromMarkup = function (markup, bindingDelegate) {
+		        // Templatize the markup
+		        var helperTemplate = document.createElement('template');
+		        helperTemplate.setAttribute('bind', '')
+		        helperTemplate.innerHTML = markup;
+
+		        HTMLTemplateElement.decorate(helperTemplate);
+		        if (bindingDelegate) helperTemplate.bindingDelegate = bindingDelegate;
+
+		        return helperTemplate;
+		    }
+		    var modArray = function(obj) {
+		        if (!(obj instanceof Array))
+		            if (obj) return [obj];
+		            else return [];
+		        else return obj;
+		    }
+
+		    // Utility method to return input element type for a corresponding salesforce field type.
+	        var inputType = function(fieldType) {
+	            switch(fieldType) {
+	                 case "int": return "number";
+	                 case "double": return "number";
+	                 case "percent": return "number";
+	                 case "phone": return "tel";
+	                 case "date": return "date";
+	                 case "datetime": return "datetime";
+	                 case "time": return "time";
+	                 case "url": return "url";
+	                 case "email": return "email";
+	                 case "base64": return "file";
+	                 default: return "text";
+	            }
+	        }
+
+	        Polymer('force-paper-detail', {
+
+				compileTemplate: function(layoutSections) {
+
+			        // Generates and returns a Handlebar template for a specific field.
+			        // If forEdit is true and if field is editable, method returns an input type element.
+			        var generateFieldTemplate = function(fieldLabel, fieldName, fieldInfo, displayField, forEdit) {
+			            var fieldType = fieldInfo.type,
+			                html = '<span class="' + fieldType + '" data-field-name="' + fieldName + '">';
+
+			            if (forEdit) {
+			                if (fieldType == 'boolean')
+			                    html += (fieldLabel + '<paper-toggle-button checked?="{{' + displayField + '}}"></paper-toggle-button>');
+			                else if (fieldType == 'picklist') {
+			                    html += '<select value="{{' + displayField + '}}">';
+			                    fieldInfo.picklistValues.forEach(function(option){
+			                        html += ('<option value="' + option.value + '">' + option.label + '</option>');
+			                    })
+			                    html += '</select>';
+			                } else if (fieldType == 'textarea')
+			                    html += ('<paper-input label="' + fieldLabel + '" multiline floatingLabel maxRows="3" value="{{' + displayField + '}}"></paper-input>');
+			                else
+			                    html += ('<paper-input label="' + fieldLabel + '" floatingLabel value="{{' + displayField + '}}" type="' + inputType(fieldType) + '" maxlength="' + fieldInfo.length + '"/>');
+			            }
+			            else {
+			                if (fieldType == 'boolean')
+			                    html += ('<paper-checkbox checked?="{{' + displayField + '}}" disabled style="margin-top: 25px; margin-bottom: 25px; float:left;"></paper-checkbox><span style="padding-left: 20px;line-height: 68px;">' + fieldLabel + '</span>');
+			                else if (fieldInfo.htmlFormatted) //TBD: See if we need to do anything for HTML type fields in polymer.
+			                    html += '<force-html-output value="{{' + displayField + '}}"></force-html-output>';
+			                else html += ('{{' + displayField + '}}');
+			            }
+			            return html + '</span>';
+			        }
+
+			        // Generates and returns the handlebar template for the layout sections.
+			        var html = '';
+			        var layoutFieldsInfoMap = {};
+
+			        layoutSections.forEach(function(section, sectionIndex) {
+			            html += '<div class="sf-layout-section">';
+			            html += ('<h1 class="sf-layout-section-heading">' + section.heading + '</h1>');
+			            // Iterate over layout rows in each section
+			            modArray(section.layoutRows).forEach(function(row) {
+			                html += '<div class="sf-layout-row ui-responsive">';
+			                // Iterate over layout items in each row
+			                modArray(row.layoutItems).forEach(function(item) {
+			                    html += '<div class="sf-layout-item' + ((+section.columns > 1) ? ' ui-block' : '') + '">';
+			                    if (!item.placeholder) {
+			                        //html += ('<div class="sf-layout-item-label">' + item.label + '</div>');
+			                        var errorHtml = '';
+			                        var valueHtml = '<div class="sf-layout-item-value">';
+			                        // Iterate over layout item component in each item
+			                        modArray(item.layoutComponents).forEach(function(comp) {
+			                            var isFieldEditable = false;
+			                            if (comp.type == 'Separator') valueHtml += comp.value;
+			                            else if (comp.type == 'Field' && !/__XyzEncoded__s$/.test(comp.value)) { // Add a special case to ingnore weird geo location field which adds internal field to layout (*__XyzEncoded__s)
+			                                var displayField = comp.value; // Default display field as the field of component
+			                                var fieldInfo = comp.details; // Fetch the field info to check if it's a relationship
+			                                layoutFieldsInfoMap[comp.value] = fieldInfo; // Track the field required for this layout
+			                                if (fieldInfo.type == 'reference') {
+			                                    displayField = fieldInfo.relationshipName;
+			                                    displayField += (fieldInfo.referenceTo == 'Case' ? '.CaseNumber' : '.Name');
+			                                    layoutFieldsInfoMap[displayField] = fieldInfo;
+			                                }
+			                                // check if field is editable based on the field type information and the layout settings. Also ignore refrence type fields as we don't currently support the edit for that.
+			                                isFieldEditable = (item.editable && fieldInfo.type != 'reference' && fieldInfo.updateable);
+			                                valueHtml += generateFieldTemplate(item.label, comp.value, fieldInfo, displayField, isFieldEditable);
+			                                if (isFieldEditable) errorHtml += '<div class="sf-layout-item-error">{{__errors__.' + comp.value + '}}</div>';
+			                            }
+			                        });
+			                        html += (errorHtml + valueHtml + '</div>');
+			                    }
+			                    html += '</div>';
+			                });
+			                html += '</div>';
+			            });
+			            html += '</div>';
+			        });
+
+			        // Templatize the markup
+			        return {
+			            template: createTemplateFromMarkup(html),
+			            fields: _.keys(layoutFieldsInfoMap),
+			            fieldInfos: layoutFieldsInfoMap
+			        };
+			    }
+			});
+
+		})();
+	</script>
+</polymer-element>

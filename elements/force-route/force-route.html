@@ -1,0 +1,35 @@
+<polymer-element name="force-route" attributes="path">
+    <script>
+        (function() {
+            var private_router;
+            var pathParser = /:([^\/]*)/g;
+            Polymer('force-route', {
+                /**
+                 * path: path to a supported route
+                 * @type {String}
+                 */
+                path: '',
+                ready: function() {
+                    // setup listeners for this.path
+                    // and fire a change event when complete
+                    this.router.route(this.path, "force-route", function() {
+                      this.fireChange(arguments);
+                    }.bind(this));
+                },
+                fireChange: function(args) {
+                    var res, idx = 0;
+                    while ((res = pathParser.exec(this.path)) !== null) {
+                      this[res[1]] = args[idx++];
+                    }
+                    this.fire('route-changed', {path: this.path, params: args});
+                },
+                get router() {
+                    if (!private_router) {
+                      private_router = new Backbone.Router();
+                    }
+                    return private_router;
+                }
+            });
+        })();
+    </script>
+</polymer-element>

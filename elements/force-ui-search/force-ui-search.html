@@ -1,0 +1,50 @@
+<!--
+    force-ui-search element
+
+    @attributes:
+    sobject: (Required) Type of sobject that you want to be searching on.
+    searchfield: (Required) Field you want to be searching by.
+-->
+<!-- TBD: Improve query update process to chunk the changes and minimize the server calls -->
+<link rel="import" href="../force-sobject-store/force-sobject-store.html">
+<link rel="import" href="../../dependencies/paper-input/paper-input.html">
+<polymer-element name="force-ui-search" attributes="sobject searchfield">
+  <template>
+      <force-sobject-store id="store" sobject="{{sobject}}" fieldstoindex="{{searchfield}}"></force-sobject-store>
+      <div class="bar bar-standard bar-header-secondary">
+        <paper-input id="input" label="Search" class="search-key" inputValue="{{criteria}}" style="width:100%"></paper-input>
+      </div>
+  </template>
+  <script>
+    Polymer('force-ui-search', {
+        criteria: "",
+        querytype: "soql",
+        query: null,
+        observe: {
+          "$.input.focused": "blurAction",
+          "criteria": "computeQuery"
+        },
+        focusAction: function() {
+          this.$.input.downAction({});
+          this.$.input.upAction();
+        },
+        blurAction: function() {
+          if (!this.$.input.focused) this.fire('blur');
+        },
+        get storeName() {
+          if (this.$ && this.$.store.cache) return this.$.store.cache.soupName;
+          return this.sobject;
+        },
+        computeQuery: function() {
+            if (SFDC.isOnline()) {
+                this.querytype = "soql";
+                this.query = "SELECT Id, " + this.searchfield + " FROM " + this.sobject + " WHERE " + this.searchfield + " LIKE '" + this.criteria + "%' ORDER BY " + this.searchfield + " LIMIT 25";
+            }
+            else {
+                this.querytype = "cache";
+                this.query = {queryType:"smart", smartSql:"SELECT {" + this.storeName + ":_soup} FROM {" + this.storeName + "} WHERE {" + this.storeName + ":" + this.searchfield + "} LIKE '%" + this.criteria + "%' ORDER BY LOWER({" + this.storeName + ":" + this.searchfield + "})", pageSize:25};
+            }
+        }
+    });
+  </script>
+</polymer-element>
