@@ -143,14 +143,42 @@ license that can be found in the LICENSE file.
 
     <mobile-app sobject="Account"></mobile-app>
 
+    <script src="elements-AE/forcetk.ui.js"></script>
+
     <script type="text/javascript">
       	window.addEventListener('WebComponentsReady', function() {
           	var creds = {
             	accessToken: '00DU0000000Hb57!AR0AQGyHnvGhTi07F8Zij8pJTkVw0rCV2D5JtuuCvTQh2xH4JWavtOAYOs_HfbtlD53h_YFBAyNub42kjeKfn2ioiuxT2LJ9',
-              	instanceUrl: 'https://na12.salesforce.com'
+              instanceUrl: 'https://na12.salesforce.com'
           	};
+
+            // Salesforce login URL
+            var loginURL = 'https://login.salesforce.com/',
+              // Consumer Key from Setup | Develop | Remote Access
+              consumerKey = '3MVG9QDx8IX8nP5TwrwtRg53zXgJ3uh1Ggo9wNaAwMyRnRr8ukHN.gAI.kYEOu7rWc1f0NwEEUl5_qnI1EK7l',
+              // Callback URL from Setup | Develop | Remote Access
+              callbackURL = 'http://localhost:9000/oauth/success';
+
+            // Instantiating forcetk ClientUI
+            var oauthClient = new ForceOAuth(loginURL, consumerKey, callbackURL,
+                              function forceOAuthUI_successHandler(forcetkClient) { // successCallback
+                                  console.log('OAuth success!');
+                                  creds = {
+                                    accessToken: oauthClient.oauthResponse.access_token,
+                                    instanceUrl: oauthClient.oauthResponse.instance_url
+                                  };
+                                  SFDC.launch(creds);
+                              },
+
+                              function forceOAuthUI_errorHandler(error) { // errorCallback
+                                  console.log('OAuth error!');
+                                  oauthClient.login();
+                              });
+
           	Backbone.history.start();
-          	SFDC.launch(creds);
+
+          	if (location.protocol == 'file:') SFDC.launch(creds);
+            else oauthClient.login();
       	});
     </script>
 

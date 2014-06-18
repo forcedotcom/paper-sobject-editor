@@ -1,7 +1,14 @@
 {
-  "name": "polymer2",
+  "name": "paper-sobject-editor",
   "version": "0.0.0",
-  "dependencies": {},
+  "engines": {
+    "node": ">=0.10.25",
+    "npm": ">=1.3.24"
+  },
+  "dependencies": {
+    "express": "latest",
+    "http-proxy": "latest"
+  },
   "devDependencies": {
     "cheerio": "~0.11.0",
     "grunt": "~0.4.1",
@@ -15,8 +22,5 @@
     "nopt": "~2.1.1",
     "polymer-shim-styles": "akhileshgupta/polymer-shim-styles",
     "time-grunt": "~0.1.0"
-  },
-  "engines": {
-    "node": ">=0.8.0"
   }
 }
