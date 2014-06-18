@@ -32,7 +32,7 @@
         },
         render: function() {
             // Force detail re-render if recordid didn't change
-            if (this.$.detail.viewModel && this.$.detail.viewModel.Id == this.recordid) this.$.detail.render();
+            if (this.$.detail.model && this.$.detail.model.id == this.recordid) this.$.detail.render();
         },
         navigateBack: function(ev) {
             window.history.back();
