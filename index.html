@@ -81,7 +81,7 @@ license that can be found in the LICENSE file.
 
           <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync="{{resetConnection}}"></sync-screen>
 
-          <detail-screen id="detail" sobject="{{sobject}}" path="edit/:recordid" on-route-changed="{{showDetail}}"></detail-screen>
+          <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)" on-route-changed="{{showDetail}}"></detail-screen>
 
         </core-animated-pages>
 
@@ -146,7 +146,7 @@ license that can be found in the LICENSE file.
     <script type="text/javascript">
       	window.addEventListener('WebComponentsReady', function() {
           	var creds = {
-            	accessToken: '00DU0000000Hb57!AR0AQBZkoAaR5BkIzmzfz1xtiZqDt220CljrrQyC2BEAmARjs09P0.Bu4Qj7qIAq8YHunWMfpSs48vH3J6SC_.vtfPurRdAC',
+            	accessToken: '00DU0000000Hb57!AR0AQGyHnvGhTi07F8Zij8pJTkVw0rCV2D5JtuuCvTQh2xH4JWavtOAYOs_HfbtlD53h_YFBAyNub42kjeKfn2ioiuxT2LJ9',
               	instanceUrl: 'https://na12.salesforce.com'
           	};
           	Backbone.history.start();

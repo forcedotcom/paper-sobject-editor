@@ -2,7 +2,7 @@
     <script>
         (function() {
             var private_router;
-            var pathParser = /:([^\/]*)/g;
+            var pathParser = /(?::|\*)([^\/\(\)]*)/g;
             Polymer('force-route', {
                 /**
                  * path: path to a supported route

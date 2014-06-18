@@ -68,7 +68,7 @@
 	            <div flex>
 	              <force-ui-search id="search" sobject="{{sobject}}" searchfield="Name" on-blur="{{hideSearch}}" style="display:none"></force-ui-search>
 	            </div>
-	            <core-icon id="create-icon" icon="add" style="padding:8px"></core-icon>
+	            <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}" style="padding:8px"></core-icon>
 	            <div id="title" class="bottom indent title">Contacts</div>
 
         	</core-toolbar>
@@ -102,6 +102,9 @@
         	},
           	refresh: function() {
             	this.$.list.fetch();
+          	},
+          	navigateToCreate: function() {
+          		window.location.hash = "#edit";
           	},
           	showSearch: function() {
 	            this.$.search.style.display = 'block';
