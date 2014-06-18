@@ -57,9 +57,9 @@
 			                    })
 			                    html += '</select>';
 			                } else if (fieldType == 'textarea')
-			                    html += ('<paper-input label="' + fieldLabel + '" multiline floatingLabel maxRows="3" value="{{' + displayField + '}}"></paper-input>');
+			                    html += ('<force-paper-input label="' + fieldLabel + '" multiline floatingLabel maxRows="3" value="{{' + displayField + '}}" error="{{__errors__.fieldName}}"></force-paper-input>');
 			                else
-			                    html += ('<paper-input label="' + fieldLabel + '" floatingLabel value="{{' + displayField + '}}" type="' + inputType(fieldType) + '" maxlength="' + fieldInfo.length + '"/>');
+			                    html += ('<force-paper-input label="' + fieldLabel + '" floatingLabel value="{{' + displayField + '}}" type="' + inputType(fieldType) + '" maxlength="' + fieldInfo.length + '" error="{{__errors__.' + fieldName + '}}" invalid?="{{__errors__.' + fieldName + '}}"></force-paper-input>');
 			            }
 			            else {
 			                if (fieldType == 'boolean')
@@ -86,7 +86,6 @@
 			                    html += '<div class="sf-layout-item' + ((+section.columns > 1) ? ' ui-block' : '') + '">';
 			                    if (!item.placeholder) {
 			                        //html += ('<div class="sf-layout-item-label">' + item.label + '</div>');
-			                        var errorHtml = '';
 			                        var valueHtml = '<div class="sf-layout-item-value">';
 			                        // Iterate over layout item component in each item
 			                        modArray(item.layoutComponents).forEach(function(comp) {
@@ -104,10 +103,9 @@
 			                                // check if field is editable based on the field type information and the layout settings. Also ignore refrence type fields as we don't currently support the edit for that.
 			                                isFieldEditable = (item.editable && fieldInfo.type != 'reference' && fieldInfo.updateable);
 			                                valueHtml += generateFieldTemplate(item.label, comp.value, fieldInfo, displayField, isFieldEditable);
-			                                if (isFieldEditable) errorHtml += '<div class="sf-layout-item-error">{{__errors__.' + comp.value + '}}</div>';
 			                            }
 			                        });
-			                        html += (errorHtml + valueHtml + '</div>');
+			                        html += (valueHtml + '</div>');
 			                    }
 			                    html += '</div>';
 			                });
@@ -126,5 +124,18 @@
 			});
 
 		})();
+	</script>
+</polymer-element>
+<polymer-element name="force-paper-input" extends="paper-input">
+	<template>
+		<shadow></shadow>
+	</template>
+	<script type="text/javascript">
+		Polymer('force-paper-input', {
+			invalidChanged: function() {
+				if (this.invalid) this.classList.add('invalid');
+				else this.classList.remove('invalid');
+			}
+		})
 	</script>
 </polymer-element>

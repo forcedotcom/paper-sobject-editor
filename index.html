@@ -81,7 +81,7 @@ license that can be found in the LICENSE file.
 
           <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync="{{resetConnection}}"></sync-screen>
 
-          <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)" on-route-changed="{{showDetail}}"></detail-screen>
+          <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-route-changed="{{showDetail}}"></detail-screen>
 
         </core-animated-pages>
 

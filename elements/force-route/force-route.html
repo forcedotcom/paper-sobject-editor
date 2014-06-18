@@ -19,7 +19,8 @@
                 fireChange: function(args) {
                     var res, idx = 0;
                     while ((res = pathParser.exec(this.path)) !== null) {
-                      this[res[1]] = args[idx++];
+                      if (typeof this[res[1]] == 'boolean') this[res[1]] = args[idx++] ? true : false;
+                      else this[res[1]] = args[idx++];
                     }
                     this.fire('route-changed', {path: this.path, params: args});
                 },

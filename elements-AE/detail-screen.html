@@ -1,4 +1,4 @@
-<polymer-element name="detail-screen" extends="force-route" attributes="sobject recordid">
+<polymer-element name="detail-screen" extends="force-route" attributes="sobject recordid sync" on-route-changed="{{render}}">
     <template>
         <link rel="stylesheet" href="detail.css"/>
         <div style="position: absolute; top: 0; bottom: 0; right: 0; left: 0; overflow-y: scroll">
@@ -12,6 +12,10 @@
                     <paper-item label="Save" on-tap="{{doSave}}"></paper-item>
                     <paper-item label="Delete" on-tap="{{doToggleDelete}}"></paper-item>
                 </template>
+                <template if="{{sync}}">
+                    <paper-item label="Merge" on-tap="{{doSaveMerge}}"></paper-item>
+                    <paper-item label="Overwrite" on-tap="{{doSaveOverwrite}}"></paper-item>
+                </template>
                 <template if="{{$.detail.model.attributes.__locally_deleted__}}">
                     <paper-item label="Undelete" on-tap="{{doToggleDelete}}"></paper-item>
                 </template>
@@ -22,8 +26,13 @@
     </template>
     <script>
       Polymer('detail-screen', {
+        sync: false,
         get model() {
             return (this.$ ? this.$.detail.$.force_sobject : null);
+        },
+        render: function() {
+            // Force detail re-render if recordid didn't change
+            if (this.$.detail.viewModel && this.$.detail.viewModel.Id == this.recordid) this.$.detail.render();
         },
         navigateBack: function(ev) {
             window.history.back();
@@ -52,15 +61,18 @@
         },
 
         doSave: function() {
-            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED));
+            var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : null;
+            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED, cacheMode));
         },
 
         doSaveMerge: function() {
-            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.MERGE_ACCEPT_YOURS));
+            var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : null;
+            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.MERGE_ACCEPT_YOURS, cacheMode));
         },
 
         doSaveOverwrite: function() {
-            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.OVERWRITE));
+            var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : null;
+            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.OVERWRITE, cacheMode));
         },
 
         doToggleDelete: function() {

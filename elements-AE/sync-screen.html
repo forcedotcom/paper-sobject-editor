@@ -34,7 +34,7 @@
             <force-sobject-collection id="list" sobject="{{sobject}}" querytype="cache" query="{{query}}" on-sync="{{syncComplete}}"></force-sobject-collection>
             <div id="listview">
                 <template repeat="{{model in $.list.collection.models}}">
-                    <a href="#edit/{{model.id}}" style="text-decoration: none; color: inherit">
+                    <a href="#edit/{{model.id}}/sync" style="text-decoration: none; color: inherit">
                         <div style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
                             <div horizontal layout>
                                 <status-icon props="{{model.attributes}}"></status-icon>
@@ -77,6 +77,7 @@
                 },
                 error: function(model) {
                     that.failedIds.push(model.id);
+                    that.$.list.fetch();
                 }
             }
 
