@@ -51,6 +51,7 @@
 			                if (fieldType == 'boolean')
 			                    html += (fieldLabel + '<paper-toggle-button checked?="{{' + displayField + '}}"></paper-toggle-button>');
 			                else if (fieldType == 'picklist') {
+			                	html += ('<div class="sf-layout-item-label">' + fieldLabel + '</div>');
 			                    html += '<select value="{{' + displayField + '}}">';
 			                    fieldInfo.picklistValues.forEach(function(option){
 			                        html += ('<option value="' + option.value + '">' + option.label + '</option>');
