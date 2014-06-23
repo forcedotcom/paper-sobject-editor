@@ -6,13 +6,22 @@ paper-menu-button /deep/ div#overlay {
     background: white
 }
 
-:host /deep/ paper-input /deep/ .focusedColor {
+:host /deep/ force-paper-input {
+    color: #ccc;
+    width: 100%;
+    margin-right: 20px;
+}
+
+:host /deep/ force-paper-input::shadow .focusedColor {
   color: #00adef;
   background-color: #00adef;
 }
 
-:host /deep/ paper-input /deep/ #floatedLabel {
-  color: #00adef;
+:host /deep/ h1.sf-layout-section-heading {
+  line-height: 40px;
+  color: #484848;
+  /*color: white;
+  background-color: #00adef;*/
 }
 
 :host /deep/ .ui-responsive {
@@ -98,7 +107,7 @@ paper-menu-button /deep/ div#overlay {
   border-radius: 5px;
   padding: .5em .7em .5em;
   margin-bottom: 15px;
-  width: 20em;
+  width: 100%;
   /*font-family: "ProximaNovaSoft-Regular";*/
   color: #525354;
   font-size: 1rem;

@@ -67,18 +67,18 @@
 			                    html += ('<paper-checkbox checked?="{{' + displayField + '}}" disabled style="margin-top: 25px; margin-bottom: 25px; float:left;"></paper-checkbox><span style="padding-left: 20px;line-height: 68px;">' + fieldLabel + '</span>');
 			                else if (fieldInfo.htmlFormatted) //TBD: See if we need to do anything for HTML type fields in polymer.
 			                    html += '<force-html-output value="{{' + displayField + '}}"></force-html-output>';
-			                else html += ('{{' + displayField + '}}');
+			                else html += ('<force-paper-input label="' + fieldLabel + '" disabled floatingLabel value="{{' + displayField + '}}" type="' + inputType(fieldType) + '" maxlength="' + fieldInfo.length + '"></force-paper-input>');
 			            }
 			            return html + '</span>';
 			        }
 
 			        // Generates and returns the handlebar template for the layout sections.
-			        var html = '';
+			        var html = '<paper-shadow></paper-shadow>';
 			        var layoutFieldsInfoMap = {};
 
 			        layoutSections.forEach(function(section, sectionIndex) {
 			            html += '<div class="sf-layout-section">';
-			            html += ('<h1 class="sf-layout-section-heading">' + section.heading + '</h1>');
+			            html += ('<div class="paper-shadow-top paper-shadow-top-z-1" style="position:relative"><div class="paper-shadow-bottom paper-shadow-bottom-z-1"></div><h1 class="sf-layout-section-heading">' + section.heading + '</h1></div>');
 			            // Iterate over layout rows in each section
 			            modArray(section.layoutRows).forEach(function(row) {
 			                html += '<div class="sf-layout-row ui-responsive">';

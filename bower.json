@@ -11,7 +11,7 @@
     "jquery": "latest",
     "underscore": "latest",
     "backbone": "latest",
-    "mobilesdk-shared": "akhileshgupta/SalesforceMobileSDK-Shared#a964636902835bcfae988ac691f8a1d095c3674b",
+    "mobilesdk-shared": "akhileshgupta/SalesforceMobileSDK-Shared#a1b35479382e04c9f773ab81ca7be0848eef5020",
     "ratchet": "twbs/ratchet#>=2.0.2",
     "mocha": "~1.18.2",
     "should": "~3.3.1",
