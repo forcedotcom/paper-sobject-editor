@@ -1,4 +1,4 @@
-<polymer-element name="search-screen" extends="force-route" attributes="sobject">
+<polymer-element name="search-screen" extends="force-route" attributes="sobject searchfields fieldstofetch">
     <template>
 
         <style>
@@ -35,7 +35,7 @@
 
 			/* background for toolbar when it is at its full size */
 			core-scroll-header-panel::shadow #headerBg {
-				background-image: url(banner.png);
+				background-image: url(banner.jpg);
 			}
 
 			/* background for toolbar when it is condensed */
@@ -66,7 +66,7 @@
 
 	            <core-icon id="search-icon" icon="search" on-tap="{{showSearch}}" style="padding:8px"></core-icon>
 	            <div flex>
-	              <force-ui-search id="search" sobject="{{sobject}}" searchfield="Name" on-blur="{{hideSearch}}" style="display:none"></force-ui-search>
+	              <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" on-blur="{{hideSearch}}" style="display:none"></force-ui-search>
 	            </div>
 	            <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}" style="padding:8px"></core-icon>
 	            <div id="title" class="bottom indent title">Contacts</div>
@@ -75,19 +75,9 @@
 
         <div class="content">
 
-            <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}"></force-sobject-collection>
+            <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" on-sync="{{updateListview}}"></force-sobject-collection>
             <div id="listview">
-              	<template repeat="{{model in $.list.collection.models}}">
-                  	<a href="#edit/{{model.id}}" style="text-decoration: none; color: inherit">
-	                  	<div style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
-	                    	<div horizontal layout>
-		                      	<status-icon props="{{model.attributes}}"></status-icon>
-		                      	<div flex style="margin-left: 10px">{{model.attributes.Name}}</div>
-		                      	<core-icon icon="chevron-right" style="fill: black"></core-icon>
-	                    	</div>
-	                  	</div>
-                  	</a>
-              	</template>
+            	<content select="*"></content>
             </div>
 
           </div>
@@ -97,6 +87,14 @@
     </template>
     <script>
         Polymer('search-screen', {
+        	ready: function() {
+        		this.super();
+        		this.template = this.querySelector('template');
+        		this.template.setAttribute('repeat', '');
+        	},
+        	updateListview: function() {
+        		this.template.model = this.$.list.collection.models;
+        	},
         	updateConnection: function() {
         		this.$.search.computeQuery();
         	},

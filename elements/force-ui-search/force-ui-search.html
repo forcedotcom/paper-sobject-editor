@@ -3,14 +3,15 @@
 
     @attributes:
     sobject: (Required) Type of sobject that you want to be searching on.
-    searchfield: (Required) Field you want to be searching by.
+    searchfields: (Required) Field you want to be searching by.
+    fieldstofetch:
 -->
 <!-- TBD: Improve query update process to chunk the changes and minimize the server calls -->
 <link rel="import" href="../force-sobject-store/force-sobject-store.html">
 <link rel="import" href="../../dependencies/paper-input/paper-input.html">
-<polymer-element name="force-ui-search" attributes="sobject searchfield">
+<polymer-element name="force-ui-search" attributes="sobject searchfields fieldstofetch">
   <template>
-      <force-sobject-store id="store" sobject="{{sobject}}" fieldstoindex="{{searchfield}}"></force-sobject-store>
+      <force-sobject-store id="store" sobject="{{sobject}}" fieldstoindex="{{searchfields}}"></force-sobject-store>
       <div class="bar bar-standard bar-header-secondary">
         <paper-input id="input" label="Search" class="search-key" inputValue="{{criteria}}" style="width:100%"></paper-input>
       </div>
@@ -36,13 +37,21 @@
           return this.sobject;
         },
         computeQuery: function() {
+            var searchFields = this.searchfields.trim().split(/\s+/);
+            var fieldsToFetch = this.fieldstofetch ? this.fieldstofetch.trim().split(/\s+/) : [];
+            fieldsToFetch = _.union(searchFields, fieldsToFetch);
+
             if (SFDC.isOnline()) {
+                for (var idx in searchFields) searchFields[idx] = searchFields[idx] + " LIKE '" + this.criteria + "%'";
                 this.querytype = "soql";
-                this.query = "SELECT Id, " + this.searchfield + " FROM " + this.sobject + " WHERE " + this.searchfield + " LIKE '" + this.criteria + "%' ORDER BY " + this.searchfield + " LIMIT 25";
+                this.query = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " WHERE " + searchFields.join(" OR ") + " LIMIT 25";
             }
             else {
+                for (var idx in searchFields) 
+                  searchFields[idx] = "{" + this.storeName + ":" + searchFields[idx] + "} LIKE '" + this.criteria + "%'";
+
                 this.querytype = "cache";
-                this.query = {queryType:"smart", smartSql:"SELECT {" + this.storeName + ":_soup} FROM {" + this.storeName + "} WHERE {" + this.storeName + ":" + this.searchfield + "} LIKE '%" + this.criteria + "%' ORDER BY LOWER({" + this.storeName + ":" + this.searchfield + "})", pageSize:25};
+                this.query = {queryType:"smart", smartSql:"SELECT {" + this.storeName + ":_soup} FROM {" + this.storeName + "} WHERE " + searchFields[0], pageSize:25};
             }
         }
     });

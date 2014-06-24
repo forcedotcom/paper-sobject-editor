@@ -31,8 +31,6 @@ license that can be found in the LICENSE file.
 	<link href="dependencies/paper-menu-button/paper-menu-button.html" rel="import">
 	<link href="dependencies/paper-input/paper-input.html" rel="import">
 	<link href="dependencies/paper-checkbox/paper-checkbox.html" rel="import">
-	<!--link href="dependencies/paper-icon-button/paper-icon-button.html" rel="import"-->
-	<!--link href="dependencies/paper-header-panel/paper-header-panel.html" rel="import"-->
 	
 	
 	<!-- Mobile UI Elements -->
@@ -60,7 +58,7 @@ license that can be found in the LICENSE file.
 
 <body unresolved>
 
-    <polymer-element name="mobile-app" attributes="sobject">
+    <polymer-element name="mobile-app" attributes="sobject searchfields displayfields">
       <template>
 
         <style>
@@ -77,7 +75,27 @@ license that can be found in the LICENSE file.
 
         <core-animated-pages id="pages" transitions="['slide-from-right']" on-save="{{refresh}}" on-destroy="{{refresh}}" style="overflow-x:hidden">
 
-          <search-screen id="listview" path="" sobject="{{sobject}}" on-route-changed="{{showList}}"></search-screen>
+          <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}">
+            <template>
+                <a href="#edit/{{id}}" style="text-decoration: none; color: inherit">
+                  <div style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
+                    <div horizontal layout>
+                      <img class="profile-photo" src="images/{{attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/> 
+                      <div layout vertical center-justified flex>
+                        <div style="margin-left: 10px" layout horizontal>
+                            <div flex>
+                              <div style="font-size: 1.1em;">{{attributes.FirstName}} {{attributes.LastName}}</div>
+                              <span style="font-size: 0.9em; color: #696969">{{attributes.Title}}</span>
+                            </div>
+                            <status-icon props="{{attributes}}"></status-icon>
+                            <core-icon icon="chevron-right" style="fill: black"></core-icon>
+                        </div>
+                    </div>
+                    </div>
+                  </div>
+                </a>
+            </template>
+          </search-screen>
 
           <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync="{{resetConnection}}"></sync-screen>
 
@@ -97,12 +115,6 @@ license that can be found in the LICENSE file.
             SFDC.isOnline = function() {
               return this._onlineStatus && !this.$.syncview.hasLocalChanges();
             }.bind(this);
-
-            /*SFDC.cacheMode = function() {
-            	if (this.$.syncview.hasLocalChanges() || !SFDC.isOnline)
-            		return Force.CACHE_MODE.CACHE_ONLY;
-            	else return Force.CACHE_MODE.SERVER_FIRST;
-            }.bind(this);*/
           },
           get onlinestatus() {
             return this._onlineStatus;
@@ -141,15 +153,15 @@ license that can be found in the LICENSE file.
 
     </polymer-element>
 
-    <mobile-app sobject="Account"></mobile-app>
+    <mobile-app sobject="Contact" searchfields="FirstName LastName Photo__c" displayfields="Title"></mobile-app>
 
     <script src="elements-AE/forcetk.ui.js"></script>
 
     <script type="text/javascript">
       	window.addEventListener('WebComponentsReady', function() {
           	var creds = {
-            	accessToken: '00DU0000000Hb57!AR0AQH3qYJm1GhWWhhsi5PNqKJsmnU4cdAbJq4OJKHdLEL_u4OFiIAMcqNKc6AWmh5qpJyt8qoldTlcKONvE_AD3hPyCxKjE',
-              instanceUrl: 'https://na12.salesforce.com'
+            	accessToken: '00Do0000000J3Ct!AQ0AQLgYNj8NEu6Rx.FbuKOPUq8KUObtF9W3v.p.qbS695byOiriE6353V3dqVzO.DeXdwOONaYoS3yuuQTj8IavwIkSZJ0M',
+              instanceUrl: 'https://na17.salesforce.com'
           	};
 
             // Salesforce login URL
@@ -180,6 +192,7 @@ license that can be found in the LICENSE file.
           	if (location.protocol == 'file:') SFDC.launch(creds);
             else oauthClient.login();
       	});
+        window.location.hash = '';
     </script>
 
 </body>

@@ -39,7 +39,7 @@
                             <div horizontal layout>
                                 <status-icon props="{{model.attributes}}"></status-icon>
                                 <sync-status-icon recordid="{{model.id}}" failedids="{{failedIds}}"></sync-status-icon>
-                                <div flex style="margin-left: 10px">{{model.attributes.Name}}</div>
+                                <div flex style="margin-left: 10px">{{model.attributes.Name || (model.attributes.FirstName + ' ' + model.attributes.LastName)}}</div>
                                 <core-icon icon="chevron-right" style="fill: black"></core-icon>
                             </div>
                         </div>
