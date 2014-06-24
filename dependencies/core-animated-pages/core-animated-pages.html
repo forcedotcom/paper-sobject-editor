@@ -1,0 +1,165 @@
+<link href="../polymer/polymer.html" rel="import">
+<link href="../core-selector/core-selector.html" rel="import">
+
+<link href="transitions/hero-transition.html" rel="import">
+<link href="transitions/cross-fade.html" rel="import">
+
+<!--
+
+`core-animated-pages` selects one of its children "pages" to show and runs a transition
+when switching between them.
+
+-->
+<polymer-element name="core-animated-pages" extends="core-selector" notap attributes="transitions">
+
+<template>
+
+  <style>
+    :host {
+      display: block;
+      position: relative;
+    }
+
+    polyfill-next-selector { content: ':host > *'; }
+    ::content > * {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      visibility: hidden;
+      z-index: -1000;
+    }
+
+    polyfill-next-selector { content: ':host > .core-selected'; }
+    ::content > .core-selected {
+      visibility: visible;
+      z-index: auto;
+    }
+
+    /* Both pages being animated must be visible */
+    polyfill-next-selector { content: ':host > [animate]'; }
+    ::content > [animate] {
+      visibility: visible;
+      z-index: auto;
+    }
+  </style>
+
+  <shadow></shadow>
+
+</template>
+
+<script>
+
+  Polymer({
+
+    eventDelegates: {
+      'core-transitionend': 'transitionEnd',
+      'webkitTransitionEnd': 'transitionEnd',
+      'transitionEnd': 'transitionEnd'
+    },
+
+    selected: 0,
+
+    registerCallback: function() {
+      this.meta = document.createElement('core-transition');
+    },
+
+    created: function() {
+      this.transitions = [];
+      this.transitioning = [];
+    },
+
+    ready: function() {
+      this.super(arguments);
+    },
+
+    transitionsChanged: function(old) {
+      if (old) {
+        old.forEach(function(transitionId) {
+          var t = this.getTransition(transitionId);
+          if (t) {
+            t.teardown(this);
+          }
+        }.bind(this));
+      }
+
+      if (this.transitions) {
+        this.transitions.forEach(function(transitionId) {
+          var t = this.getTransition(transitionId);
+          if (t) {
+            t.install(this);
+          }
+        }.bind(this));
+      }
+    },
+
+    getTransition: function(transitionId) {
+      return this.meta.byId(transitionId);
+    },
+
+    applyTransition: function(src, dst) {
+      if (this.transitioning.indexOf(src) === -1) {
+        this.transitioning.push(src);
+      }
+      if (this.transitioning.indexOf(dst) === -1) {
+        this.transitioning.push(dst);
+      }
+
+      var transitions = [];
+
+      this.transitions.forEach(function(transitionId) {
+        var t = this.getTransition(transitionId);
+        if (t) {
+          t.setup(src, dst, this);
+          transitions.push(t);
+        }
+      }.bind(this));
+
+      src.setAttribute('animate', '');
+      dst.setAttribute('animate', '');
+
+      getComputedStyle(dst).top;
+
+      transitions.forEach(function(transition) {
+        transition.go(this, {
+          duration: 1000,
+          easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+        });
+      }.bind(this));
+    },
+
+    complete: function() {
+      this.transitioning.forEach(function(t) {
+        t.removeAttribute('animate');
+      });
+      this.transitioning = [];
+
+      this.fire('core-animated-pages-transition-end');
+    },
+    
+    transitionEnd: function(e) {
+      if (this.transitioning.length && this.selectedItem.contains(e.target)) {
+        this.job('transitionWatch', function() {
+          this.complete();
+        }, 500);
+      }
+    },
+
+    selectedItemChanged: function(oldItem) {
+      this.super(arguments);
+
+      if (oldItem && this.selectedItem) {
+        // TODO(sorvell): allow bindings to update first?
+        var self = this;
+        Platform.endOfMicrotask(function() {
+          self.applyTransition(oldItem, self.selectedItem);
+        });
+      }
+    }
+
+  });
+
+</script>
+
+</polymer-element>
