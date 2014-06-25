@@ -153,23 +153,23 @@ license that can be found in the LICENSE file.
 
     </polymer-element>
 
-    <mobile-app sobject="Contact" searchfields="FirstName LastName Photo__c" displayfields="Title"></mobile-app>
+    <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="Title"></mobile-app>
 
     <script src="elements-AE/forcetk.ui.js"></script>
 
     <script type="text/javascript">
       	window.addEventListener('WebComponentsReady', function() {
           	var creds = {
-            	accessToken: '00Do0000000J3Ct!AQ0AQLgYNj8NEu6Rx.FbuKOPUq8KUObtF9W3v.p.qbS695byOiriE6353V3dqVzO.DeXdwOONaYoS3yuuQTj8IavwIkSZJ0M',
-              instanceUrl: 'https://na17.salesforce.com'
+            	accessToken: '',
+              instanceUrl: ''
           	};
 
             // Salesforce login URL
             var loginURL = 'https://login.salesforce.com/',
               // Consumer Key from Setup | Develop | Remote Access
-              consumerKey = '3MVG9QDx8IX8nP5TwrwtRg53zXgJ3uh1Ggo9wNaAwMyRnRr8ukHN.gAI.kYEOu7rWc1f0NwEEUl5_qnI1EK7l',
+              consumerKey = '3MVG9QDx8IX8nP5TwrwtRg53zXqqSdv4wEGLXlDQaydmbK.Q1rzeKuQ43zC4tDnAIrL24Y9O4Dz1QVMzN1Slr',
               // Callback URL from Setup | Develop | Remote Access
-              callbackURL = 'http://localhost:9000/oauth/success';
+              callbackURL = 'https://sfdc-sobject-editor.herokuapp.com/oauth/success';
 
             // Instantiating forcetk ClientUI
             var oauthClient = new ForceOAuth(loginURL, consumerKey, callbackURL,
