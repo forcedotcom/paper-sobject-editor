@@ -6,6 +6,11 @@ license that can be found in the LICENSE file.
 -->
 <html>
 <head>
+  <script>
+    if (location.protocol == 'http:' && location.hostname != 'localhost') 
+      window.location = 'https://' + location.hostname;
+  </script>
+  
 	<meta name="viewport" content="width=device-width, user-scalable=no">
 
 	<!-- Platform polyfill import -->
