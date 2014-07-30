@@ -1,5 +1,5 @@
-:host /deep/ core-icon {
-    fill: #fff;
+:host /deep/ core-toolbar {
+    color: #fff;
 }
 
 paper-menu-button /deep/ div#overlay {
@@ -91,6 +91,14 @@ paper-menu-button /deep/ div#overlay {
     white-space: nowrap;
     margin-bottom: 0.5em;
     color: rgb(204,204,204);
+}
+
+:host /deep/ .sf-layout-item-value>span.boolean {
+  padding: 20px 0;
+}
+
+:host /deep/ .sf-layout-item-value paper-toggle-button {
+  padding-right: 10px;
 }
 
 :host /deep/ .sf-layout-item-value select {

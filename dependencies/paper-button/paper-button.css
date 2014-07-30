@@ -1,5 +1,6 @@
 :host {
   display: inline-block;
+  position: relative;
   border: 0;
   background: transparent;
   text-align: center;
@@ -30,12 +31,17 @@
   cursor: auto;
 }
 
+#shadow-container {
+  border-radius: inherit;
+}
+
 #clip {
   position: relative;
   border-radius: inherit;
   overflow: hidden;
 }
 
+/*
 #focusBg {
   position: absolute;
   top: 0;
@@ -73,6 +79,7 @@
     opacity: 0;
   }
 }
+*/
 
 #ripple {
   position: absolute;

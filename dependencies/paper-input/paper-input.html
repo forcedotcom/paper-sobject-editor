@@ -16,7 +16,7 @@ Example:
     <paper-input label="Your Name"></paper-input>
     <paper-input multiline label="Enter multiple lines here"></paper-input>
 
-@group Quantum Paper Elements
+@group Paper Elements
 @element paper-input
 @extends core-input
 @homepage github.io
@@ -30,7 +30,7 @@ Example:
 
     <link href="paper-input.css" rel="stylesheet">
 
-    <div id="floatedLabel" class="hidden"><span id="floatedLabelSpan">{{label}}</span></div>
+    <div id="floatedLabel" class="hidden" hidden?="{{!floatingLabel}}"><span id="floatedLabelSpan">{{label}}</span></div>
 
     <div id="container" on-transitionend="{{transitionEndAction}}" on-webkitTransitionEnd="{{transitionEndAction}}">
 
@@ -166,8 +166,8 @@ Example:
         }
 
         if (this.floatingLabel && !this.focused) {
-            this.$.label.classList.toggle('hidden', this.inputValue);
-            this.$.floatedLabel.classList.toggle('hidden', !this.inputValue);
+          this.$.label.classList.toggle('hidden', this.inputValue);
+          this.$.floatedLabel.classList.toggle('hidden', !this.inputValue);
         }
       },
 
@@ -214,6 +214,7 @@ Example:
           this.$.label.classList.add('animating');
           this.async(function() {
             this.$.label.style.webkitTransform = 'none';
+            this.$.label.style.transform = 'none';
           });
         }
         this.focused = false;
@@ -232,6 +233,7 @@ Example:
         var rect = this.$.underline.getBoundingClientRect();
         var right = e.x - rect.left;
         this.$.underlineHighlight.style.webkitTransformOriginX = right + 'px';
+        this.$.underlineHighlight.style.transformOriginX = right + 'px';
         this.$.underlineHighlight.classList.remove('focused');
         this.underlineAsync = this.async(function() {
           this.$.underlineHighlight.classList.add('pressed');
@@ -247,7 +249,7 @@ Example:
         }
       },
 
-      upAction: function() {
+      upAction: function(e) {
         if (this.disabled) {
           return;
         }
@@ -255,7 +257,13 @@ Example:
         if (!this.pressed) {
           return;
         }
-        
+
+        // if a touchevent caused the up, the synthentic mouseevents will blur
+        // the input, make sure to prevent those from being generated.
+        if (e._source === 'touch') {
+          e.preventDefault();
+        }
+
         if (this.underlineAsync) {
           clearTimeout(this.underlineAsync);
           this.underlineAsync = null;
@@ -284,6 +292,7 @@ Example:
           this.$.label.classList.add('focusedColor');
           this.$.label.classList.add('animating');
           this.$.label.style.webkitTransform = this.$.label.cachedTransform;
+          this.$.label.style.transform = this.$.label.cachedTransform;
         }
       },
 

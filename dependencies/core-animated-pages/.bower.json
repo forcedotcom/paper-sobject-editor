@@ -7,14 +7,14 @@
     "core-transition": "Polymer/core-transition#>=0.3.0 <1.0.0"
   },
   "homepage": "https://github.com/Polymer/core-animated-pages",
-  "version": "0.3.2",
-  "_release": "0.3.2",
+  "version": "0.3.4",
+  "_release": "0.3.4",
   "_resolution": {
     "type": "version",
-    "tag": "0.3.2",
-    "commit": "1217a4858ed71858c4f9ad261ac37146d8414f2b"
+    "tag": "0.3.4",
+    "commit": "2b2d67769f25b8b446d46c672a2b1c7d0fec126b"
   },
   "_source": "git://github.com/Polymer/core-animated-pages.git",
-  "_target": "~0.3.2",
+  "_target": ">=0.3.4 <1.0.0",
   "_originalSource": "Polymer/core-animated-pages"
 }

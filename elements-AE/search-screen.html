@@ -1,125 +1,128 @@
+<link rel="import" href="../dependencies/core-scroll-header-panel/core-scroll-header-panel.html">
+<link rel="import" href="../dependencies/core-toolbar/core-toolbar.html">
+<link rel="import" href="../dependencies/core-icon-button/core-icon-button.html">
 <polymer-element name="search-screen" extends="force-route" attributes="sobject searchfields fieldstofetch">
     <template>
 
         <style>
+            force-ui-search /deep/ paper-input::shadow #floatedLabel {
+                display: none;
+            }
+            force-ui-search /deep/ paper-input::shadow #errorContainer {
+                display: none;
+            }
+            force-ui-search /deep/ #underline {
+                background-color: white
+            }
+            force-ui-search /deep/ .focusedColor {
+                background-color: white
+            }
+            force-ui-search /deep/ input {
+                color: white;
+            }
 
-        	force-ui-search /deep/ paper-input::shadow #floatedLabel {
-	      		display: none;
-		    }
+            core-scroll-header-panel {
+                position: absolute;
+                top: 0; bottom: 0;
+                left: 0; right: 0;
+            }
 
-		    force-ui-search /deep/ paper-input::shadow #errorContainer {
-		      	display: none;
-		    }
+            :host /deep/ core-icon {
+                fill: #fff;
+            }
 
-		    force-ui-search /deep/ #underline {
-		    	background-color: white
-		    }
-		    force-ui-search /deep/ .focusedColor {
-		    	background-color: white
-		    }
-		    force-ui-search /deep/ input {
-		      	color: white;
-		    }
+            /* background for toolbar when it is at its full size */
+            core-scroll-header-panel::shadow #headerBg {
+                background-image: url(banner.jpg);
+            }
 
-			core-scroll-header-panel {
-				position: absolute;
-				top: 0;
-				right: 0;
-				bottom: 0;
-				left: 0;
-			}
+            /* background for toolbar when it is condensed */
+            core-scroll-header-panel::shadow #condensedHeaderBg {
+                background-color: #00adef;
+            }
 
-			:host /deep/ core-icon {
-				fill: #fff;
-			}
+            core-toolbar {
+                color: #f1f1f1;
+                fill: #f1f1f1;
+                background-color: transparent;
+            }
 
-			/* background for toolbar when it is at its full size */
-			core-scroll-header-panel::shadow #headerBg {
-				background-image: url(banner.jpg);
-			}
-
-			/* background for toolbar when it is condensed */
-			core-scroll-header-panel::shadow #condensedHeaderBg {
-				background-color: #00adef;
-			}
-
-			core-toolbar {
-				color: #f1f1f1;
-				fill: #f1f1f1;
-			}
-
-			.title {
-				font-size: 40px;
-			}
-
-			.content {
-				padding: 10px 0px;
-			}
+            .title {
+                font-size: 40px;
+            }
+            .content {
+                padding: 10px 0px;
+            }
 
         </style>
 
         <core-scroll-header-panel condenses on-core-header-transform="{{titleTransform}}">
         	
-        	<paper-shadow target="{{$.toolbar}}"></paper-shadow>
+            <paper-shadow></paper-shadow>
+            <core-toolbar id="toolbar" class="tall paper-shadow-top paper-shadow-top-z-1">
+    
+                <core-icon id="search-icon" icon="search" on-tap="{{showSearch}}" style="padding:8px"></core-icon>
+                <div flex>
+                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" on-blur="{{hideSearch}}" style="display:none"></force-ui-search>
+                </div>
+                <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}" style="padding:8px"></core-icon>
+                <div id="title" class="bottom indent title">Contacts</div>
+		      
+            </core-toolbar>
 
-        	<core-toolbar id="toolbar" class="tall">
+            <div class="content">
 
-	            <core-icon id="search-icon" icon="search" on-tap="{{showSearch}}" style="padding:8px"></core-icon>
-	            <div flex>
-	              <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" on-blur="{{hideSearch}}" style="display:none"></force-ui-search>
-	            </div>
-	            <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}" style="padding:8px"></core-icon>
-	            <div id="title" class="bottom indent title">Contacts</div>
+                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" on-sync="{{updateListview}}" style="display:none"></force-sobject-collection>
+                <div id="listview">
+                    <content select="*"></content>
+                </div>
 
-        	</core-toolbar>
-
-        <div class="content">
-
-            <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" on-sync="{{updateListview}}"></force-sobject-collection>
-            <div id="listview">
-            	<content select="*"></content>
             </div>
-
-          </div>
 
         </core-scroll-header-panel>
 
     </template>
     <script>
-        Polymer('search-screen', {
-        	ready: function() {
-        		this.super();
-        		this.template = this.querySelector('template');
-        		this.template.setAttribute('repeat', '');
-        	},
-        	updateListview: function() {
-        		this.template.model = this.$.list.collection.models;
-        	},
-        	updateConnection: function() {
-        		this.$.search.computeQuery();
-        	},
-          	refresh: function() {
-            	this.$.list.fetch();
-          	},
-          	navigateToCreate: function() {
-          		window.location.hash = "#edit";
-          	},
-          	showSearch: function() {
+    	(function() {
+	        var titleStyle;
+
+	        Polymer('search-screen', {
+	          ready: function() {
+	            this.super();
+	            titleStyle = this.$.title.style;
+	          },
+	          updateListview: function() {
+                this.template = this.querySelector('template');
+                if (this.template) {
+                    this.template.setAttribute('repeat', '');
+                    this.template.model = this.$.list.collection.models;
+                }
+	          },
+	          updateConnection: function() {
+	            this.$.search.computeQuery();
+	          },
+	          refresh: function() {
+	            this.$.list.fetch();
+	          },
+	          navigateToCreate: function() {
+	            window.location.hash = "#edit";
+	          },
+	          showSearch: function(e) {
 	            this.$.search.style.display = 'block';
-    	        this.$.search.focusAction();
-    		},
-          	hideSearch: function() {
-            	if (this.$.search.criteria.length == 0) 
-            		this.$.search.style.display = 'none';
-          	},
-          	titleTransform: function(e) {
-	            var d = e.detail;
-	            var m = d.height - d.condensedHeight;
-	            var scale = Math.max(0.75, (m - d.y) / (m / 0.25)  + 0.75);
-	            var titleStyle = this.$.title.style;
-	            titleStyle.webkitTransform = titleStyle.transform =
-	                'scale(' + scale + ') translateZ(0)';
-          	}
-        });
+	            this.$.search.focusAction(e);
+	          },
+	          hideSearch: function() {
+	            if (this.$.search.criteria.length == 0) 
+	              this.$.search.style.display = 'none';
+	          },
+	          titleTransform: function(e) {
+	              var d = e.detail;
+	              var m = d.height - d.condensedHeight;
+	              var scale = Math.max(0.75, (m - d.y) / (m / 0.25)  + 0.75);
+	              titleStyle.webkitTransform = titleStyle.transform = 
+	                  'scale(' + scale + ') translateZ(0)';
+	          }
+	        });
+		})();
     </script>
 </polymer-element>

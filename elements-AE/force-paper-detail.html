@@ -1,4 +1,5 @@
 <link rel="import" href="../elements/force-ui-detail/force-ui-detail.html">
+<link href="../dependencies/paper-toggle-button/paper-toggle-button.html" rel="import">
 <polymer-element name="force-paper-detail" extends="force-ui-detail">
 	<script>
 		(function() {
@@ -45,11 +46,11 @@
 			        // If forEdit is true and if field is editable, method returns an input type element.
 			        var generateFieldTemplate = function(fieldLabel, fieldName, fieldInfo, displayField, forEdit) {
 			            var fieldType = fieldInfo.type,
-			                html = '<span class="' + fieldType + '" data-field-name="' + fieldName + '">';
+			                html = '<span class="' + fieldType + '" data-field-name="' + fieldName + '"' + (fieldType == 'boolean' ? ' layout horizontal center ' : '') + '>';
 
 			            if (forEdit) {
 			                if (fieldType == 'boolean')
-			                    html += (fieldLabel + '<paper-toggle-button checked?="{{' + displayField + '}}"></paper-toggle-button>');
+			                    html += ('<paper-toggle-button checked?="{{' + displayField + '}}"></paper-toggle-button>' + fieldLabel);
 			                else if (fieldType == 'picklist') {
 			                	html += ('<div class="sf-layout-item-label">' + fieldLabel + '</div>');
 			                    html += '<select value="{{' + displayField + '}}">';

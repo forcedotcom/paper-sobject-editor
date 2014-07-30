@@ -18,40 +18,52 @@
   </template>
   <script>
     Polymer('force-ui-search', {
+        searchfields: "Name",
         criteria: "",
         querytype: "soql",
         query: null,
         observe: {
           "$.input.focused": "blurAction",
-          "criteria": "computeQuery"
+          "criteria": "computeQuery",
+          "sobject": "computeQuery"
         },
-        focusAction: function() {
-          this.$.input.downAction({});
-          this.$.input.upAction();
+        ready: function() {
+          if(this.sobject) this.computeQuery();
+        },
+        focusAction: function(e) {
+          this.$.input.downAction(e);
+          this.$.input.upAction(e);
         },
         blurAction: function() {
           if (!this.$.input.focused) this.fire('blur');
         },
         get storeName() {
           if (this.$ && this.$.store.cache) return this.$.store.cache.soupName;
-          return this.sobject;
+          return this.sobject.toLowerCase();
         },
         computeQuery: function() {
             var searchFields = this.searchfields.trim().split(/\s+/);
             var fieldsToFetch = this.fieldstofetch ? this.fieldstofetch.trim().split(/\s+/) : [];
             fieldsToFetch = _.union(searchFields, fieldsToFetch);
 
+            var query, querytype;
+
             if (SFDC.isOnline()) {
                 for (var idx in searchFields) searchFields[idx] = searchFields[idx] + " LIKE '" + this.criteria + "%'";
-                this.querytype = "soql";
-                this.query = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " WHERE " + searchFields.join(" OR ") + " LIMIT 25";
+                querytype = "soql";
+                query = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " WHERE " + searchFields.join(" OR ") + " LIMIT 25";
             }
             else {
                 for (var idx in searchFields) 
                   searchFields[idx] = "{" + this.storeName + ":" + searchFields[idx] + "} LIKE '" + this.criteria + "%'";
 
-                this.querytype = "cache";
-                this.query = {queryType:"smart", smartSql:"SELECT {" + this.storeName + ":_soup} FROM {" + this.storeName + "} WHERE " + searchFields[0], pageSize:25};
+                querytype = "cache";
+                query = {queryType:"smart", smartSql:"SELECT {" + this.storeName + ":_soup} FROM {" + this.storeName + "} WHERE " + searchFields[0], pageSize:25};
+            }
+
+            if (querytype != this.querytype || !_.isEqual(this.query, query)) {
+                this.querytype = querytype;
+                this.query = query;
             }
         }
     });

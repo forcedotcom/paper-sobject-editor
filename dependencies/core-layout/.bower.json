@@ -2,17 +2,17 @@
   "name": "core-layout",
   "private": true,
   "dependencies": {
-    "polymer": "Polymer/polymer#^0.3.0"
+    "polymer": "Polymer/polymer#>=0.3.0 <1.0.0"
   },
-  "version": "0.3.0",
+  "version": "0.3.4",
   "homepage": "https://github.com/Polymer/core-layout",
-  "_release": "0.3.0",
+  "_release": "0.3.4",
   "_resolution": {
     "type": "version",
-    "tag": "0.3.0",
-    "commit": "e36539fc694fdfb25125bcae6586933daff44588"
+    "tag": "0.3.4",
+    "commit": "8bee263c2b917483a5b6b11ad50f0603eb93dc59"
   },
   "_source": "git://github.com/Polymer/core-layout.git",
-  "_target": ">=0.3.0",
+  "_target": ">=0.3.4 <1.0.0",
   "_originalSource": "Polymer/core-layout"
 }

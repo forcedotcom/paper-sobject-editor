@@ -67,37 +67,31 @@ license that can be found in the LICENSE file.
       <template>
 
         <style>
-        	core-animated-pages {
-        		position: absolute;
-        		top: 0; bottom: 0;
-        		left: 0; right: 0;
-        	}
-          	core-animated-pages#pages > * {
-            	-webkit-transition-duration: 0.5s;
-            	transition-duration: 0.5s;
-          	}
+          core-animated-pages {
+            position: absolute;
+            top: 0; bottom: 0;
+            left: 0; right: 0;
+          }
+          core-animated-pages#pages > * {
+            -webkit-transition-duration: 0.5s;
+            transition-duration: 0.5s;
+          }
         </style>
 
-        <core-animated-pages id="pages" transitions="['slide-from-right']" on-save="{{refresh}}" on-destroy="{{refresh}}" style="overflow-x:hidden">
+        <core-animated-pages id="pages" transitions="slide-from-right" on-save="{{refresh}}" on-destroy="{{refresh}}" style="overflow-x:hidden">
 
           <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}">
             <template>
                 <a href="#edit/{{id}}" style="text-decoration: none; color: inherit">
-                  <div style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
-                    <div horizontal layout>
+                    <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
                       <img class="profile-photo" src="images/{{attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/> 
-                      <div layout vertical center-justified flex>
-                        <div style="margin-left: 10px" layout horizontal>
-                            <div flex>
-                              <div style="font-size: 1.1em;">{{attributes.FirstName}} {{attributes.LastName}}</div>
-                              <span style="font-size: 0.9em; color: #696969">{{attributes.Title}}</span>
-                            </div>
-                            <status-icon props="{{attributes}}"></status-icon>
-                            <core-icon icon="chevron-right" style="fill: black"></core-icon>
-                        </div>
+                      <div flex style="margin-left: 10px">
+                        <div style="font-size: 1.1em;">{{attributes.FirstName}} {{attributes.LastName}}</div>
+                        <span style="font-size: 0.9em; color: #696969">{{attributes.Title}}</span>
+                      </div>
+                      <status-icon props="{{attributes}}"></status-icon>
+                      <core-icon icon="chevron-right" style="fill: black"></core-icon>
                     </div>
-                    </div>
-                  </div>
                 </a>
             </template>
           </search-screen>

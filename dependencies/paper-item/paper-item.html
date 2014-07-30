@@ -8,7 +8,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <!--
-@group Quantum Paper Elements
+@group Paper Elements
 
 `paper-item` is a list-item object for use in menus. It may contain and icon and/or
 a text label.
@@ -26,22 +26,19 @@ Example:
 
 <link href="../polymer/polymer.html" rel="import">
 <link href="../core-icon/core-icon.html" rel="import">
-<link href="../core-layout/core-layout.html" rel="import">
 <link href="../paper-ripple/paper-ripple.html" rel="import">
 
-<polymer-element name="paper-item" attributes="label iconSrc icon">
+<polymer-element name="paper-item" attributes="label iconSrc icon" center horizontal layout>
 
   <template>
 
     <link href="paper-item.css" rel="stylesheet">
 
-    <core-layout align="center"></core-layout>
-
     <paper-ripple id="ripple"></paper-ripple>
 
     <core-icon id="icon" hidden?="{{!iconSrc && !icon}}" src="{{iconSrc}}" icon="{{icon}}"></core-icon>
     {{label}}
-
+    <content></content>
   </template>
 
   <script>

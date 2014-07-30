@@ -10,6 +10,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 :host {
   display: inline-block;
   width: 200px;
+  cursor: default;
 }
 
 #sliderContainer {
@@ -100,6 +101,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 #sliderKnob.expand:not(.pin) > #sliderKnobInner {
   width: 100%;
   height: 100%;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 #sliderKnob.ring > #sliderKnobInner {

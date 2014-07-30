@@ -5,12 +5,12 @@
     "core-icons": "Polymer/core-icons#>=0.3.0 <1.0.0"
   },
   "homepage": "https://github.com/Polymer/core-icon-button",
-  "version": "0.3.2",
-  "_release": "0.3.2",
+  "version": "0.3.4",
+  "_release": "0.3.4",
   "_resolution": {
     "type": "version",
-    "tag": "0.3.2",
-    "commit": "5b8baa773bdb5ecc9c22e3b06c62394f650df2f2"
+    "tag": "0.3.4",
+    "commit": "61ffcd29f02279c59e7d49ce313edddcfbbae64d"
   },
   "_source": "git://github.com/Polymer/core-icon-button.git",
   "_target": ">=0.3.0 <1.0.0",

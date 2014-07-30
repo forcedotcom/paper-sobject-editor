@@ -305,7 +305,9 @@ if (forcetk.Client === undefined) {
     forcetk.Client.prototype.ajax = function(path, callback, error, method, payload, headerParams) {
         var that = this;
         var retryCount = 0;
-        var url = (location.protocol == 'file:' ? this.instanceUrl : location.origin) + '/services/data' + path;
+        var url;
+        if (path.indexOf(this.instanceUrl) == 0) url = path;
+        else url = (location.protocol == 'file:' ? this.instanceUrl : location.origin) + '/services/data' + path;
         return $j.ajax({
             type: method || "GET",
             async: this.asyncAjax,
