@@ -20,17 +20,19 @@
                 color: #fff;
             }
         </style>
-        <div style="position: absolute; top: 0; bottom: 0; right: 0; left: 0; overflow-y: scroll">
-            <paper-shadow target="{{$.toolbar}}"></paper-shadow>
+        <paper-shadow target="{{$.toolbar}}"></paper-shadow>
 
-            <core-toolbar id="toolbar" style="background-color: #00adef;">
-              <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" size="40"></core-icon>
-              <div flex></div>
-              <paper-menu-button icon="more-vert" halign="right">
-                <paper-item label="Sync" on-tap="{{doSync}}"></paper-item>
-                <paper-item label="Cancel" on-tap="{{navigateBack}}"></paper-item>
-              </paper-menu-button>
-            </core-toolbar>
+        <core-toolbar id="toolbar" style="background-color: #00adef;">
+          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" size="40"></core-icon>
+          <div flex></div>
+          <paper-menu-button icon="more-vert" halign="right">
+            <paper-item label="Sync" on-tap="{{doSync}}"></paper-item>
+            <paper-item label="Cancel" on-tap="{{navigateBack}}"></paper-item>
+          </paper-menu-button>
+        </core-toolbar>
+
+        <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;">
+            
             <force-sobject-collection id="list" sobject="{{sobject}}" querytype="cache" query="{{query}}" on-sync="{{syncComplete}}"></force-sobject-collection>
             <div id="listview">
                 <template repeat="{{model in $.list.collection.models}}">

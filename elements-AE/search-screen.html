@@ -56,14 +56,14 @@
 
         </style>
 
-        <core-scroll-header-panel condenses on-core-header-transform="{{titleTransform}}">
+        <core-scroll-header-panel condenses on-core-header-transform="{{titleTransform}}" style="-webkit-overflow-scrolling: touch;">
         	
             <paper-shadow></paper-shadow>
             <core-toolbar id="toolbar" class="tall paper-shadow-top paper-shadow-top-z-1">
     
-                <core-icon id="search-icon" icon="search" on-tap="{{showSearch}}" style="padding:8px"></core-icon>
+                <core-icon id="search-icon" icon="search" style="padding:8px"></core-icon>
                 <div flex>
-                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" on-blur="{{hideSearch}}" style="display:none"></force-ui-search>
+                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}"></force-ui-search>
                 </div>
                 <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}" style="padding:8px"></core-icon>
                 <div id="title" class="bottom indent title">Contacts</div>
@@ -106,14 +106,6 @@
 	          },
 	          navigateToCreate: function() {
 	            window.location.hash = "#edit";
-	          },
-	          showSearch: function(e) {
-	            this.$.search.style.display = 'block';
-	            this.$.search.focusAction(e);
-	          },
-	          hideSearch: function() {
-	            if (this.$.search.criteria.length == 0) 
-	              this.$.search.style.display = 'none';
 	          },
 	          titleTransform: function(e) {
 	              var d = e.detail;

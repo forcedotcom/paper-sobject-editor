@@ -61,7 +61,7 @@ license that can be found in the LICENSE file.
   	</style>
 </head>
 
-<body unresolved>
+<body unresolved touch-action="auto">
 
     <polymer-element name="mobile-app" attributes="sobject searchfields displayfields">
       <template>
@@ -82,7 +82,7 @@ license that can be found in the LICENSE file.
 
           <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}">
             <template>
-                <a href="#edit/{{id}}" style="text-decoration: none; color: inherit">
+                <a href="#edit/{{id}}" style="text-decoration: none; color: inherit; -webkit-tap-highlight-color: rgba(0,0,0,0);">
                     <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
                       <img class="profile-photo" src="images/{{attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/> 
                       <div flex style="margin-left: 10px">

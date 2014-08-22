@@ -1,25 +1,24 @@
 <polymer-element name="detail-screen" extends="force-route" attributes="sobject recordid sync" on-route-changed="{{render}}">
     <template>
         <link rel="stylesheet" href="detail.css"/>
-        <div style="position: absolute; top: 0; bottom: 0; right: 0; left: 0; overflow-y: scroll">
-            
-            <core-toolbar id="toolbar" style="background-color: #00adef;">
-              <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" size="40"></core-icon>
-              <div flex></div>
-              <paper-menu-button icon="more-vert" halign="right">
-                <template if="{{!$.detail.model.attributes.__locally_deleted__}}">
-                    <paper-item label="Save" on-tap="{{doSave}}"></paper-item>
-                    <paper-item label="Delete" on-tap="{{doToggleDelete}}"></paper-item>
-                </template>
-                <template if="{{sync}}">
-                    <paper-item label="Merge" on-tap="{{doSaveMerge}}"></paper-item>
-                    <paper-item label="Overwrite" on-tap="{{doSaveOverwrite}}"></paper-item>
-                </template>
-                <template if="{{$.detail.model.attributes.__locally_deleted__}}">
-                    <paper-item label="Undelete" on-tap="{{doToggleDelete}}"></paper-item>
-                </template>
-              </paper-menu-button>
-            </core-toolbar>
+        <core-toolbar id="toolbar" style="background-color: #00adef;">
+          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" size="40"></core-icon>
+          <div flex></div>
+          <paper-menu-button icon="more-vert" halign="right">
+            <template if="{{!$.detail.model.attributes.__locally_deleted__}}">
+                <paper-item label="Save" on-tap="{{doSave}}"></paper-item>
+                <paper-item label="Delete" on-tap="{{doToggleDelete}}"></paper-item>
+            </template>
+            <template if="{{sync}}">
+                <paper-item label="Merge" on-tap="{{doSaveMerge}}"></paper-item>
+                <paper-item label="Overwrite" on-tap="{{doSaveOverwrite}}"></paper-item>
+            </template>
+            <template if="{{$.detail.model.attributes.__locally_deleted__}}">
+                <paper-item label="Undelete" on-tap="{{doToggleDelete}}"></paper-item>
+            </template>
+          </paper-menu-button>
+        </core-toolbar>
+        <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;">
             <force-paper-detail id="detail" sobject="{{sobject}}" recordid="{{recordid}}" foredit="true"></force-paper-detail>
         </div>
     </template>

@@ -141,7 +141,7 @@
                 // Fetch field infos and then generate template
                 return fetchFieldInfos(view.sobject, fieldsArray)
                     .then(function(fieldInfos) {
-                        return compileTemplateForFields(fieldInfos, fieldLabelMap, view.foredit);
+                        return view.compileTemplate(compileTemplateForFields(fieldInfos, fieldLabelMap, view.foredit));
                     });
             } else if (view.$.sobject_layout.layout) {
                 // Return a promise to keep the return type consistent
@@ -289,7 +289,7 @@
         });
         if (row.layoutItems.length) section.layoutRows.push(row);
 
-        return compileTemplateForLayout([section]);
+        return [section];
     }
 
     // Generates handlebar template for a layout object, which is returned by describeLayout api call.
