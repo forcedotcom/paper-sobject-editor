@@ -16,13 +16,6 @@ license that can be found in the LICENSE file.
 	<!-- Platform polyfill import -->
 	<script src="dependencies/platform/platform.js"></script>
 
-	<!-- Local Browser Testing. Mocked cordova and Smartstore -->
-	<script src="dependencies/mobilesdk-shared/test/MockCordova.js"></script>
-	<script src="dependencies/mobilesdk-shared/libs/cordova.force.js"></script>
-	<script src="dependencies/mobilesdk-shared/test/MockSmartStore.js"></script>
-	<!-- End Local Testing -->
-
-
 	<!-- Core Polymer Elements -->
 	<link href="dependencies/core-icons/core-icons.html" rel="import">
 	<link href="dependencies/core-animated-pages/core-animated-pages.html" rel="import">
@@ -43,6 +36,7 @@ license that can be found in the LICENSE file.
 	<link rel="import" href="elements/force-ui-search/force-ui-search.html">
 	<link rel="import" href="elements/force-sobject-collection/force-sobject-collection.html">
 	<link rel="import" href="elements/force-route/force-route.html">
+	<link rel="import" href="elements/force-signin/force-signin.html">
 
 	<!-- Account Editor Polymer Elements -->
 	<link rel="import" href="elements-AE/force-paper-detail.html">
@@ -51,14 +45,24 @@ license that can be found in the LICENSE file.
 	<link rel="import" href="elements-AE/detail-screen.html">
 	<link rel="import" href="elements-AE/status-icon.html">
 
+	<!-- Local Browser Testing. Mocked cordova and Smartstore -->
+	<script src="dependencies/mobilesdk-shared/test/MockCordova.js"></script>
+	<script src="dependencies/mobilesdk-shared/libs/cordova.force.js"></script>
+	<script src="dependencies/mobilesdk-shared/test/MockSmartStore.js"></script>
+	<!-- End Local Testing -->
 
-  	<style shim-shadowdom>
-	    body {
-	      margin: 0;
-	      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-	      font-size: 14px;
-	    }
-  	</style>
+	<!-- Mobile SDK container script includes ->
+	<script type="text/javascript" src="cordova.js"></script>
+	<!-- End Mobile SDK script includes -->
+
+
+	<style shim-shadowdom>
+		body {
+			margin: 0;
+			font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+			font-size: 14px;
+		}
+	</style>
 </head>
 
 <body unresolved touch-action="auto">
@@ -77,6 +81,8 @@ license that can be found in the LICENSE file.
             transition-duration: 0.5s;
           }
         </style>
+
+        <force-signin consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXqqSdv4wEGLXlDQaydmbK.Q1rzeKuQ43zC4tDnAIrL24Y9O4Dz1QVMzN1Slr" callbackurl="https://sfdc-sobject-editor.herokuapp.com/oauth/success"></force-signin>
 
         <core-animated-pages id="pages" transitions="slide-from-right" on-save="{{refresh}}" on-destroy="{{refresh}}" style="overflow-x:hidden">
 
@@ -154,44 +160,11 @@ license that can be found in the LICENSE file.
 
     <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="Title"></mobile-app>
 
-    <script src="elements-AE/forcetk.ui.js"></script>
-
-    <script type="text/javascript">
-      	window.addEventListener('WebComponentsReady', function() {
-          	var creds = {
-            	accessToken: '',
-              instanceUrl: ''
-          	};
-
-            // Salesforce login URL
-            var loginURL = 'https://login.salesforce.com/',
-              // Consumer Key from Setup | Develop | Remote Access
-              consumerKey = '3MVG9QDx8IX8nP5TwrwtRg53zXqqSdv4wEGLXlDQaydmbK.Q1rzeKuQ43zC4tDnAIrL24Y9O4Dz1QVMzN1Slr',
-              // Callback URL from Setup | Develop | Remote Access
-              callbackURL = 'https://sfdc-sobject-editor.herokuapp.com/oauth/success';
-
-            // Instantiating forcetk ClientUI
-            var oauthClient = new ForceOAuth(loginURL, consumerKey, callbackURL,
-                              function forceOAuthUI_successHandler(forcetkClient) { // successCallback
-                                  console.log('OAuth success!');
-                                  creds = {
-                                    accessToken: oauthClient.oauthResponse.access_token,
-                                    instanceUrl: oauthClient.oauthResponse.instance_url
-                                  };
-                                  SFDC.launch(creds);
-                              },
-
-                              function forceOAuthUI_errorHandler(error) { // errorCallback
-                                  console.log('OAuth error!');
-                                  oauthClient.login();
-                              });
-
-          	Backbone.history.start();
-
-          	if (location.protocol == 'file:') SFDC.launch(creds);
-            else oauthClient.login();
-      	});
-        window.location.hash = '';
+    <script>
+      window.addEventListener('WebComponentsReady', function() {
+        Backbone.history.start();
+      })
+      window.location.hash = '';
     </script>
 
     <script>
