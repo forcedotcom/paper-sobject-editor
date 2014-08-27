@@ -51,7 +51,7 @@
             if (SFDC.isOnline()) {
                 for (var idx in searchFields) searchFields[idx] = searchFields[idx] + " LIKE '" + this.criteria + "%'";
                 querytype = "soql";
-                query = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " WHERE " + searchFields.join(" OR ") + " LIMIT 25";
+                query = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " WHERE " + searchFields.join(" OR ") + " LIMIT 250";
             }
             else {
                 for (var idx in searchFields) 

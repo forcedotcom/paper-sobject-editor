@@ -1,7 +1,8 @@
 <link rel="import" href="../dependencies/core-scroll-header-panel/core-scroll-header-panel.html">
 <link rel="import" href="../dependencies/core-toolbar/core-toolbar.html">
 <link rel="import" href="../dependencies/core-icon-button/core-icon-button.html">
-<polymer-element name="search-screen" extends="force-route" attributes="sobject searchfields fieldstofetch">
+<link rel="import" href="../dependencies/core-list/core-list.html">
+<polymer-element name="search-screen" extends="force-route" attributes="sobject searchfields fieldstofetch resultHeight">
     <template>
 
         <style>
@@ -73,9 +74,9 @@
             <div class="content">
 
                 <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" on-sync="{{updateListview}}" style="display:none"></force-sobject-collection>
-                <div id="listview">
+                <core-list id="uilist" height="{{resultHeight}}" style="height:100%">
                     <content select="*"></content>
-                </div>
+                </core-list>
 
             </div>
 
@@ -91,13 +92,15 @@
 	            this.super();
 	            titleStyle = this.$.title.style;
 	          },
-	          updateListview: function() {
-                this.template = this.querySelector('template');
-                if (this.template) {
-                    this.template.setAttribute('repeat', '');
-                    this.template.model = this.$.list.collection.models;
-                }
-	          },
+
+              attached: function() {
+                this.$.uilist.attached = null;
+                this.$.uilist.template = this.querySelector('template');
+              },              
+
+              updateListview: function() {
+                this.$.uilist.data = this.$.list.collection.models;
+              },
 	          updateConnection: function() {
 	            this.$.search.computeQuery();
 	          },
