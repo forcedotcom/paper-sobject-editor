@@ -74,7 +74,7 @@
             <div class="content">
 
                 <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" on-sync="{{updateListview}}" style="display:none"></force-sobject-collection>
-                <core-list id="uilist" height="{{resultHeight}}" style="height:100%">
+                <core-list id="uilist" height="{{resultHeight}}" style="height:355px"> <!-- FIXME -->
                     <content select="*"></content>
                 </core-list>
 
@@ -94,8 +94,7 @@
 	          },
 
               attached: function() {
-                this.$.uilist.attached = null;
-                this.$.uilist.template = this.querySelector('template');
+                this.$.uilist.appendChild(this.querySelector('template'));
               },              
 
               updateListview: function() {

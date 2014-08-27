@@ -86,7 +86,7 @@ license that can be found in the LICENSE file.
 
         <core-animated-pages id="pages" transitions="slide-from-right" on-save="{{refresh}}" on-destroy="{{refresh}}" style="overflow-x:hidden">
 
-          <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}" resultHeight="71">
+          <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}" resultHeight="71" on-core-activate="{{openEdit}}">
             <template>
               <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
                 <img class="profile-photo" src="images/{{attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/> 
@@ -118,9 +118,6 @@ license that can be found in the LICENSE file.
             SFDC.isOnline = function() {
               return this._onlineStatus && !this.$.syncview.hasLocalChanges();
             }.bind(this);
-            this.$.listview.addEventListener("core-activate", function(params) {
-              window.location.hash = "#edit/" + params.detail.data.attributes.Id;
-            })
           },
           get onlinestatus() {
             return this._onlineStatus;
@@ -129,6 +126,9 @@ license that can be found in the LICENSE file.
             this._onlineStatus = newStatus;
             this.cloudicon = newStatus ? "cloud-done" : "cloud-off";
             this.$.network_icon.style.fill = newStatus ? 'green' : 'red';
+          },
+          openEdit: function(params) {
+              window.location.hash = "#edit/" + params.detail.data.attributes.Id;
           },
           refresh: function() {
           	this.$.listview.refresh();
