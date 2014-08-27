@@ -119,7 +119,6 @@ license that can be found in the LICENSE file.
               return this._onlineStatus && !this.$.syncview.hasLocalChanges();
             }.bind(this);
             this.$.listview.addEventListener("core-activate", function(params) {
-              alert(JSON.stringify(params.detail.data.attributes));
               window.location.hash = "#edit/" + params.detail.data.attributes.Id;
             })
           },
