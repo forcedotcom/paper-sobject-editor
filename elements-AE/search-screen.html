@@ -64,16 +64,16 @@
     
                 <core-icon id="search-icon" icon="search" style="padding:8px"></core-icon>
                 <div flex>
-                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" limit="250"></force-ui-search>
+                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}"></force-ui-search>
                 </div>
                 <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}" style="padding:8px"></core-icon>
-                <div id="title" class="bottom indent title">Contacts</div>
+                <div id="title" class="bottom indent title">{{$.list.models.length || ""}} Contacts</div>
 		      
             </core-toolbar>
 
             <div class="content">
 
-                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" on-sync="{{updateListview}}" style="display:none"></force-sobject-collection>
+                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" on-sync="{{updateListview}}" style="display:none" maxsize="2000" pagesize="100"></force-sobject-collection>
                 <core-list id="uilist" height="{{resultHeight}}" style="height:355px"> <!-- FIXME -->
                     <content select="*"></content>
                 </core-list>
@@ -98,7 +98,7 @@
               },              
 
               updateListview: function() {
-                this.$.uilist.data = this.$.list.collection.models;
+                this.$.uilist.data = this.$.list.models;
               },
 	          updateConnection: function() {
 	            this.$.search.computeQuery();

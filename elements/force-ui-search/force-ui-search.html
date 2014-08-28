@@ -9,7 +9,7 @@
 <!-- TBD: Improve query update process to chunk the changes and minimize the server calls -->
 <link rel="import" href="../force-sobject-store/force-sobject-store.html">
 <link rel="import" href="../../dependencies/paper-input/paper-input.html">
-<polymer-element name="force-ui-search" attributes="sobject searchfields fieldstofetch limit">
+<polymer-element name="force-ui-search" attributes="sobject searchfields fieldstofetch">
   <template>
       <force-sobject-store id="store" sobject="{{sobject}}" fieldstoindex="{{searchfields}}"></force-sobject-store>
       <div class="bar bar-standard bar-header-secondary">
@@ -42,7 +42,6 @@
           return this.sobject.toLowerCase();
         },
         computeQuery: function() {
-            var limit = parseInt(this.limit || "25");
             var searchFields = this.searchfields.trim().split(/\s+/);
             var fieldsToFetch = this.fieldstofetch ? this.fieldstofetch.trim().split(/\s+/) : [];
             fieldsToFetch = _.union(searchFields, fieldsToFetch);
@@ -52,14 +51,14 @@
             if (SFDC.isOnline()) {
                 for (var idx in searchFields) searchFields[idx] = searchFields[idx] + " LIKE '" + this.criteria + "%'";
                 querytype = "soql";
-                query = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " WHERE " + searchFields.join(" OR ") + " LIMIT " + limit;
+                query = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " WHERE " + searchFields.join(" OR ");
             }
             else {
                 for (var idx in searchFields) 
                   searchFields[idx] = "{" + this.storeName + ":" + searchFields[idx] + "} LIKE '" + this.criteria + "%'";
 
                 querytype = "cache";
-                query = {queryType:"smart", smartSql:"SELECT {" + this.storeName + ":_soup} FROM {" + this.storeName + "} WHERE " + searchFields[0], pageSize:limit};
+                query = {queryType:"smart", smartSql:"SELECT {" + this.storeName + ":_soup} FROM {" + this.storeName + "} WHERE " + searchFields[0], pageSize:25};
             }
 
             if (querytype != this.querytype || !_.isEqual(this.query, query)) {
