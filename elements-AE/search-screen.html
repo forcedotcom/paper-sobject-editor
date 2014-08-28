@@ -71,10 +71,10 @@
 		      
             </core-toolbar>
 
-            <div class="content">
+            <div class="content" style="height:100%">
 
                 <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" on-sync="{{updateListview}}" style="display:none" maxsize="2000" pagesize="100"></force-sobject-collection>
-                <core-list id="uilist" height="{{resultHeight}}" style="height:355px"> <!-- FIXME -->
+                <core-list id="uilist" height="{{resultHeight}}" style="height:100%">
                     <content select="*"></content>
                 </core-list>
 
