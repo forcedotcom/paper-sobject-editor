@@ -1,11 +1,11 @@
 {
   "name": "mobilesdk-shared",
   "homepage": "https://github.com/wmathurin/SalesforceMobileSDK-Shared",
-  "_release": "258801bc49",
+  "_release": "46f5ba6b4c",
   "_resolution": {
     "type": "branch",
     "branch": "unstable",
-    "commit": "258801bc497fc89a599492934db0f1144d624769"
+    "commit": "46f5ba6b4c2782e7f3e95e9ee1f0648fcab372dd"
   },
   "_source": "git://github.com/wmathurin/SalesforceMobileSDK-Shared.git",
   "_target": "unstable",
