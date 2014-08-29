@@ -28,15 +28,17 @@
 
     //SFDC.launch
     //TODO: Provide an auth provider as an argument so that the consumer can initiate fetch for new session tokens
-    SFDC.launch = function(options) {
-        var opts = {apiVersion: 'v29.0', userAgent: 'SalesforceMobileUI/alpha'};
+    SFDC.launch = function(options, logLevel) {
+        var opts = {apiVersion: 'v31.0', userAgent: 'SalesforceMobileUI/alpha'};
         options = _.extend(opts, options);
         if (!initialized) {
 
             initialized = true;
             Force.init(options, options.apiVersion, null, authenticator);
+            Force.setLogLevel(logLevel || "info")
 
             if (navigator.smartstore) {
+                navigator.smartstore.setLogLevel(logLevel || "info");
                 SFDC.metadataStore = new Force.StoreCache('sobjectTypes', [], 'type');
                 SFDC.metadataStore.init()
                 .done(function() {

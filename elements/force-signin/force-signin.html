@@ -15,7 +15,7 @@
 					oauthPlugin.getAuthCredentials(
 						// Callback method when authentication succeeds.
 						function (creds) {
-						    SFDC.launch(creds);
+						    SFDC.launch(creds, "debug");
 						},
 						function (error) {
 						    alert('Failed to authenticate user: ' + error);
@@ -32,7 +32,7 @@
 				                      accessToken: oauthClient.oauthResponse.access_token,
 				                      instanceUrl: oauthClient.oauthResponse.instance_url
 				                    };
-				                    SFDC.launch(creds);
+				                    SFDC.launch(creds, "debug");
 				                },
 
 				                function forceOAuthUI_errorHandler(error) { // errorCallback
