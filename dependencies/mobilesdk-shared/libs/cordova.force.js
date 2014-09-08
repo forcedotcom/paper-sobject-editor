@@ -181,17 +181,23 @@ cordova.define("com.salesforce.util.bootstrap", function(require, exports, modul
  */
 cordova.define("com.salesforce.util.exec", function(require, exports, module) {
     var exec = function(pluginVersion, successCB, errorCB, service, action, args) {
-        var defaultSuccessCB = function() {
-            console.log(service + ":" + action + " succeeded");
-        };
-        var defaultErrorCB = function() {
-            console.error(service + ":" + action + " failed");
-        };
-        successCB = typeof successCB !== "function" ? defaultSuccessCB : successCB;
-        errorCB = typeof errorCB !== "function" ? defaultErrorCB : errorCB;
+        var tag = "TIMING " + service + ":" + action;
+        console.time(tag);
         args.unshift("pluginSDKVersion:" + pluginVersion);
         var cordovaExec = require('cordova/exec');
-        return cordovaExec(successCB, errorCB, service, action, args);                  
+        return cordovaExec(
+            function() {
+                console.timeEnd(tag);
+                if (typeof successCB === "function")
+                    successCB.apply(null, arguments);
+            }, 
+            function() {
+                console.timeEnd(tag);
+                console.error(tag + " failed");
+                if (typeof errorCB === "function")
+                    errorCB.apply(null, arguments);
+            }, 
+            service, action, args);                  
     };
 
     /**
@@ -529,7 +535,7 @@ cordova.define("com.salesforce.plugin.smartstore", function (require, exports, m
     var setLogLevel = function(level) {
         logLevel = level;
         var methods = ["error", "info", "warn", "debug"];
-        var levelAsInt = methods.indexOf(level);
+        var levelAsInt = methods.indexOf(level.toLowerCase());
         for (var i=0; i<methods.length; i++) {
             storeConsole[methods[i]] = (i <= levelAsInt ? console[methods[i]].bind(console) : function() {});
         }
