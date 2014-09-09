@@ -73,8 +73,8 @@
 
             <div class="content" style="height:100%">
 
-                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" on-sync="{{updateListview}}" style="display:none" maxsize="2000" pagesize="100"></force-sobject-collection>
-                <core-list id="uilist" height="{{resultHeight}}" style="height:100%">
+                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" style="display:none" maxsize="2000" pagesize="100"></force-sobject-collection>
+                <core-list id="uilist" height="{{resultHeight}}" style="height:100%" data="{{$.list.models}}">
                     <content select="*"></content>
                 </core-list>
 
@@ -97,18 +97,18 @@
                 this.$.uilist.appendChild(this.querySelector('template'));
               },              
 
-              updateListview: function() {
-                this.$.uilist.data = this.$.list.models;
-              },
 	          updateConnection: function() {
 	            this.$.search.computeQuery();
 	          },
+
 	          refresh: function() {
 	            this.$.list.fetch();
 	          },
+
 	          navigateToCreate: function() {
 	            window.location.hash = "#edit";
 	          },
+
 	          titleTransform: function(e) {
 	              var d = e.detail;
 	              var m = d.height - d.condensedHeight;
@@ -120,3 +120,4 @@
 		})();
     </script>
 </polymer-element>
+
