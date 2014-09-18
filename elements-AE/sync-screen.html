@@ -18,12 +18,14 @@
         <style>
             :host /deep/ core-icon {
                 color: #fff;
+                width: 40px; 
+                height: 40px;
             }
         </style>
         <paper-shadow target="{{$.toolbar}}"></paper-shadow>
 
         <core-toolbar id="toolbar" style="background-color: #00adef;">
-          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" size="40"></core-icon>
+          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}"></core-icon>
           <div flex></div>
           <paper-menu-button icon="more-vert" halign="right">
             <paper-item label="Sync" on-tap="{{doSync}}"></paper-item>

@@ -2,16 +2,16 @@
   "name": "core-transition",
   "private": true,
   "dependencies": {
-    "polymer": "Polymer/polymer#>=0.3.0 <1.0.0",
-    "core-meta": "Polymer/core-meta#>=0.3.0 <1.0.0"
+    "polymer": "Polymer/polymer#^0.4.0",
+    "core-meta": "Polymer/core-meta#^0.4.0"
   },
   "homepage": "https://github.com/Polymer/core-transition",
-  "version": "0.3.4",
-  "_release": "0.3.4",
+  "version": "0.4.1",
+  "_release": "0.4.1",
   "_resolution": {
     "type": "version",
-    "tag": "0.3.4",
-    "commit": "21a04281819c779d160043954c78e56fb6952a53"
+    "tag": "0.4.1",
+    "commit": "49deefe3c4d650a8f460ec80fa3177907432fd7a"
   },
   "_source": "git://github.com/Polymer/core-transition.git",
   "_target": ">=0.3.0 <1.0.0",
