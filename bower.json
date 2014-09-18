@@ -16,11 +16,7 @@
     "paper-elements": "Polymer/paper-elements#>=0.4.0 <1.0.0",
     "core-animated-pages": "Polymer/core-animated-pages#>=0.4.0 <1.0.0",
     "core-scroll-header-panel": "Polymer/core-scroll-header-panel#>=0.4.0 <1.0.0",
-    "paper-item": "Polymer/paper-item#~0.3.4",
-    "paper-menu-button": "Polymer/paper-menu-button#~0.3.4"
-  },
-  "resolutions": {
-    "paper-menu-button": "~0.3.4",
-    "paper-item": "~0.3.4"
+    "paper-item": "Polymer/paper-item#>=0.4.0 <1.0.0",
+    "paper-menu-button": "Polymer/paper-menu-button#>=0.4.0 <1.0.0"
   }
 }

@@ -2,19 +2,19 @@
   "name": "paper-item",
   "private": true,
   "dependencies": {
-    "polymer": "Polymer/polymer#>=0.3.0 <1.0.0",
-    "core-icon": "Polymer/core-icon#>=0.3.0 <1.0.0",
-    "paper-ripple": "Polymer/paper-ripple#>=0.3.0 <1.0.0"
+    "polymer": "Polymer/polymer#^0.4.0",
+    "core-icon": "Polymer/core-icon#^0.4.0",
+    "paper-ripple": "Polymer/paper-ripple#^0.4.0"
   },
   "homepage": "https://github.com/Polymer/paper-item",
-  "version": "0.3.5",
-  "_release": "0.3.5",
+  "version": "0.4.1",
+  "_release": "0.4.1",
   "_resolution": {
     "type": "version",
-    "tag": "0.3.5",
-    "commit": "06e4854e71fe1f7c10a39ec0a2cf44b1af11b264"
+    "tag": "0.4.1",
+    "commit": "206a067e34fc42c7b6bb8c8638852fdc161a77f7"
   },
   "_source": "git://github.com/Polymer/paper-item.git",
-  "_target": "~0.3.4",
+  "_target": "^0.4.0",
   "_originalSource": "Polymer/paper-item"
 }
