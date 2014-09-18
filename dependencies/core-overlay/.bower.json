@@ -14,6 +14,6 @@
     "commit": "6935b3a0441f00d0e12c51131dec760532319736"
   },
   "_source": "git://github.com/Polymer/core-overlay.git",
-  "_target": ">=0.3.0 <1.0.0",
+  "_target": "^0.4.0",
   "_originalSource": "Polymer/core-overlay"
 }
