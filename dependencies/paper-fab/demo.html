@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <!--
 Copyright 2013 The Polymer Authors. All rights reserved.
 Use of this source code is governed by a BSD-style
@@ -9,7 +9,7 @@ license that can be found in the LICENSE file.
 
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes">
 
   <title>paper-fab</title>
 
@@ -35,18 +35,38 @@ license that can be found in the LICENSE file.
       -webkit-transform: translateZ(0);
     }
 
+    paper-fab {
+      color: #FFF;
+      margin-right:2em;
+    }
+
+    paper-fab.blue {
+      background: #5677fc;
+    }
+
+    paper-fab.green {
+      background: #259b24;
+    }
+
+    paper-fab.yellow {
+      background: #ffeb3b;
+      color: #000;
+    }
+
   </style>
 
 </head>
 <body unresolved>
 
+  <h3>Regular</h3>
+
   <paper-fab icon="arrow-forward"></paper-fab>
+  <paper-fab icon="create" class="blue"></paper-fab>
 
-  <br>
-  <br>
-  <br>
+  <h3>Mini</h3>
 
-  <paper-fab class="mini" icon="arrow-forward"></paper-fab>
+  <paper-fab icon="done" class="mini green"></paper-fab>
+  <paper-fab icon="reply" class="mini yellow"></paper-fab>
 
 </body>
 </html>

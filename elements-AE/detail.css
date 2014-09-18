@@ -12,8 +12,15 @@ paper-menu-button /deep/ div#overlay {
     margin-right: 20px;
 }
 
-:host /deep/ force-paper-input::shadow .focusedColor {
+:host /deep/ force-paper-input[focused]::shadow .floated-label {
   color: #00adef;
+}
+
+:host /deep/ force-paper-input::shadow .focused-underline {
+  background-color: #00adef;
+}
+
+:host /deep/ force-paper-input::shadow .cursor {
   background-color: #00adef;
 }
 

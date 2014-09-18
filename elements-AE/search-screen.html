@@ -11,10 +11,10 @@
             force-ui-search /deep/ paper-input::shadow #errorContainer {
                 display: none;
             }
-            force-ui-search /deep/ #underline {
+            force-ui-search /deep/ #underline>div {
                 background-color: white
             }
-            force-ui-search /deep/ .focusedColor {
+            force-ui-search /deep/ .cursor {
                 background-color: white
             }
             force-ui-search /deep/ input {
@@ -56,16 +56,16 @@
 
         </style>
 
-        <core-scroll-header-panel condenses on-core-header-transform="{{titleTransform}}" style="-webkit-overflow-scrolling: touch;">
+        <core-scroll-header-panel condenses style="-webkit-overflow-scrolling: touch;">
         	
             <paper-shadow></paper-shadow>
             <core-toolbar id="toolbar" class="tall paper-shadow-top paper-shadow-top-z-1">
     
-                <core-icon id="search-icon" icon="search" style="padding:8px"></core-icon>
+                <core-icon id="search-icon" icon="search"></core-icon>
                 <div flex>
                     <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}"></force-ui-search>
                 </div>
-                <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}" style="padding:8px"></core-icon>
+                <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}"></core-icon>
                 <div id="title" class="bottom indent title">Contacts</div>
 		      
             </core-toolbar>
@@ -90,6 +90,7 @@
 	          ready: function() {
 	            this.super();
 	            titleStyle = this.$.title.style;
+                this.addEventListener('core-header-transform', this.titleTransform.bind(this), false);
 	          },
 	          updateListview: function() {
                 this.template = this.querySelector('template');
