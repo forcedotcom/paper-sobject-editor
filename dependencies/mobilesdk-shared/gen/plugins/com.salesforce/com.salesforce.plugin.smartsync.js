@@ -1,4 +1,3 @@
-cordova.define("com.salesforce.util.exec", function(require, exports, module) {
 /*
  * Copyright (c) 2012-14, salesforce.com, inc.
  * All rights reserved.
@@ -27,30 +26,36 @@ cordova.define("com.salesforce.util.exec", function(require, exports, module) {
 
 // Version this js was shipped with
 var SALESFORCE_MOBILE_SDK_VERSION = "3.0.0";
-var exec = function(pluginVersion, successCB, errorCB, service, action, args) {
-    var tag = "TIMING " + service + ":" + action;
-    console.time(tag);
-    args.unshift("pluginSDKVersion:" + pluginVersion);
-    var cordovaExec = require('cordova/exec');
-    return cordovaExec(
-        function() {
-            console.timeEnd(tag);
-            if (typeof successCB === "function")
-                successCB.apply(null, arguments);
-        }, 
-        function() {
-            console.timeEnd(tag);
-            console.error(tag + " failed");
-            if (typeof errorCB === "function")
-                errorCB.apply(null, arguments);
-        }, 
-        service, action, args);                  
+var SERVICE = "com.salesforce.smartsync";
+
+var exec = require("com.salesforce.util.exec").exec;
+
+var syncDown = function(target, soupName, options, successCB, errorCB) {
+    exec(SALESFORCE_MOBILE_SDK_VERSION, successCB, errorCB, SERVICE,
+         "syncDown",
+         [{"target": target, "soupName": soupName, "options": options}]
+        );        
+};
+
+var syncUp = function(target, soupName, options, successCB, errorCB) {
+    exec(SALESFORCE_MOBILE_SDK_VERSION, successCB, errorCB, SERVICE,
+         "syncUp",
+         [{"target": target, "soupName": soupName, "options": options}]
+        );        
+};
+
+var getSyncStatus = function(syncId, successCB, errorCB) {
+    exec(SALESFORCE_MOBILE_SDK_VERSION, successCB, errorCB, SERVICE,
+         "getSyncStatus",
+         [{"syncId": syncId}]
+        );        
 };
 
 /**
  * Part of the module that is public
  */
 module.exports = {
-    exec: exec
+    syncDown: syncDown,
+    syncUp: syncUp,
+    getSyncStatus: getSyncStatus
 };
-});

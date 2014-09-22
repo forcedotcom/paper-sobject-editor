@@ -5,7 +5,7 @@
     "jquery": "latest",
     "underscore": "latest",
     "backbone": "latest",
-    "mobilesdk-shared": "wmathurin/SalesforceMobileSDK-Shared#unstable",
+    "mobilesdk-shared": "wmathurin/SalesforceMobileSDK-Shared#smartsyncplugin",
     "ratchet": "twbs/ratchet#>=2.0.2",
     "mocha": "~1.18.2",
     "should": "~3.3.1",

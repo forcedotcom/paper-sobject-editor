@@ -1,13 +1,13 @@
 {
   "name": "mobilesdk-shared",
   "homepage": "https://github.com/wmathurin/SalesforceMobileSDK-Shared",
-  "_release": "8fd28e236e",
+  "_release": "b5e3f9c9d6",
   "_resolution": {
     "type": "branch",
-    "branch": "unstable",
-    "commit": "8fd28e236e32e596743f909c3dc935edd5cb5d8a"
+    "branch": "smartsyncplugin",
+    "commit": "b5e3f9c9d64e163baf864e64262dc19804b892aa"
   },
   "_source": "git://github.com/wmathurin/SalesforceMobileSDK-Shared.git",
-  "_target": "unstable",
+  "_target": "smartsyncplugin",
   "_originalSource": "wmathurin/SalesforceMobileSDK-Shared"
 }

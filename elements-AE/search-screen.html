@@ -64,7 +64,7 @@
     
                 <core-icon id="search-icon" icon="search"></core-icon>
                 <div flex>
-                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}"></force-ui-search>
+                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" cachemode="{{cachemode}}"></force-ui-search>
                 </div>
                 <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}"></core-icon>
                 <div id="title" class="bottom indent title">{{$.list.models.length || ""}} Contacts</div>
@@ -72,8 +72,8 @@
             </core-toolbar>
 
             <div class="content" style="height:100%">
-
-                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" style="display:none" maxsize="2000" pagesize="100"></force-sobject-collection>
+                <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-syncdown="{{showSearch}}"></force-sobject-sync>
+                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" style="display:none" maxsize="2000" pagesize="100" autosync="false"></force-sobject-collection>
                 <core-list id="uilist" height="{{resultHeight}}" style="height:100%" data="{{$.list.models}}">
                     <content select="*"></content>
                 </core-list>
@@ -88,11 +88,26 @@
 	        var titleStyle;
 
 	        Polymer('search-screen', {
+              cachemode: Force.CACHE_MODE.CACHE_ONLY,
 	          ready: function() {
 	            this.super();
+                this.setupSyncQuery();
 	            titleStyle = this.$.title.style;
                 this.addEventListener('core-header-transform', this.titleTransform.bind(this), false);
 	          },
+
+              setupSyncQuery: function() {
+                var searchFields = this.searchfields.trim().split(/\s+/);
+                var fieldsToFetch = this.fieldstofetch ? this.fieldstofetch.trim().split(/\s+/) : [];
+                fieldsToFetch = _.union(searchFields, fieldsToFetch);
+
+                this.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " LIMIT 10000";
+              },
+
+              showSearch: function() {
+                this.$.list.autosync = true;
+                this.$.list.fetch();
+              },
 
               attached: function() {
                 this.$.uilist.appendChild(this.querySelector('template'));
