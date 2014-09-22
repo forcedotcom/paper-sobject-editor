@@ -16,9 +16,11 @@ var server = require('http').createServer(function(req, res) {
   // and then proxy the request.
   var endpoint = req.headers['salesforceproxy-endpoint'];
   var target = endpoint || 'http://localhost:8000';
+  console.log('Endpoint: ' + endpoint);
 
   if (endpoint) {
     var auth = req.headers['x-authorization'];
+    console.log('Auth: ' + auth);
     if (auth) req.headers['Authorization'] = auth;
     req.url = endpoint;
   }
