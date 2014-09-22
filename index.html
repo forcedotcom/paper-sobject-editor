@@ -114,7 +114,7 @@ license that can be found in the LICENSE file.
         Polymer('mobile-app', {
           _onlineStatus: true,
           cloudicon: 'cloud-done',
-          proxyhost: window.location.origin,
+          proxyhost: (location.protocol === 'file:') ? null : location.origin,
           ready: function() {
             SFDC.isOnline = function() {
               return this._onlineStatus && !this.$.syncview.hasLocalChanges();
