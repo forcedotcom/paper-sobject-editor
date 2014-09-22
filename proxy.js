@@ -1,5 +1,6 @@
 var http = require('http'),
     httpProxy = require('http-proxy'),
+    url = require('url'),
     express = require('express');
 
 // Create a proxy server with custom application logic
@@ -15,14 +16,17 @@ var server = require('http').createServer(function(req, res) {
   // You can define here your custom logic to handle the request
   // and then proxy the request.
   var endpoint = req.headers['salesforceproxy-endpoint'];
-  var target = endpoint || 'http://localhost:8000';
+  var target = 'http://localhost:8000';
   console.log('Endpoint: ' + endpoint);
 
   if (endpoint) {
     var auth = req.headers['x-authorization'];
-    console.log('Auth: ' + auth);
     if (auth) req.headers['Authorization'] = auth;
     req.url = endpoint;
+    
+    var targetURL = url.parse(endpoint);
+    target = targetURL.protocol + "//" + targetURL.host;
+    console.log('target URL: ' + target);
   }
 
   proxy.web(req, res, { target: target });
