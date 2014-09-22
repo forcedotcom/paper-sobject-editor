@@ -25,7 +25,7 @@
  */
 
 // Version this js was shipped with
-var SALESFORCE_MOBILE_SDK_VERSION = "2.3.0.unstable";
+var SALESFORCE_MOBILE_SDK_VERSION = "2.3.0";
 var SERVICE = "com.salesforce.sdkinfo";
 
 var exec = require("com.salesforce.util.exec").exec;
@@ -33,11 +33,12 @@ var exec = require("com.salesforce.util.exec").exec;
 /**
   * SDKInfo data structure
   */
-var SDKInfo = function(sdkVersion, forcePluginsAvailable, appName, appVersion) {
+var SDKInfo = function(sdkVersion, forcePluginsAvailable, appName, appVersion, bootconfig) {
     this.sdkVersion = sdkVersion;
     this.forcePluginsAvailable = forcePluginsAvailable;
     this.appName = appName;
     this.appVersion = appVersion;
+    this.bootConfig = bootconfig;
 };
 
 /**

@@ -1,12 +1,13 @@
 {
   "name": "mobilesdk-shared",
-  "homepage": "https://github.com/akhileshgupta/SalesforceMobileSDK-Shared",
-  "_release": "8fd59192c1",
+  "homepage": "https://github.com/forcedotcom/SalesforceMobileSDK-Shared",
+  "_release": "e3c27f3b06",
   "_resolution": {
-    "type": "commit",
-    "commit": "8fd59192c1b8ad438e29e961d88a65781506b60d"
+    "type": "branch",
+    "branch": "master",
+    "commit": "e3c27f3b06975d25cfecbd58dfba497353711758"
   },
-  "_source": "git://github.com/akhileshgupta/SalesforceMobileSDK-Shared.git",
-  "_target": "8fd59192c1b8ad438e29e961d88a65781506b60d",
-  "_originalSource": "akhileshgupta/SalesforceMobileSDK-Shared"
+  "_source": "git://github.com/forcedotcom/SalesforceMobileSDK-Shared.git",
+  "_target": "*",
+  "_originalSource": "forcedotcom/SalesforceMobileSDK-Shared"
 }

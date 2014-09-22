@@ -14,6 +14,6 @@
     "commit": "c59966c6a3fa662b6a7475c7d5f48c3aa9de36c3"
   },
   "_source": "git://github.com/Polymer/core-animation.git",
-  "_target": ">=0.3.0 <1.0.0",
+  "_target": "^0.4.0",
   "_originalSource": "Polymer/core-animation"
 }
