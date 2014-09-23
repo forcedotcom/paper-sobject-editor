@@ -23,7 +23,7 @@
             }
         },
         compileTemplate: function(layoutSections) {
-            return compileTemplateForLayout(layoutSections, !view.recordid);
+            return compileTemplateForLayout(layoutSections, !this.recordid);
         },
         get model() {
             return this.$ ? this.$.force_sobject._model : null;
