@@ -106,7 +106,7 @@
 			                                }
 			                                // check if field is editable based on the field type information and the layout settings. Also ignore refrence type fields as we don't currently support the edit for that.
 			                                isFieldEditable = (fieldInfo.type != 'reference' && fieldInfo.updateable);
-			                                isFieldEditable = isFieldEditable && (isNew ? item.editableForNew : item.editableForUpdate);
+                                			    isFieldEditable = isFieldEditable && (isNew ? item.editableForNew : item.editableForUpdate);
 			                                valueHtml += generateFieldTemplate(item.label, comp.value, fieldInfo, displayField, isFieldEditable);
 			                            }
 			                        });
