@@ -55,9 +55,18 @@
                 padding: 10px 0px;
             }
 
+            #scrollHeader::shadow #headerContainer {
+                transition: transform 200ms ease-out;
+                -webkit-transition: -webkit-transform 200ms ease-out;
+            }
+
+            #scrollHeader::shadow #mainContainer {
+                overflow: hidden;
+            }
+
         </style>
 
-        <core-scroll-header-panel condenses style="-webkit-overflow-scrolling: touch;">
+        <core-scroll-header-panel id="scrollHeader" condenses style="-webkit-overflow-scrolling: touch; overflow: hidden;">
         	
             <paper-shadow></paper-shadow>
             <core-toolbar id="toolbar" class="tall paper-shadow-top paper-shadow-top-z-1">
@@ -94,14 +103,29 @@
                 this.setupSyncQuery();
 	            titleStyle = this.$.title.style;
                 this.addEventListener('core-header-transform', this.titleTransform.bind(this), false);
+                this.$.uilist.addEventListener('scroll', this.toggleHeader.bind(this));
 	          },
+
+              toggleHeader: function(e) {
+                this._scrollTop = e.detail ? e.detail.target.scrollTop : e.target.scrollTop;
+                if (this._scrollTop > 0 && !this.condensed) {
+                    this.$.scrollHeader.transformHeader(this.$.scrollHeader.headerMargin);
+                    this.$.scrollHeader.$.mainContainer.style.paddingTop = (this.$.scrollHeader.headerHeight - this.$.scrollHeader.headerMargin) + 'px';
+                    titleStyle.display = 'none';
+                    this.condensed = true;
+                } else if (this._scrollTop == 0 && this.condensed) {
+                    this.$.scrollHeader.setup();
+                    titleStyle.display = 'block';
+                    this.condensed = false;
+                }
+              },
 
               setupSyncQuery: function() {
                 var searchFields = this.searchfields.trim().split(/\s+/);
                 var fieldsToFetch = this.fieldstofetch ? this.fieldstofetch.trim().split(/\s+/) : [];
                 fieldsToFetch = _.union(searchFields, fieldsToFetch);
 
-                this.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " LIMIT 10000";
+                this.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " LIMIT 4000";
               },
 
               showSearch: function() {
