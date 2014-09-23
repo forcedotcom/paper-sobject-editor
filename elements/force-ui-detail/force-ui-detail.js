@@ -23,7 +23,7 @@
             }
         },
         compileTemplate: function(layoutSections) {
-            return compileTemplateForLayout(layoutSections);
+            return compileTemplateForLayout(layoutSections, !this.recordid);
         },
         get model() {
             return this.$ ? this.$.force_sobject._model : null;
@@ -319,7 +319,7 @@
     */
     //TBD: Allow way to hide empty values
     //TBD: Allow way to show selective field types
-    var compileTemplateForLayout = function(layoutSections) {
+    var compileTemplateForLayout = function(layoutSections, isNew) {
 
         // Utility method to return input element type for a corresponding salesforce field type.
         var inputType = function(fieldType) {
@@ -399,7 +399,8 @@
                                     layoutFieldsInfoMap[displayField] = fieldInfo;
                                 }
                                 // check if field is editable based on the field type information and the layout settings. Also ignore refrence type fields as we don't currently support the edit for that.
-                                isFieldEditable = (item.editable && fieldInfo.type != 'reference' && fieldInfo.updateable);
+                                isFieldEditable = (fieldInfo.type != 'reference' && fieldInfo.updateable);
+                                isFieldEditable = isFieldEditable && (isNew ? item.editableForNew : item.editableForUpdate);
                                 valueHtml += generateFieldTemplate(comp.value, fieldInfo, displayField, isFieldEditable);
                                 if (isFieldEditable) errorHtml += '<div class="sf-layout-item-error">{{__errors__.' + comp.value + '}}</div>';
                             }
