@@ -42,8 +42,6 @@
 
 				compileTemplate: function(layoutSections) {
 
-				var isNew = !this.recordid;
-
 			        // Generates and returns a Handlebar template for a specific field.
 			        // If forEdit is true and if field is editable, method returns an input type element.
 			        var generateFieldTemplate = function(fieldLabel, fieldName, fieldInfo, displayField, forEdit) {
@@ -105,8 +103,7 @@
 			                                    layoutFieldsInfoMap[displayField] = fieldInfo;
 			                                }
 			                                // check if field is editable based on the field type information and the layout settings. Also ignore refrence type fields as we don't currently support the edit for that.
-			                                isFieldEditable = (fieldInfo.type != 'reference' && fieldInfo.updateable);
-                                			    isFieldEditable = isFieldEditable && (isNew ? item.editableForNew : item.editableForUpdate);
+			                                isFieldEditable = (item.editable && fieldInfo.type != 'reference' && fieldInfo.updateable);
 			                                valueHtml += generateFieldTemplate(item.label, comp.value, fieldInfo, displayField, isFieldEditable);
 			                            }
 			                        });
