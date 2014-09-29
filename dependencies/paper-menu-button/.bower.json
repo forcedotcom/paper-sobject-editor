@@ -24,6 +24,6 @@
     "commit": "799db930b471dbb56d25eb46f3848948f7f7bd8c"
   },
   "_source": "git://github.com/Polymer/paper-menu-button.git",
-  "_target": "^0.4.0",
+  "_target": ">=0.4.0 <1.0.0",
   "_originalSource": "Polymer/paper-menu-button"
 }

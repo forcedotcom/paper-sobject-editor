@@ -25,10 +25,11 @@
                 );
             });
 
-            document.addEventListener('syncDown', this.syncEvent.bind(this));
+            document.addEventListener('sync', this.syncEvent.bind(this));
         },
         syncEvent: function(e) {
-            if (e.detail.syncId == this.syncId) this.fire(e.type.toLowerCase(), {status: e.detail.status});
+            if (this.syncId >= 0 && e.detail.syncId == this.syncId) 
+                this.fire(e.detail.type.toLowerCase(), {status: e.detail.status});
         }
     }));
 
