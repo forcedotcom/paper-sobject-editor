@@ -91,12 +91,12 @@ license that can be found in the LICENSE file.
           <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}" resultHeight="71" on-core-activate="{{openEdit}}">
             <template>
               <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
-                <img class="profile-photo" src="images/{{attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/> 
+                <img class="profile-photo" src="images/{{model.attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/> 
                 <div flex style="margin-left: 10px">
-                  <div style="font-size: 1.1em;">{{attributes.FirstName}} {{attributes.LastName}}</div>
-                  <span style="font-size: 0.9em; color: #696969">{{attributes.Title}}</span>
+                  <div style="font-size: 1.1em;">{{model.attributes.FirstName}} {{model.attributes.LastName}}</div>
+                  <span style="font-size: 0.9em; color: #696969">{{model.attributes.Title}}</span>
                 </div>
-                <status-icon props="{{attributes}}"></status-icon>
+                <status-icon props="{{model.attributes}}"></status-icon>
                 <core-icon icon="chevron-right" style="fill: black"></core-icon>
               </div>
             </template>
