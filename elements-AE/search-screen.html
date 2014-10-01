@@ -76,7 +76,7 @@
                     <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" cachemode="{{cachemode}}"></force-ui-search>
                 </div>
                 <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}"></core-icon>
-                <div id="title" class="bottom indent title">{{$.list.models.length || ""}} Contacts</div>
+                <div id="title" class="bottom indent title">{{$.list.collection.models.length || ""}} Contacts</div>
 		      
             </core-toolbar>
 
@@ -84,7 +84,7 @@
                 <img id="loading" src="loading-gray.gif" style="position: absolute; top: 50%; left: 45%; width: 32px;"/>
                 <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-syncdown="{{showSearch}}"></force-sobject-sync>
                 <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" style="display:none" maxsize="2000" pagesize="100" autosync="false"></force-sobject-collection>
-                <core-list id="uilist" height="{{resultHeight}}" style="height:100%" data="{{$.list.models}}" touch-action="pan-y" on-touchend="{{stopClick}}">
+                <core-list id="uilist" height="{{resultHeight}}" style="height:100%" data="{{$.list.collection.models}}" touch-action="pan-y" on-touchend="{{stopClick}}">
                     <content select="*"></content>
                 </core-list>
 
@@ -98,65 +98,65 @@
 	        var titleStyle;
 
 	        Polymer('search-screen', {
-              cachemode: Force.CACHE_MODE.CACHE_ONLY,
+	          cachemode: Force.CACHE_MODE.CACHE_ONLY,
 	          ready: function() {
 	            this.super();
-                this.fetchData();
-                this.setupSyncQuery();
+	            this.fetchData();
+	            this.setupSyncQuery();
 	            titleStyle = this.$.title.style;
-                this.addEventListener('core-header-transform', this.titleTransform.bind(this), false);
-                this.$.uilist.addEventListener('scroll', this.toggleHeader.bind(this));
+	            this.addEventListener('core-header-transform', this.titleTransform.bind(this), false);
+	            this.$.uilist.addEventListener('scroll', this.toggleHeader.bind(this));
 	          },
 
-              fetchData: function() {
-                var onFetch = function() {
-                    if (this.$.list.collection.size() > 0) {
-                        this.$.loading.style.display = "none";
-                        this.$.list.autosync = true;
-                    }
-                    this.$.list.removeEventListener('sync', onFetch);
-                }.bind(this);
-                if (!this.$.list.autosync) {
-                    this.$.list.addEventListener('sync', onFetch);
-                    this.async(function() { this.$.list.fetch(); });
-                }
-              },
+	          fetchData: function() {
+	            var onFetch = function() {
+	              if (this.$.list.collection.size() > 0) {
+                    this.$.loading.style.display = "none";
+                    this.$.list.autosync = true;
+	              }
+	              this.$.list.removeEventListener('sync', onFetch);
+	            }.bind(this);
+	            if (!this.$.list.autosync) {
+	              this.$.list.addEventListener('sync', onFetch);
+	              this.async(function() { this.$.list.fetch(); });
+	            }
+	          },
 
-              toggleHeader: function(e) {
-                this._scrollTop = e.detail ? e.detail.target.scrollTop : e.target.scrollTop;
-                if (this._scrollTop > 0 && !this.condensed) {
-                    this.$.scrollHeader.transformHeader(this.$.scrollHeader.headerMargin);
-                    this.$.scrollHeader.$.mainContainer.style.paddingTop = (this.$.scrollHeader.headerHeight - this.$.scrollHeader.headerMargin) + 'px';
-                    titleStyle.display = 'none';
-                    this.condensed = true;
-                } else if (this._scrollTop == 0 && this.condensed) {
-                    this.$.scrollHeader.setup();
-                    titleStyle.display = 'block';
-                    this.condensed = false;
-                }
-              },
+	          toggleHeader: function(e) {
+	            this._scrollTop = e.detail ? e.detail.target.scrollTop : e.target.scrollTop;
+	            if (this._scrollTop > 0 && !this.condensed) {
+	              this.$.scrollHeader.transformHeader(this.$.scrollHeader.headerMargin);
+	              this.$.scrollHeader.$.mainContainer.style.paddingTop = (this.$.scrollHeader.headerHeight - this.$.scrollHeader.headerMargin) + 'px';
+	              titleStyle.display = 'none';
+	              this.condensed = true;
+	            } else if (this._scrollTop == 0 && this.condensed) {
+	              this.$.scrollHeader.setup();
+	              titleStyle.display = 'block';
+	              this.condensed = false;
+	            }
+	          },
 
-              setupSyncQuery: function() {
-                var searchFields = this.searchfields.trim().split(/\s+/);
-                var fieldsToFetch = this.fieldstofetch ? this.fieldstofetch.trim().split(/\s+/) : [];
-                fieldsToFetch = _.union(searchFields, fieldsToFetch);
+	          setupSyncQuery: function() {
+	            var searchFields = this.searchfields.trim().split(/\s+/);
+	            var fieldsToFetch = this.fieldstofetch ? this.fieldstofetch.trim().split(/\s+/) : [];
+	            fieldsToFetch = _.union(searchFields, fieldsToFetch);
 
-                this.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " LIMIT 4000";
-              },
+	            this.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " LIMIT 4000";
+	          },
 
-              stopClick: function(e) {
-                e.preventDefault();
-              },
+	          stopClick: function(e) {
+	            e.preventDefault();
+	          },
 
-              showSearch: function(e) {
-                if (e.detail.status == 'DONE') {
-                    this.fetchData();
-                }
-              },
+	          showSearch: function(e) {
+	            if (e.detail.status == 'DONE') {
+	              this.fetchData();
+	            }
+	          },
 
-              attached: function() {
-                this.$.uilist.appendChild(this.querySelector('template'));
-              },              
+	          attached: function() {
+	            this.$.uilist.appendChild(this.querySelector('template'));
+	          },              
 
 	          updateConnection: function() {
 	            this.$.search.computeQuery();

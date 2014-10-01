@@ -2,7 +2,7 @@
     <template>
         <link rel="stylesheet" href="detail.css"/>
         <core-toolbar id="toolbar" style="background-color: #00adef;">
-          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 40px; height: 40px;"></core-icon>
+          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 40px; height: 40px;" on-touchend="{{stopClick}}"></core-icon>
           <div flex></div>
           <paper-menu-button icon="more-vert" halign="right">
             <template if="{{!$.detail.model.attributes.__locally_deleted__}}">
@@ -18,7 +18,7 @@
             </template>
           </paper-menu-button>
         </core-toolbar>
-        <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;">
+        <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;" touch-action="pan-y">
             <force-paper-detail id="detail" sobject="{{sobject}}" recordid="{{recordid}}" foredit="true" fieldlist="FirstName LastName Title Department Phone Email HomePhone"></force-paper-detail>
         </div>
     </template>
@@ -31,6 +31,9 @@
         render: function() {
             // Force detail re-render if recordid didn't change
             if (this.$.detail.model && this.$.detail.model.id == this.recordid) this.$.detail.render();
+        },
+        stopClick: function(e) {
+            e.preventDefault();
         },
         navigateBack: function(ev) {
             window.history.back();

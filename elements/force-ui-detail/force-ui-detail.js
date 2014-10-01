@@ -271,8 +271,7 @@
         _.keys(fieldInfoMap).forEach(function(field) {
             item = {
                 placeholder: false,
-                editableForUpdate: foredit,
-                editableForNew: foredit,
+                editable: foredit,
                 label: fieldLabelMap[field] || fieldInfoMap[field].label,
                 layoutComponents: {
                     type: 'Field',

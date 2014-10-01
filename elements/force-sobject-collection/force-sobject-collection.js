@@ -7,7 +7,6 @@
         query: "",
         querytype: "mru",
         maxsize: -1,
-        pagesize: 25,
         autosync: true
         /* async: false */ // Optional property to perform fetch as a web worker operation. Useful for data priming.
     };
@@ -49,28 +48,17 @@
             this.collection.on('all', function(event) {
                 this.fire(event);
             }.bind(this));
-            this.models = [];
             this.resetCount = 0;
         },
-
         reset: function() {
             this.collection.config = generateConfig(_.pick(this, _.keys(viewProps)));
             this.collection.reset();
-            this.models = [];
             this.resetCount++;
             if (this.autosync) this.fetch();
         },
-
         fetch: function() {
             var collection = this.collection;
-            var config = collection.config;
-            var query = config.query;
             var resetCount = this.resetCount; // captured for closure below
-            var offset = 0;
-
-            var limitSoql = function(soql, offset, pagesize) {
-                return soql + ' LIMIT ' + pagesize + ' OFFSET ' + offset;
-            };
 
             var onFetch = function() {
                 if (this.resetCount > resetCount) {
@@ -83,36 +71,25 @@
                     return;
                 }
 
-                _.each(collection.models, function(record) {
-                    this.models.push(record);
-                }.bind(this));
+                if ((this.maxsize < 0 || this.maxsize > collection.size())
+                    && collection.hasMore())
+                    collection.getMore().then(onFetch);
 
-                if (config.type == "soql" && (offset+this.pagesize) < this.maxsize) {
-                    offset += this.pagesize;
-                    config.query = limitSoql(query, offset, this.pagesize);
-                    this.collection.fetch({ reset:true, success: onFetch});
-                }
             }.bind(this);
 
             var operation = function() {
                 var store = this.$.store;
 
-                if (config) {
-                    // Append limit if soql and maxsize was provided
-                    if (config.type == "soql" && this.maxsize > 0) {
-                        config.query = limitSoql(query, offset, this.pagesize);
-                    }
-
+                if (collection.config) {
                     // Define the collection model type. Set the idAttribute to 'ExternalId' if sobject is external object.
                     collection.model = Force.SObject.extend({
                         idAttribute: this.sobject.toLowerCase().search(/__x$/) > 0 ? 'ExternalId' : 'Id'
                     });
-
                     $.when(store.cacheReady, SFDC.launcher)
                     .done(function() {
                         collection.cache = store.cache;
                         collection.cacheForOriginals = store.cacheForOriginals;
-                        collection.fetch({ reset: true, success: onFetch, config:config });
+                        collection.fetch({ reset: true, success: onFetch });
                     });
                 }
             }.bind(this);

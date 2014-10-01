@@ -58,8 +58,12 @@
                 for (var idx in searchFields) 
                   searchFields[idx] = "{" + this.storeName + ":" + searchFields[idx] + "} LIKE '" + this.criteria + "%'";
 
+                var filterClause;
+                if (window.cordova && !cordova.interceptExec) filterClause = searchFields.join(" OR ");
+                else filterClause = searchFields[0]; // Mockstore only supports single search field in smartsql.
+
                 querytype = "cache";
-                query = {queryType:"smart", smartSql:"SELECT {" + this.storeName + ":_soup} FROM {" + this.storeName + "} WHERE " + searchFields[0]};
+                query = {queryType:"smart", smartSql:"SELECT {" + this.storeName + ":_soup} FROM {" + this.storeName + "} WHERE " + filterClause};
             }
 
             if (querytype != this.querytype || !_.isEqual(this.query, query)) {
