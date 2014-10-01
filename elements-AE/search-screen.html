@@ -84,7 +84,7 @@
                 <img id="loading" src="loading-gray.gif" style="position: absolute; top: 50%; left: 45%; width: 32px;"/>
                 <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-syncdown="{{showSearch}}"></force-sobject-sync>
                 <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" style="display:none" maxsize="2000" pagesize="100" autosync="false"></force-sobject-collection>
-                <core-list id="uilist" height="{{resultHeight}}" style="height:100%" data="{{$.list.models}}">
+                <core-list id="uilist" height="{{resultHeight}}" style="height:100%" data="{{$.list.models}}" touch-action="pan-y" on-touchend="{{stopClick}}">
                     <content select="*"></content>
                 </core-list>
 
@@ -101,11 +101,26 @@
               cachemode: Force.CACHE_MODE.CACHE_ONLY,
 	          ready: function() {
 	            this.super();
+                this.fetchData();
                 this.setupSyncQuery();
 	            titleStyle = this.$.title.style;
                 this.addEventListener('core-header-transform', this.titleTransform.bind(this), false);
                 this.$.uilist.addEventListener('scroll', this.toggleHeader.bind(this));
 	          },
+
+              fetchData: function() {
+                var onFetch = function() {
+                    if (this.$.list.collection.size() > 0) {
+                        this.$.loading.style.display = "none";
+                        this.$.list.autosync = true;
+                    }
+                    this.$.list.removeEventListener('sync', onFetch);
+                }.bind(this);
+                if (!this.$.list.autosync) {
+                    this.$.list.addEventListener('sync', onFetch);
+                    this.async(function() { this.$.list.fetch(); });
+                }
+              },
 
               toggleHeader: function(e) {
                 this._scrollTop = e.detail ? e.detail.target.scrollTop : e.target.scrollTop;
@@ -129,10 +144,14 @@
                 this.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " LIMIT 4000";
               },
 
-              showSearch: function() {
-                this.$.loading.style.display = "none";
-                this.$.list.autosync = true;
-                this.$.list.fetch();
+              stopClick: function(e) {
+                e.preventDefault();
+              },
+
+              showSearch: function(e) {
+                if (e.detail.status == 'DONE') {
+                    this.fetchData();
+                }
               },
 
               attached: function() {

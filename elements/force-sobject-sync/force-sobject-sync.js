@@ -16,7 +16,7 @@
 
             $.when(store.cacheReady, SFDC.launcher)
             .then(function() {
-                cordova.require("com.salesforce.plugin.smartsync").syncDown(
+                mockSmartSyncPlugin.syncDown(
                     {type:"soql", query:that.query}, 
                     store.cache.soupName, null, 
                     function(result) {

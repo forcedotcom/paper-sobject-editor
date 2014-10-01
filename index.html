@@ -55,6 +55,8 @@ license that can be found in the LICENSE file.
 
 	<!-- Mobile SDK container script includes ->
 	<script type="text/javascript" src="cordova.js"></script>
+	<script type="text/javascript" src="cordova_plugins.js"></script>
+	<script src="dependencies/mobilesdk-shared/test/MockSmartSyncPlugin.js"></script>
 	<!-- End Mobile SDK script includes -->
 
 
@@ -64,10 +66,13 @@ license that can be found in the LICENSE file.
 			font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 			font-size: 14px;
 		}
+		* {
+			-webkit-tap-highlight-color: rgba(0,0,0,0);
+		}
 	</style>
 </head>
 
-<body unresolved touch-action="auto">
+<body unresolved touch-action="none">
 
     <polymer-element name="mobile-app" attributes="sobject searchfields displayfields">
       <template>
@@ -94,7 +99,7 @@ license that can be found in the LICENSE file.
                 <img class="profile-photo" src="images/{{model.attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/> 
                 <div flex style="margin-left: 10px">
                   <div style="font-size: 1.1em;">{{model.attributes.FirstName}} {{model.attributes.LastName}}</div>
-                  <span style="font-size: 0.9em; color: #696969">{{model.attributes.Title}}</span>
+                  <span style="font-size: 0.9em; color: #696969; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
                 </div>
                 <status-icon props="{{model.attributes}}"></status-icon>
                 <core-icon icon="chevron-right" style="fill: black"></core-icon>
@@ -131,7 +136,7 @@ license that can be found in the LICENSE file.
             this.$.network_icon.style.fill = newStatus ? 'green' : 'red';
           },
           openEdit: function(params) {
-              window.location.hash = "#edit/" + params.detail.data.attributes.Id;
+            window.location.hash = "#edit/" + params.detail.data.id;
           },
           refresh: function() {
           	this.$.listview.refresh();
@@ -171,6 +176,7 @@ license that can be found in the LICENSE file.
       window.addEventListener('WebComponentsReady', function() {
         Backbone.history.start();
       });
+      if (window.mockStore) mockStore.useSessionStorage();
     </script>
 
     <script>
