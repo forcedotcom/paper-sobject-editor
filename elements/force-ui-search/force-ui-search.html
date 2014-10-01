@@ -9,7 +9,7 @@
 <!-- TBD: Improve query update process to chunk the changes and minimize the server calls -->
 <link rel="import" href="../force-sobject-store/force-sobject-store.html">
 <link rel="import" href="../../dependencies/paper-input/paper-input.html">
-<polymer-element name="force-ui-search" attributes="sobject searchfields fieldstofetch">
+<polymer-element name="force-ui-search" attributes="sobject searchfields fieldstofetch cachemode">
   <template>
       <force-sobject-store id="store" sobject="{{sobject}}" fieldstoindex="{{searchfields}}"></force-sobject-store>
       <div class="bar bar-standard bar-header-secondary">
@@ -22,6 +22,7 @@
         criteria: "",
         querytype: "soql",
         query: null,
+        cachemode: Force.CACHE_MODE.SERVER_FIRST,
         observe: {
           "$.input.focused": "blurAction",
           "criteria": "computeQuery",
@@ -48,7 +49,7 @@
 
             var query, querytype;
 
-            if (SFDC.isOnline()) {
+            if (SFDC.isOnline() && this.cachemode == Force.CACHE_MODE.SERVER_FIRST) {
                 for (var idx in searchFields) searchFields[idx] = searchFields[idx] + " LIKE '" + this.criteria + "%'";
                 querytype = "soql";
                 query = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " WHERE " + searchFields.join(" OR ") + " LIMIT 25";
@@ -57,8 +58,12 @@
                 for (var idx in searchFields) 
                   searchFields[idx] = "{" + this.storeName + ":" + searchFields[idx] + "} LIKE '" + this.criteria + "%'";
 
+                var filterClause;
+                if (window.cordova && !cordova.interceptExec) filterClause = searchFields.join(" OR ");
+                else filterClause = searchFields[0]; // Mockstore only supports single search field in smartsql.
+
                 querytype = "cache";
-                query = {queryType:"smart", smartSql:"SELECT {" + this.storeName + ":_soup} FROM {" + this.storeName + "} WHERE " + searchFields[0], pageSize:25};
+                query = {queryType:"smart", smartSql:"SELECT {" + this.storeName + ":_soup} FROM {" + this.storeName + "} WHERE " + filterClause};
             }
 
             if (querytype != this.querytype || !_.isEqual(this.query, query)) {

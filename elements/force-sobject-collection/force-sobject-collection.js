@@ -44,28 +44,40 @@
             querytype: "reset"
         },
         ready: function() {
-            var that = this;
-
-            that.collection = new Force.SObjectCollection();
-            that.collection.on('all', function(event) {
-                that.fire(event);
-            });
+            this.collection = new Force.SObjectCollection();
+            this.collection.on('all', function(event) {
+                this.fire(event);
+            }.bind(this));
+            this.resetCount = 0;
         },
         reset: function() {
             this.collection.config = generateConfig(_.pick(this, _.keys(viewProps)));
             this.collection.reset();
+            this.resetCount++;
             if (this.autosync) this.fetch();
         },
         fetch: function() {
+            var collection = this.collection;
+            var resetCount = this.resetCount; // captured for closure below
 
             var onFetch = function() {
-                if ((this.maxsize < 0 || this.maxsize > this.collection.length)
-                    && this.collection.hasMore())
-                    this.collection.getMore().then(onFetch);
+                if (this.resetCount > resetCount) {
+                    // This is an old query -- ignore
+                    return;
+                }
+
+                if (collection.length == 0) {
+                    // Nothing came back 
+                    return;
+                }
+
+                if ((this.maxsize < 0 || this.maxsize > collection.size())
+                    && collection.hasMore())
+                    collection.getMore().then(onFetch);
+
             }.bind(this);
 
             var operation = function() {
-                var collection = this.collection;
                 var store = this.$.store;
 
                 if (collection.config) {
