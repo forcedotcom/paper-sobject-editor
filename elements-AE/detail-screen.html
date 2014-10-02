@@ -1,7 +1,7 @@
 <polymer-element name="detail-screen" extends="force-route" attributes="sobject recordid sync" on-route-changed="{{render}}">
     <template>
         <link rel="stylesheet" href="detail.css"/>
-        <core-toolbar id="toolbar" style="background-color: #00adef;">
+        <core-toolbar id="toolbar" style="background-color: #f40009;">
           <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 40px; height: 40px;" on-touchend="{{stopClick}}"></core-icon>
           <div flex></div>
           <paper-menu-button icon="more-vert" halign="right">
@@ -25,6 +25,10 @@
     <script>
       Polymer('detail-screen', {
         sync: false,
+        ready: function() {
+            this.super();
+            this.$.detail.fetchCacheMode = Force.CACHE_MODE.CACHE_ONLY;
+        },
         get model() {
             return (this.$ ? this.$.detail.$.force_sobject : null);
         },

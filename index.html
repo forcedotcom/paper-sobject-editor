@@ -148,8 +148,10 @@ license that can be found in the LICENSE file.
           },
           set onlinestatus(newStatus) {
             this._onlineStatus = newStatus;
-            this.cloudicon = newStatus ? "cloud-done" : "cloud-off";
-            this.$.network_icon.style.fill = newStatus ? 'green' : 'red';
+            // Override the value with actual status
+            this._onlineStatus = SFDC.isOnline();
+            this.cloudicon = this._onlineStatus ? "cloud-done" : "cloud-off";
+            this.$.network_icon.style.fill = this._onlineStatus ? 'green' : 'red';
           },
           openEdit: function(params) {
             window.location.hash = "#edit/" + params.detail.data.id;

@@ -73,7 +73,8 @@
 
                 if ((this.maxsize < 0 || this.maxsize > collection.size())
                     && collection.hasMore())
-                    this.async(function() { collection.getMore().then(onFetch); }); // Do async so as to avoid blocking UI thread
+                    collection.getMore().then(onFetch);
+                    //this.async(function() { collection.getMore().then(onFetch); }); // Do async so as to avoid blocking UI thread
 
             }.bind(this);
 

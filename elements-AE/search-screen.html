@@ -51,9 +51,6 @@
             .title {
                 font-size: 40px;
             }
-            .content {
-                padding: 10px 0px;
-            }
 
             #scrollHeader::shadow #headerContainer {
                 transition: transform 200ms ease-out;
@@ -61,30 +58,36 @@
             }
 
             #scrollHeader::shadow #mainContainer {
-                overflow: hidden;
+                /*overflow: hidden;*/
+                margin-top: 64px;
             }
 
         </style>
 
-        <core-scroll-header-panel id="scrollHeader" condenses style="-webkit-overflow-scrolling: touch; overflow: hidden;">
+        <core-scroll-header-panel id="scrollHeader" style="-webkit-overflow-scrolling: touch;" touch-action="pan-y">
         	
-            <paper-shadow></paper-shadow>
-            <core-toolbar id="toolbar" class="tall paper-shadow-top paper-shadow-top-z-1">
-    
+            <core-toolbar id="header" style="background-color: #f40009;">
+
+                <core-icon id="menu-icon" icon="menu"></core-icon>
+                <div id="title" flex>{{$.list.collection.models.length || ""}} Contacts</div>
+                <core-icon id="apps-icon" icon="apps"></core-icon>
+                
+            </core-toolbar>
+            <core-toolbar id="toolbar" style="background-color: #bdc3c7;">
+        
                 <core-icon id="search-icon" icon="search"></core-icon>
                 <div flex>
                     <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" cachemode="{{cachemode}}"></force-ui-search>
                 </div>
                 <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}"></core-icon>
-                <div id="title" class="bottom indent title">{{$.list.collection.models.length || ""}} Contacts</div>
-		      
+              
             </core-toolbar>
 
-            <div class="content" style="height:100%">
+            <div class="content">
                 <img id="loading" src="loading-gray.gif" style="position: absolute; top: 50%; left: 45%; width: 32px;"/>
                 <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-synccomplete="{{fetchData}}"></force-sobject-sync>
                 <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" style="display:none" autosync="false"></force-sobject-collection>
-                <core-list id="uilist" height="{{resultHeight}}" style="height:100%" data="{{$.list.collection.models}}" touch-action="pan-y" on-touchend="{{stopClick}}">
+                <core-list id="uilist" height="{{resultHeight}}" style="height:100%" data="{{$.list.collection.models}}" on-touchend="{{stopClick}}">
                     <content select="*"></content>
                 </core-list>
 
@@ -95,7 +98,6 @@
     </template>
     <script>
     	(function() {
-	        var titleStyle;
 
 	        Polymer('search-screen', {
 	          cachemode: Force.CACHE_MODE.CACHE_ONLY,
@@ -103,9 +105,6 @@
 	            this.super();
 	            this.fetchData();
 	            this.setupSyncQuery();
-	            titleStyle = this.$.title.style;
-	            this.addEventListener('core-header-transform', this.titleTransform.bind(this), false);
-	            this.$.uilist.addEventListener('scroll', this.toggleHeader.bind(this));
 	          },
 
 	          fetchData: function() {
@@ -119,20 +118,6 @@
 	            if (!this.$.list.autosync) {
 	              this.$.list.addEventListener('sync', onFetch);
 	              this.async(function() { this.$.list.fetch(); });
-	            }
-	          },
-
-	          toggleHeader: function(e) {
-	            this._scrollTop = e.detail ? e.detail.target.scrollTop : e.target.scrollTop;
-	            if (this._scrollTop > 0 && !this.condensed) {
-	              this.$.scrollHeader.transformHeader(this.$.scrollHeader.headerMargin);
-	              this.$.scrollHeader.$.mainContainer.style.paddingTop = (this.$.scrollHeader.headerHeight - this.$.scrollHeader.headerMargin) + 'px';
-	              titleStyle.display = 'none';
-	              this.condensed = true;
-	            } else if (this._scrollTop == 0 && this.condensed) {
-	              this.$.scrollHeader.setup();
-	              titleStyle.display = 'block';
-	              this.condensed = false;
 	            }
 	          },
 
@@ -162,14 +147,6 @@
 
 	          navigateToCreate: function() {
 	            window.location.hash = "#edit";
-	          },
-
-	          titleTransform: function(e) {
-	              var d = e.detail;
-	              var m = d.height - d.condensedHeight;
-	              var scale = Math.max(0.75, (m - d.y) / (m / 0.25)  + 0.75);
-	              titleStyle.webkitTransform = titleStyle.transform = 
-	                  'scale(' + scale + ') translateZ(0)';
 	          }
 	        });
 		})();
