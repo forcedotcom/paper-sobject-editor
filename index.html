@@ -62,6 +62,21 @@ license that can be found in the LICENSE file.
 			font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
 			font-size: 14px;
 		}
+		* {
+			-webkit-tap-highlight-color: rgba(0,0,0,0);
+		}
+		body /deep/ .round {
+			width:50px;
+			height:50px;
+			background:#1abc9c;
+			border-radius: 50%;
+			text-align: center;
+			display: table-cell; 
+			vertical-align: middle; 
+			color: white;
+			font-size: 19px;
+			line-height: 50px;
+		}
 	</style>
 </head>
 
@@ -82,7 +97,7 @@ license that can be found in the LICENSE file.
           }
         </style>
 
-        <force-signin consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXqqSdv4wEGLXlDQaydmbK.Q1rzeKuQ43zC4tDnAIrL24Y9O4Dz1QVMzN1Slr" callbackurl="https://sfdc-sobject-editor.herokuapp.com" proxyurl="{{proxyhost}}" on-success="{{startRouting}}"></force-signin>
+        <force-signin consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXqqSdv4wEGLXlDQaydmbK.Q1rzeKuQ43zC4tDnAIrL24Y9O4Dz1QVMzN1Slr" callbackurl="https://sfdc-sobject-editor.herokuapp.com" proxyurl="{{proxyhost}}" on-success="{{startRouting}}" on-offline="{{startRouting}}"></force-signin>
 
         <core-animated-pages id="pages" transitions="slide-from-right" on-save="{{refresh}}" on-destroy="{{refresh}}" style="overflow-x:hidden">
 
@@ -90,7 +105,8 @@ license that can be found in the LICENSE file.
             <template>
                 <a href="#edit/{{id}}" style="text-decoration: none; color: inherit; -webkit-tap-highlight-color: rgba(0,0,0,0);">
                     <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
-                      <img class="profile-photo" src="images/{{attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/> 
+                      <!--img class="profile-photo" src="images/{{model.attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/--> 
+                      <div class="round" style="background-color:{{attributes.LastName | iconColor}}">{{attributes.FirstName | uppercaseFirstChar}}{{attributes.LastName | uppercaseFirstChar}}</div>
                       <div flex style="margin-left: 10px">
                         <div style="font-size: 1.1em;">{{attributes.FirstName}} {{attributes.LastName}}</div>
                         <span style="font-size: 0.9em; color: #696969">{{attributes.Title}}</span>
@@ -118,9 +134,12 @@ license that can be found in the LICENSE file.
           cloudicon: 'cloud-done',
           proxyhost: (location.protocol === 'file:') ? null : location.origin,
           ready: function() {
-            SFDC.isOnline = function() {
-              return this._onlineStatus && !this.$.syncview.hasLocalChanges();
-            }.bind(this);
+            var that = this;
+            // Add online/offline event listeners if inside cordova container & not using mock cordova
+            if (window.cordova && !cordova.interceptExec) {
+              document.addEventListener("online", function() { that.onlinestatus = true; }, false);
+              document.addEventListener("offline", function() { that.onlinestatus = false; }, false);
+            }
           },
           get onlinestatus() {
             return this._onlineStatus;
@@ -165,9 +184,31 @@ license that can be found in the LICENSE file.
     <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="Title"></mobile-app>
 
     <script>
-      window.addEventListener('WebComponentsReady', function() {
-        Backbone.history.start();
-      });
+      (function() {
+        window.addEventListener('WebComponentsReady', function() {
+          // Overriding online status
+          var originalIsOnline = SFDC.isOnline;
+          var mobileApp = document.querySelector('mobile-app');
+          mobileApp.onlinestatus = SFDC.isOnline();
+          SFDC.isOnline = function() {
+            return originalIsOnline() && mobileApp.onlinestatus;
+          };
+          // Setting up polymer expressions
+          PolymerExpressions.prototype.uppercaseFirstChar = function(value) {
+            return (value && value.length) ? value.charAt(0).toUpperCase() : '';
+          }
+          var colors = ["#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50", "#f1c40f", "#e67e22", "#e74c3c", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"];
+          PolymerExpressions.prototype.iconColor = function(value) {
+            if (value && value.length > 0) {
+              var code = value.split("").reduce(function(code, val) { return code + val.charCodeAt(0); }, 0);
+              return colors[code % 19];
+            } else return colors[0];
+          }
+          // Starting backbone routing
+          Backbone.history.start();
+        });
+        if (window.mockStore) mockStore.useSessionStorage();
+      })();
     </script>
 
     <script>

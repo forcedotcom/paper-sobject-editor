@@ -65,8 +65,13 @@
                 oauthClient.login(this.usePopupWindow);
             },
             authenticate: function() {
-                if (window.cordova && !cordova.interceptExec) this.authenticateWithPlugin()
-                else this.authenticateWithForcetk();
+                if (SFDC.isOnline()) {
+                    if (window.cordova && !cordova.interceptExec) this.authenticateWithPlugin()
+                    else this.authenticateWithForcetk();
+                } else {
+                    this.launch();
+                    this.fire('offline');
+                }
             },
             ready: function() {
                 if (!(this.accesstoken && this.instanceurl)) {
