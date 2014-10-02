@@ -69,6 +69,18 @@ license that can be found in the LICENSE file.
 		* {
 			-webkit-tap-highlight-color: rgba(0,0,0,0);
 		}
+		body /deep/ .round {
+			width:50px;
+			height:50px;
+			background:#1abc9c;
+			border-radius: 50%;
+			text-align: center;
+			display: table-cell; 
+			vertical-align: middle; 
+			color: white;
+			font-size: 19px;
+			line-height: 50px;
+		}
 	</style>
 </head>
 
@@ -89,14 +101,15 @@ license that can be found in the LICENSE file.
           }
         </style>
 
-        <force-signin consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXjHqR_EeHHhvOg6eRlANYorN6WUok0BtdumUcrK_YCCnpoZSziVa.t8QB3.z" callbackurl="https://sobject-smartsync.herokuapp.com" proxyurl="{{proxyhost}}" on-success="{{startRouting}}" on-offline="{{startRouting}}"></force-signin>
+        <force-signin consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXgW0xeFBfLMzPRJ4aNy8z7MsSSDjNj.NLu4pSY4B8V3sbYSLrhAMJWxs39jB" callbackurl="http://localhost:9000" proxyurl="{{proxyhost}}" on-success="{{startRouting}}" on-offline="{{startRouting}}"></force-signin>
 
         <core-animated-pages id="pages" transitions="slide-from-right" on-save="{{refresh}}" on-destroy="{{refresh}}" style="overflow-x:hidden">
 
           <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}" resultHeight="71" on-core-activate="{{openEdit}}">
             <template>
               <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
-                <img class="profile-photo" src="images/{{model.attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/> 
+                <!--img class="profile-photo" src="images/{{model.attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/--> 
+                <div class="round" style="background-color:{{model.attributes.LastName | iconColor}}">{{model.attributes.FirstName | uppercaseFirstChar}}{{model.attributes.LastName | uppercaseFirstChar}}</div>
                 <div flex style="margin-left: 10px">
                   <div style="font-size: 1.1em;">{{model.attributes.FirstName}} {{model.attributes.LastName}}</div>
                   <span style="font-size: 0.9em; color: #696969; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
@@ -186,6 +199,16 @@ license that can be found in the LICENSE file.
           };
           Backbone.history.start();
         });
+        PolymerExpressions.prototype.uppercaseFirstChar = function(value) {
+          return (value && value.length) ? value.charAt(0).toUpperCase() : '';
+        }
+        var colors = ["#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50", "#f1c40f", "#e67e22", "#e74c3c", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"];
+        PolymerExpressions.prototype.iconColor = function(value) {
+          if (value && value.length > 0) {
+            var code = value.split("").reduce(function(code, val) { return code + val.charCodeAt(0); }, 0);
+            return colors[code % 19];
+          } else return colors[0];
+        }
         if (window.mockStore) mockStore.useSessionStorage();
       })();
     </script>
