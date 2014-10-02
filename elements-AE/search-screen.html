@@ -83,7 +83,7 @@
               
             </core-toolbar>
 
-            <div class="content">
+            <div class="content" style="height: 100%">
                 <img id="loading" src="loading-gray.gif" style="position: absolute; top: 50%; left: 45%; width: 32px;"/>
                 <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-synccomplete="{{fetchData}}"></force-sobject-sync>
                 <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" style="display:none" autosync="false"></force-sobject-collection>
@@ -126,7 +126,7 @@
 	            var fieldsToFetch = this.fieldstofetch ? this.fieldstofetch.trim().split(/\s+/) : [];
 	            fieldsToFetch = _.union(searchFields, fieldsToFetch);
 
-	            this.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " LIMIT 4000";
+	            this.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " LIMIT 200";
 	          },
 
 	          stopClick: function(e) {

@@ -7,12 +7,15 @@
     var initialized = false;
     var readyDeferred = $.Deferred();
 
-    var authenticator = function(client, callback, error) {
-        if (readyDeferred.state() != 'pending') {
-            readyDeferred = $.Deferred();
-            SFDC.launcher = readyDeferred.promise();
+    var authenticator = function(authProvider) {
+        return function(client, callback, error) {
+            if (readyDeferred.state() != 'pending') {
+                readyDeferred = $.Deferred();
+                SFDC.launcher = readyDeferred.promise();
+                if (authProvider) authProvider();
+            }
+            SFDC.launcher.done(callback).fail(error);
         }
-        SFDC.launcher.done(callback).fail(error);
     }
 
     // Global Events Dispatcher to loosely couple all the views
@@ -40,7 +43,7 @@
         if (!initialized) {
 
             initialized = true;
-            Force.init(options, SFDC_API_VERSION, null, authenticator);
+            Force.init(options, SFDC_API_VERSION, null, authenticator(options.authProvider));
             Force.setLogLevel(logLevel || "info")
 
             if (navigator.smartstore) {
