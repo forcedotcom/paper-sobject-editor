@@ -63,7 +63,7 @@
                 else filterClause = searchFields[0]; // Mockstore only supports single search field in smartsql.
 
                 querytype = "cache";
-                query = {queryType:"smart", smartSql:"SELECT {" + this.storeName + ":_soup} FROM {" + this.storeName + "} WHERE " + filterClause};
+                query = {queryType:"smart", smartSql:"SELECT {" + this.storeName + ":_soup} FROM {" + this.storeName + "} WHERE " + filterClause, pageSize: 100};
             }
 
             if (querytype != this.querytype || !_.isEqual(this.query, query)) {

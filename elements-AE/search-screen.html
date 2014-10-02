@@ -82,8 +82,8 @@
 
             <div class="content" style="height:100%">
                 <img id="loading" src="loading-gray.gif" style="position: absolute; top: 50%; left: 45%; width: 32px;"/>
-                <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-syncdown="{{showSearch}}"></force-sobject-sync>
-                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" style="display:none" maxsize="2000" pagesize="100" autosync="false"></force-sobject-collection>
+                <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-synccomplete="{{fetchData}}"></force-sobject-sync>
+                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" style="display:none" autosync="false"></force-sobject-collection>
                 <core-list id="uilist" height="{{resultHeight}}" style="height:100%" data="{{$.list.collection.models}}" touch-action="pan-y" on-touchend="{{stopClick}}">
                     <content select="*"></content>
                 </core-list>
@@ -146,12 +146,6 @@
 
 	          stopClick: function(e) {
 	            e.preventDefault();
-	          },
-
-	          showSearch: function(e) {
-	            if (e.detail.status == 'DONE') {
-	              this.fetchData();
-	            }
 	          },
 
 	          attached: function() {

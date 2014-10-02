@@ -89,7 +89,7 @@ license that can be found in the LICENSE file.
           }
         </style>
 
-        <force-signin consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXjHqR_EeHHhvOg6eRlANYorN6WUok0BtdumUcrK_YCCnpoZSziVa.t8QB3.z" callbackurl="https://sobject-smartsync.herokuapp.com" proxyurl="{{proxyhost}}" on-success="{{startRouting}}"></force-signin>
+        <force-signin consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXjHqR_EeHHhvOg6eRlANYorN6WUok0BtdumUcrK_YCCnpoZSziVa.t8QB3.z" callbackurl="https://sobject-smartsync.herokuapp.com" proxyurl="{{proxyhost}}" on-success="{{startRouting}}" on-offline="{{startRouting}}"></force-signin>
 
         <core-animated-pages id="pages" transitions="slide-from-right" on-save="{{refresh}}" on-destroy="{{refresh}}" style="overflow-x:hidden">
 
@@ -123,9 +123,12 @@ license that can be found in the LICENSE file.
           cloudicon: 'cloud-done',
           proxyhost: (location.protocol === 'file:') ? null : location.origin,
           ready: function() {
-            SFDC.isOnline = function() {
-              return this._onlineStatus && !this.$.syncview.hasLocalChanges();
-            }.bind(this);
+            var that = this;
+            // Add online/offline event listeners if inside cordova container & not using mock cordova
+            if (window.cordova && !cordova.interceptExec) {
+              document.addEventListener("online", function() { that.onlinestatus = true; }, false);
+              document.addEventListener("offline", function() { that.onlinestatus = false; }, false);
+            }
           },
           get onlinestatus() {
             return this._onlineStatus;
@@ -173,10 +176,18 @@ license that can be found in the LICENSE file.
     <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="Title Phone Email Name Department HomePhone"></mobile-app>
 
     <script>
-      window.addEventListener('WebComponentsReady', function() {
-        Backbone.history.start();
-      });
-      if (window.mockStore) mockStore.useSessionStorage();
+      (function() {
+        window.addEventListener('WebComponentsReady', function() {
+          var originalIsOnline = SFDC.isOnline;
+          var mobileApp = document.querySelector('mobile-app');
+          mobileApp.onlinestatus = SFDC.isOnline();
+          SFDC.isOnline = function() {
+            return originalIsOnline() && mobileApp.onlinestatus;
+          };
+          Backbone.history.start();
+        });
+        if (window.mockStore) mockStore.useSessionStorage();
+      })();
     </script>
 
     <script>

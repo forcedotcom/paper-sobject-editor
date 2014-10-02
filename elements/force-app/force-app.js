@@ -24,7 +24,9 @@
     var SFDC_API_VERSION = 'v29.0';
 
     SFDC.isOnline = function() {
-        return navigator.onLine ||
+        // We have cordova and 
+        if (window.cordova) return cordova.require('com.salesforce.util.bootstrap').deviceIsOnline();
+        else return navigator.onLine ||
                (typeof navigator.connection != 'undefined' &&
                navigator.connection.type !== Connection.UNKNOWN &&
                navigator.connection.type !== Connection.NONE);
