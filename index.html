@@ -191,24 +191,27 @@ license that can be found in the LICENSE file.
     <script>
       (function() {
         window.addEventListener('WebComponentsReady', function() {
+          // Overriding online status
           var originalIsOnline = SFDC.isOnline;
           var mobileApp = document.querySelector('mobile-app');
           mobileApp.onlinestatus = SFDC.isOnline();
           SFDC.isOnline = function() {
             return originalIsOnline() && mobileApp.onlinestatus;
           };
+          // Setting up polymer expressions
+          PolymerExpressions.prototype.uppercaseFirstChar = function(value) {
+            return (value && value.length) ? value.charAt(0).toUpperCase() : '';
+          }
+          var colors = ["#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50", "#f1c40f", "#e67e22", "#e74c3c", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"];
+          PolymerExpressions.prototype.iconColor = function(value) {
+            if (value && value.length > 0) {
+              var code = value.split("").reduce(function(code, val) { return code + val.charCodeAt(0); }, 0);
+              return colors[code % 19];
+            } else return colors[0];
+          }
+          // Starting backbone routing
           Backbone.history.start();
         });
-        PolymerExpressions.prototype.uppercaseFirstChar = function(value) {
-          return (value && value.length) ? value.charAt(0).toUpperCase() : '';
-        }
-        var colors = ["#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50", "#f1c40f", "#e67e22", "#e74c3c", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"];
-        PolymerExpressions.prototype.iconColor = function(value) {
-          if (value && value.length > 0) {
-            var code = value.split("").reduce(function(code, val) { return code + val.charCodeAt(0); }, 0);
-            return colors[code % 19];
-          } else return colors[0];
-        }
         if (window.mockStore) mockStore.useSessionStorage();
       })();
     </script>
