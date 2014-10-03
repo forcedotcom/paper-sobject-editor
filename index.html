@@ -18,6 +18,7 @@ license that can be found in the LICENSE file.
 
 	<!-- Core Polymer Elements -->
 	<link href="dependencies/core-icons/core-icons.html" rel="import">
+	<link href="dependencies/core-icons/notification-icons.html" rel="import">
 	<link href="dependencies/core-animated-pages/core-animated-pages.html" rel="import">
 	<link href="dependencies/core-animated-pages/transitions/slide-from-right.html" rel="import">
 	<link href="dependencies/core-scroll-header-panel/core-scroll-header-panel.html" rel="import">
@@ -105,7 +106,7 @@ license that can be found in the LICENSE file.
 
         <core-animated-pages id="pages" transitions="slide-from-right" on-save="{{refresh}}" on-destroy="{{refresh}}" style="overflow-x:hidden">
 
-          <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}" resultHeight="71" on-core-activate="{{openEdit}}">
+          <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}" resultHeight="71" on-core-activate="{{openEdit}}" on-syncup="{{silentsync}}">
             <template>
               <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
                 <!--img class="profile-photo" src="images/{{model.attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/--> 
@@ -163,6 +164,7 @@ license that can be found in the LICENSE file.
           },
           refreshList: function() {
           	this.$.listview.refresh();
+          	this.$.listview.syncComplete();
           },
           showList: function(ev) {
             this.$.pages.selected = 0;
@@ -175,6 +177,10 @@ license that can be found in the LICENSE file.
           },
           startRouting: function() {
             window.location.hash = '';
+          },
+          silentsync: function() {
+            if (this.$.syncview.hasLocalChanges()) this.$.syncview.doSync();
+            else this.$.listview.syncComplete();
           }
         })
       </script>
@@ -192,6 +198,10 @@ license that can be found in the LICENSE file.
           SFDC.isOnline = function() {
             return originalIsOnline() && mobileApp.onlinestatus;
           };
+          // Force cache only actions by default
+          SFDC.cacheMode = function() {
+            return SFDC.isOnline() ? Force.CACHE_MODE.CACHE_FIRST : Force.CACHE_MODE.CACHE_ONLY;
+          }
           // Setting up polymer expressions
           PolymerExpressions.prototype.uppercaseFirstChar = function(value) {
             return (value && value.length) ? value.charAt(0).toUpperCase() : '';

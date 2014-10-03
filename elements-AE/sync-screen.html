@@ -25,12 +25,9 @@
         <paper-shadow target="{{$.toolbar}}"></paper-shadow>
 
         <core-toolbar id="toolbar" style="background-color: #f40009;">
-          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}"></core-icon>
+          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 40px; height: 40px;" on-touchend="{{stopClick}}"></core-icon>
           <div flex></div>
-          <paper-menu-button icon="more-vert" halign="right">
-            <paper-item label="Sync" on-tap="{{doSync}}"></paper-item>
-            <paper-item label="Cancel" on-tap="{{navigateBack}}"></paper-item>
-          </paper-menu-button>
+          <div on-tap="{{doSync}}" style="color:white; padding-right: 15px">Sync</div>
         </core-toolbar>
 
         <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;">
@@ -59,6 +56,10 @@
         query: {queryType:"exact", indexPath:"__local__", matchKey:true, order:"ascending", pageSize:25},
         get mergemode() {
             return Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED;
+        },
+
+        stopClick: function(e) {
+            e.preventDefault();
         },
 
         refresh: function() {
@@ -103,41 +104,6 @@
         viewLoaded: function() {
             if (!this.hasLocalChanges()) this.navigateBack();  
         }
-        /*
-        doSync: function() {
-            var that = this;
-            var collection = this.$.list.collection;
-            if (collection.length == 0 || collection.at(0).get("__sync_failed__")) {
-                // we push sync failures back to the end of the list - if we encounter one, it means we are done
-                return;
-            }
-            else {
-                var record = collection.shift();
-
-                var options = {
-                    mergeMode: Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED,
-                    success: function() {
-                        if (collection.length == 0) {
-                            app.router.navigateFirst();
-                        }
-                        else {
-                            that.doSync();
-                        }
-                    },
-                    error: function() {
-                        record = record.set("__sync_failed__", true);
-                        collection.push(record);
-                        that.doSync();
-                    },
-                    fieldlist: _.intersection(_.keys(record.attributes), app.editablefieldlist),
-                    cache: collection.cache,
-                    cacheForOriginals: collection.cacheForOriginals
-                };
-
-                return record.get("__locally_deleted__") ? record.destroy(options) : record.save(null, options);
-            }
-        },
-        */
     });
     </script>
 </polymer-element>

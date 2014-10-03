@@ -4,22 +4,18 @@
         <core-toolbar id="toolbar" style="background-color: #f40009;">
           <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 40px; height: 40px;" on-touchend="{{stopClick}}"></core-icon>
           <div flex></div>
-          <paper-menu-button icon="more-vert" halign="right">
-            <template if="{{!$.detail.model.attributes.__locally_deleted__}}">
-                <paper-item label="Save" on-tap="{{doSave}}"></paper-item>
-                <paper-item label="Delete" on-tap="{{doToggleDelete}}"></paper-item>
-            </template>
-            <template if="{{sync}}">
-                <paper-item label="Merge" on-tap="{{doSaveMerge}}"></paper-item>
-                <paper-item label="Overwrite" on-tap="{{doSaveOverwrite}}"></paper-item>
-            </template>
-            <template if="{{$.detail.model.attributes.__locally_deleted__}}">
-                <paper-item label="Undelete" on-tap="{{doToggleDelete}}"></paper-item>
-            </template>
-          </paper-menu-button>
+          <div on-tap="{{doSave}}" style="color:white; padding-right: 15px">
+            <template if="{{!sync && !$.detail.model.attributes.__locally_deleted__}}">Save</template>
+            <template if="{{sync}}">Overwrite</template>
+            <template if="{{$.detail.model.attributes.__locally_deleted__}}">Undelete</template>
+          </div>
         </core-toolbar>
         <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;" touch-action="pan-y">
-            <force-paper-detail id="detail" sobject="{{sobject}}" recordid="{{recordid}}" foredit="true" fieldlist="FirstName LastName Title Department Phone Email HomePhone"></force-paper-detail>
+            <force-paper-detail id="detail" sobject="{{sobject}}" recordid="{{recordid}}" foredit="true" fieldlist="FirstName LastName Title Department Phone Email HomePhone">
+            </force-paper-detail>
+            <template if="{{recordid && !$.detail.model.attributes.__locally_deleted__}}">
+                <div on-tap="{{ doToggleDelete }}" horizontal layout center center-justified style="background-color: white; margin: 20px; color: rgb(255, 68, 68); height: 40px; font-size: 20px;border: 1px rgb(204, 204, 204) solid;border-radius: 5px;">Delete</div>
+            </template>
         </div>
     </template>
     <script>
@@ -66,18 +62,10 @@
         },
 
         doSave: function() {
-            var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : null;
-            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED, cacheMode));
-        },
-
-        doSaveMerge: function() {
-            var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : null;
-            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.MERGE_ACCEPT_YOURS, cacheMode));
-        },
-
-        doSaveOverwrite: function() {
-            var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : null;
-            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.OVERWRITE, cacheMode));
+            var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : Force.CACHE_MODE.CACHE_ONLY;
+            // If model is locally deleted, then undelete. Else save
+            if (this.$.detail.model.attributes.__locally_deleted__) this.doToggleDelete();
+            else this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED, cacheMode));
         },
 
         doToggleDelete: function() {

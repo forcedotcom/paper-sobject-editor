@@ -74,12 +74,12 @@
 			        }
 
 			        // Generates and returns the handlebar template for the layout sections.
-			        var html = '<paper-shadow></paper-shadow>';
+			        var html = '<!--paper-shadow></paper-shadow-->';
 			        var layoutFieldsInfoMap = {};
 
 			        layoutSections.forEach(function(section, sectionIndex) {
 			            html += '<div class="sf-layout-section">';
-			            html += ('<div class="paper-shadow-top paper-shadow-top-z-1" style="position:relative"><div class="paper-shadow-bottom paper-shadow-bottom-z-1"></div><h1 class="sf-layout-section-heading">' + section.heading + '</h1></div>');
+			            html += ('<div class="" style="position:relative"><h1 class="sf-layout-section-heading">' + section.heading + '</h1></div>');
 			            // Iterate over layout rows in each section
 			            modArray(section.layoutRows).forEach(function(row) {
 			                html += '<div class="sf-layout-row ui-responsive">';
