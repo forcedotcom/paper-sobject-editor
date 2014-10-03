@@ -120,7 +120,7 @@ license that can be found in the LICENSE file.
             </template>
           </search-screen>
 
-          <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync="{{resetConnection}}"></sync-screen>
+          <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync="{{refreshList}}"></sync-screen>
 
           <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-route-changed="{{showDetail}}"></detail-screen>
 
@@ -132,7 +132,7 @@ license that can be found in the LICENSE file.
 
       <script>
         Polymer('mobile-app', {
-          _onlineStatus: true,
+          _onlinestatus: true,
           cloudicon: 'cloud-done',
           proxyhost: (location.protocol === 'file:') ? null : location.origin,
           ready: function() {
@@ -144,14 +144,18 @@ license that can be found in the LICENSE file.
             }
           },
           get onlinestatus() {
-            return this._onlineStatus;
+            return this._onlinestatus;
           },
           set onlinestatus(newStatus) {
-            this._onlineStatus = newStatus;
+            this._onlinestatus = newStatus;
             // Override the value with actual status
-            this._onlineStatus = SFDC.isOnline();
-            this.cloudicon = this._onlineStatus ? "cloud-done" : "cloud-off";
-            this.$.network_icon.style.fill = this._onlineStatus ? 'green' : 'red';
+            this._onlinestatus = SFDC.isOnline();
+            this.cloudicon = this._onlinestatus ? "cloud-done" : "cloud-off";
+            this.$.network_icon.style.fill = this._onlinestatus ? 'green' : 'red';
+
+            if (this.$.pages.selected == 0 && this._onlinestatus && this.$.syncview.hasLocalChanges()) {
+              window.location.hash = "#sync";
+            }
           },
           openEdit: function(params) {
             window.location.hash = "#edit/" + params.detail.data.id;
@@ -161,15 +165,10 @@ license that can be found in the LICENSE file.
           	this.$.syncview.refresh();
           },
           toggleConnection: function() {
-          	if (this.$.pages.selected == 0) {
-	            this.onlinestatus = !this.onlinestatus;
-	            if (this.onlinestatus) {
-	            	window.location.hash = "#sync";
-	            } else this.resetConnection();
-	        }
+            this.onlinestatus = !this._onlinestatus;
           },
-          resetConnection: function() {
-          	this.$.listview.updateConnection();
+          refreshList: function() {
+          	this.$.listview.refresh();
           },
           showList: function(ev) {
             this.$.pages.selected = 0;
