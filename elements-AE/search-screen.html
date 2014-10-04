@@ -6,26 +6,33 @@
     <template>
 
         <style>
-            force-ui-search /deep/ paper-input::shadow #floatedLabel {
+            force-ui-search /deep/ #floatedLabel,
+            force-ui-search /deep/ #errorContainer,
+            force-ui-search /deep/ #underline {
                 display: none;
-            }
-            force-ui-search /deep/ paper-input::shadow #errorContainer {
-                display: none;
-            }
-            force-ui-search /deep/ #underline>div {
-                background-color: white
             }
             force-ui-search /deep/ .cursor {
-                background-color: white
+                background-color: rgb(167, 167, 167);
             }
             force-ui-search /deep/ input {
-                color: white;
+                color: rgb(100, 100, 100);
+            }
+            force-ui-search /deep/ .label {
+                padding-top: 0.40em;
+                color: rgb(167, 167, 167);
+            }
+            force-ui-search /deep/ .input-container {
+                top: 0.3em;
             }
 
             core-scroll-header-panel {
                 position: absolute;
                 top: 0; bottom: 0;
                 left: 0; right: 0;
+            }
+            core-scroll-header-panel.animating {
+                transition: transform 100ms linear;
+                -webkit-transition: -webkit-transform 100ms linear;
             }
 
             :host /deep/ core-icon {
@@ -48,6 +55,10 @@
                 background-color: transparent;
             }
 
+            core-toolbar #search-icon {
+                color: rgb(167, 167, 167);
+            }
+
             .title {
                 font-size: 40px;
             }
@@ -62,6 +73,34 @@
                 margin-top: 64px;
             }
 
+            #scrollHeader.search {
+                -webkit-transform: translate3d(0, -64px, 0);
+                transform: translate3d(0, -64px, 0);
+            }
+
+            #scrollHeader core-toolbar #searchContainer {
+                background: rgb(230, 228, 228); 
+                border-radius: 10px; 
+                padding: 0 10px;
+            }
+            #scrollHeader.search core-toolbar #searchContainer {
+                background-color: white;
+                margin: 0;
+            }
+
+            #scrollHeader .cancelBtn,
+            #scrollHeader.search #toolbar #sync_icon,
+            #scrollHeader.search #toolbar #create-icon {
+                display: none;
+            }
+
+            #scrollHeader.search .cancelBtn {
+                margin: 0 0 0 10px;
+                color: white; 
+                line-height: 50px;
+                display: block;
+            }
+
             .sync-animation {
                 -webkit-animation: rotateAntiClockwise 1s infinite; /* Safari 4+ */
                 -moz-animation:    rotateAntiClockwise 1s infinite; /* Fx 5+ */
@@ -74,19 +113,9 @@
               100% { transform:  rotate(-360deg); }
             }
 
-            @-moz-keyframes rotateAntiClockwise {
-              0% { -moz-transform:  rotate(0deg); }
-              100% { -moz-transform:  rotate(-360deg); }
-            }
-
             @-webkit-keyframes rotateAntiClockwise  {
               0% { -webkit-transform:  rotate(0deg); }
               100% { -webkit-transform:  rotate(-360deg); }
-            }
-
-            @-o-keyframes rotateAntiClockwise  {
-              0% { -o-transform:  rotate(0deg); }
-              100% { -o-transform:  rotate(-360deg); }
             }
 
             @-ms-keyframes rotateAntiClockwise  {
@@ -97,21 +126,21 @@
         </style>
 
         <core-scroll-header-panel id="scrollHeader" style="-webkit-overflow-scrolling: touch;" touch-action="pan-y">
-        	
+            
             <core-toolbar id="header" style="background-color: #f40009;">
 
-                <core-icon id="menu-icon" icon="menu"></core-icon>
+                <core-icon id="menu-icon" icon="menu" style="width: 35px; height: 35px; margin: 0px"></core-icon>
                 <div id="title" flex>{{$.list.collection.models.length || ""}} Contacts</div>
-                <core-icon id="sync_icon" icon="notification:sync" on-tap="{{fireSyncUp}}"></core-icon>
                 
             </core-toolbar>
-            <core-toolbar id="toolbar" style="background-color: #bdc3c7;">
-        
-                <core-icon id="search-icon" icon="search"></core-icon>
-                <div flex>
-                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" cachemode="{{cachemode}}"></force-ui-search>
+            <core-toolbar id="toolbar" style="background-color: #bdc3c7;" touch-action="auto">
+                <core-icon id="sync_icon" icon="notification:sync" on-tap="{{fireSyncUp}}" style="width: 35px; height: 35px; margin: 0px"></core-icon>
+                <div id="searchContainer" flex layout horizontal center>
+                    <core-icon id="search-icon" icon="search" style="margin-right: 5px;"></core-icon>
+                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" cachemode="{{cachemode}}" style="margin: -14px 0px;" flex on-down="{{searchFocused}}" on-touchend="{{stopClick}}"></force-ui-search>
                 </div>
-                <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}"></core-icon>
+                <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}" style="width: 35px; height: 35px; margin: 0px"></core-icon>
+                <div class="cancelBtn" on-tap="{{cancelSearch}}">Cancel</div>
               
             </core-toolbar>
 
@@ -129,64 +158,93 @@
 
     </template>
     <script>
-    	(function() {
+        (function() {
 
-	        Polymer('search-screen', {
-	          cachemode: Force.CACHE_MODE.CACHE_ONLY,
-	          ready: function() {
-	            this.super();
-	            this.fetchData();
-	            this.setupSyncQuery();
-	          },
+            Polymer('search-screen', {
+              cachemode: Force.CACHE_MODE.CACHE_ONLY,
+              ready: function() {
+                this.super();
+                this.fetchData();
+                this.setupSyncQuery();
+                var scrollHeader = this.$.scrollHeader;
+                var input = this.$.search.$.input.$.input;
+                scrollHeader.addEventListener('transitionend', function() {
+                  scrollHeader.classList.remove('animating');
+                  if (scrollHeader.classList.contains('search')) {
+                        scrollHeader.style.transform = 
+                            scrollHeader.style.webkitTransform = 'translate3d(0, 0, 0)';
+                        scrollHeader.style.top = '-64px';
+                        input.style.visibility = '';
+                        input.focus(); // required by chrome
+                  } else scrollHeader.style.top = '0px';
+                });
+              },
 
-	          fireSyncUp: function() {
-	            this.$.sync_icon.classList.add('sync-animation');
-	            this.fire('syncup');
-	          },
+              searchFocused: function() {
+                this.$.scrollHeader.classList.add('search', 'animating');
+                this.$.search.$.input.$.input.style.visibility = 'hidden';
+                this.$.search.$.input.$.input.focus();
+              },
+              cancelSearch: function() {
+                var scrollHeader = this.$.scrollHeader;
+                this.$.search.criteria = '';
+                scrollHeader.style.transform = 
+                  scrollHeader.style.webkitTransform = '';
+                scrollHeader.style.top = '0px';
+                this.$.search.$.input.$.input.blur();
+                this.async(function() { 
+                     scrollHeader.classList.add('animating');
+                     scrollHeader.classList.remove('search');
+                });
+              },
 
-	          syncComplete: function() {
-	            this.$.sync_icon.classList.remove('sync-animation');
-	          },
+              fireSyncUp: function() {
+                this.$.sync_icon.classList.add('sync-animation');
+                this.fire('syncup');
+              },
 
-	          fetchData: function() {
-	            var onFetch = function() {
-	              if (this.$.list.collection.size() > 0) {
+              syncComplete: function() {
+                this.$.sync_icon.classList.remove('sync-animation');
+              },
+
+              fetchData: function() {
+                var onFetch = function() {
+                  if (this.$.list.collection.size() > 0) {
                     this.$.loading.style.display = "none";
                     this.$.list.autosync = true;
-	              }
-	              this.$.list.removeEventListener('sync', onFetch);
-	            }.bind(this);
-	            if (!this.$.list.autosync) {
-	              this.$.list.addEventListener('sync', onFetch);
-	              this.async(function() { this.$.list.fetch(); });
-	            }
-	          },
+                  }
+                  this.$.list.removeEventListener('sync', onFetch);
+                }.bind(this);
+                if (!this.$.list.autosync) {
+                  this.$.list.addEventListener('sync', onFetch);
+                  this.async(function() { this.$.list.fetch(); });
+                }
+              },
 
-	          setupSyncQuery: function() {
-	            var searchFields = this.searchfields.trim().split(/\s+/);
-	            var fieldsToFetch = this.fieldstofetch ? this.fieldstofetch.trim().split(/\s+/) : [];
-	            fieldsToFetch = _.union(searchFields, fieldsToFetch);
+              setupSyncQuery: function() {
+                var searchFields = this.searchfields.trim().split(/\s+/);
+                var fieldsToFetch = this.fieldstofetch ? this.fieldstofetch.trim().split(/\s+/) : [];
+                fieldsToFetch = _.union(searchFields, fieldsToFetch);
 
-	            this.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " LIMIT 200";
-	          },
+                this.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " LIMIT 200";
+              },
 
-	          stopClick: function(e) {
-	            e.preventDefault();
-	          },
+              stopClick: function(e) {
+                e.preventDefault();
+              },
 
-	          attached: function() {
-	            this.$.uilist.appendChild(this.querySelector('template'));
-	          },
+              attached: function() {
+                this.$.uilist.appendChild(this.querySelector('template'));
+              },
 
-	          refresh: function() {
-	            this.$.list.fetch();
-	          },
+              refresh: function() {
+                this.$.list.fetch();
+              },
 
-	          navigateToCreate: function() {
-	            window.location.hash = "#edit";
-	          }
-	        });
-		})();
+              navigateToCreate: function() {
+                window.location.hash = "#edit";
+              }
+            });
+        })();
     </script>
 </polymer-element>
-

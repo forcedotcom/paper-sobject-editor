@@ -11,10 +11,8 @@
 <link rel="import" href="../../dependencies/paper-input/paper-input.html">
 <polymer-element name="force-ui-search" attributes="sobject searchfields fieldstofetch cachemode">
   <template>
+      <paper-input id="input" label="Search" class="search-key" inputValue="{{criteria}}" style="width:100%"></paper-input>
       <force-sobject-store id="store" sobject="{{sobject}}" fieldstoindex="{{searchfields}}"></force-sobject-store>
-      <div class="bar bar-standard bar-header-secondary">
-        <paper-input id="input" label="Search" class="search-key" inputValue="{{criteria}}" style="width:100%"></paper-input>
-      </div>
   </template>
   <script>
     Polymer('force-ui-search', {
