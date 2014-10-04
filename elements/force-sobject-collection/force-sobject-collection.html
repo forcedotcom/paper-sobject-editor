@@ -26,6 +26,7 @@
 <link rel="import" href="../force-sobject-store/force-sobject-store.html">
 <polymer-element name="force-sobject-collection" attributes="sobject query querytype autosync maxsize pagesize">
     <template>
+        <style> :host { display: none; } </style>
         <force-sobject-store id="store" sobject="{{sobject}}"></force-sobject-store>
     </template>
     <script src="force-sobject-collection.js"></script>

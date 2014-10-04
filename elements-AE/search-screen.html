@@ -5,150 +5,32 @@
 <polymer-element name="search-screen" extends="force-route" attributes="sobject searchfields fieldstofetch resultHeight">
     <template>
 
-        <style>
-            force-ui-search /deep/ #floatedLabel,
-            force-ui-search /deep/ #errorContainer,
-            force-ui-search /deep/ #underline {
-                display: none;
-            }
-            force-ui-search /deep/ .cursor {
-                background-color: rgb(167, 167, 167);
-            }
-            force-ui-search /deep/ input {
-                color: rgb(100, 100, 100);
-            }
-            force-ui-search /deep/ .label {
-                padding-top: 0.40em;
-                color: rgb(167, 167, 167);
-            }
-            force-ui-search /deep/ .input-container {
-                top: 0.3em;
-            }
+        <link rel="stylesheet" href="search-screen.css"/>
 
-            core-scroll-header-panel {
-                position: absolute;
-                top: 0; bottom: 0;
-                left: 0; right: 0;
-            }
-            core-scroll-header-panel.animating {
-                transition: transform 100ms linear;
-                -webkit-transition: -webkit-transform 100ms linear;
-            }
-
-            :host /deep/ core-icon {
-                fill: #fff;
-            }
-
-            /* background for toolbar when it is at its full size */
-            core-scroll-header-panel::shadow #headerBg {
-                background-image: url(banner.jpg);
-            }
-
-            /* background for toolbar when it is condensed */
-            core-scroll-header-panel::shadow #condensedHeaderBg {
-                background-color: #00adef;
-            }
-
-            core-toolbar {
-                color: #f1f1f1;
-                fill: #f1f1f1;
-                background-color: transparent;
-            }
-
-            core-toolbar #search-icon {
-                color: rgb(167, 167, 167);
-            }
-
-            .title {
-                font-size: 40px;
-            }
-
-            #scrollHeader::shadow #headerContainer {
-                transition: transform 200ms ease-out;
-                -webkit-transition: -webkit-transform 200ms ease-out;
-            }
-
-            #scrollHeader::shadow #mainContainer {
-                /*overflow: hidden;*/
-                margin-top: 64px;
-            }
-
-            #scrollHeader.search {
-                -webkit-transform: translate3d(0, -64px, 0);
-                transform: translate3d(0, -64px, 0);
-            }
-
-            #scrollHeader core-toolbar #searchContainer {
-                background: rgb(230, 228, 228); 
-                border-radius: 10px; 
-                padding: 0 10px;
-            }
-            #scrollHeader.search core-toolbar #searchContainer {
-                background-color: white;
-                margin: 0;
-            }
-
-            #scrollHeader .cancelBtn,
-            #scrollHeader.search #toolbar #sync_icon,
-            #scrollHeader.search #toolbar #create-icon {
-                display: none;
-            }
-
-            #scrollHeader.search .cancelBtn {
-                margin: 0 0 0 10px;
-                color: white; 
-                line-height: 50px;
-                display: block;
-            }
-
-            .sync-animation {
-                -webkit-animation: rotateAntiClockwise 1s infinite; /* Safari 4+ */
-                -moz-animation:    rotateAntiClockwise 1s infinite; /* Fx 5+ */
-                -o-animation:      rotateAntiClockwise 1s infinite; /* Opera 12+ */
-                animation:         rotateAntiClockwise 1s infinite; /* IE 10+, Fx 29+ */
-            }
-
-            @keyframes rotateAntiClockwise {
-              0% { transform:  rotate(0deg); }
-              100% { transform:  rotate(-360deg); }
-            }
-
-            @-webkit-keyframes rotateAntiClockwise  {
-              0% { -webkit-transform:  rotate(0deg); }
-              100% { -webkit-transform:  rotate(-360deg); }
-            }
-
-            @-ms-keyframes rotateAntiClockwise  {
-              0% { -ms-transform:  rotate(0deg); }
-              100% { -ms-transform:  rotate(-360deg); }
-            }
-
-        </style>
-
-        <core-scroll-header-panel id="scrollHeader" style="-webkit-overflow-scrolling: touch;" touch-action="pan-y">
+        <core-scroll-header-panel id="scrollHeader" touch-action="pan-y">
             
-            <core-toolbar id="header" style="background-color: #f40009;">
-
-                <core-icon id="menu-icon" icon="menu" style="width: 35px; height: 35px; margin: 0px"></core-icon>
-                <div id="title" flex>{{$.list.collection.models.length || ""}} Contacts</div>
-                
+            <core-toolbar id="header" class="header-toolbar">
+                <core-icon id="menu-icon" class="icon" icon="menu"></core-icon>
+                <div class="title" flex>{{$.list.collection.models.length || ""}} Contacts</div>
             </core-toolbar>
-            <core-toolbar id="toolbar" style="background-color: #bdc3c7;" touch-action="auto">
-                <core-icon id="sync_icon" icon="notification:sync" on-tap="{{fireSyncUp}}" style="width: 35px; height: 35px; margin: 0px"></core-icon>
-                <div id="searchContainer" flex layout horizontal center>
-                    <core-icon id="search-icon" icon="search" style="margin-right: 5px;"></core-icon>
-                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" cachemode="{{cachemode}}" style="margin: -14px 0px;" flex on-down="{{searchFocused}}" on-touchend="{{stopClick}}"></force-ui-search>
+
+            <core-toolbar id="toolbar" class="search-toolbar">
+
+                <core-icon id="sync_icon" class="icon" icon="notification:sync" on-tap="{{fireSyncUp}}"></core-icon>
+                <div class="search-box" flex layout horizontal center>
+                    <core-icon id="search_icon" icon="search" class="search-icon"></core-icon>
+                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" cachemode="{{cachemode}}" flex on-down="{{searchFocused}}" on-touchend="{{stopClick}}"></force-ui-search>
                 </div>
-                <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}" style="width: 35px; height: 35px; margin: 0px"></core-icon>
+                <core-icon id="create_icon" class="icon" icon="add" on-tap="{{navigateToCreate}}"></core-icon>
                 <div class="cancelBtn" on-tap="{{cancelSearch}}">Cancel</div>
               
             </core-toolbar>
 
-            <div class="content" style="height: 100%">
-                <img id="loading" src="loading-gray.gif" style="position: absolute; top: 50%; left: 45%; width: 32px;"/>
+            <div class="content">
+                <img id="loading" class="loadingInd" src="loading-gray.gif"/>
                 <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-synccomplete="{{fetchData}}"></force-sobject-sync>
-                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" style="display:none" autosync="false"></force-sobject-collection>
-                <core-list id="uilist" height="{{resultHeight}}" style="height:100%" data="{{$.list.collection.models}}" on-touchend="{{stopClick}}">
+                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" autosync="false"></force-sobject-collection>
+                <core-list id="uilist" height="{{resultHeight}}" data="{{$.list.collection.models}}" on-touchend="{{stopClick}}">
                     <content select="*"></content>
                 </core-list>
 
@@ -181,9 +63,9 @@
               },
 
               searchFocused: function() {
-                this.$.scrollHeader.classList.add('search', 'animating');
-                this.$.search.$.input.$.input.style.visibility = 'hidden';
                 this.$.search.$.input.$.input.focus();
+                this.$.search.$.input.$.input.style.visibility = 'hidden';
+                this.$.scrollHeader.classList.add('search', 'animating');
               },
               cancelSearch: function() {
                 var scrollHeader = this.$.scrollHeader;
