@@ -2,9 +2,9 @@
     <template>
         <link rel="stylesheet" href="detail.css"/>
         <core-toolbar id="toolbar" style="background-color: #f40009;">
-          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 40px; height: 40px;" on-touchend="{{stopClick}}"></core-icon>
+          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 45px; height: 45px; margin: -5px;" on-touchend="{{stopClick}}"></core-icon>
           <div flex></div>
-          <div on-tap="{{doSave}}" style="color:white; padding-right: 15px">
+          <div on-tap="{{doSave}}" style="color:white; line-height: 50px;">
             <template if="{{!sync && !$.detail.model.attributes.__locally_deleted__}}">Save</template>
             <template if="{{sync}}">Overwrite</template>
             <template if="{{$.detail.model.attributes.__locally_deleted__}}">Undelete</template>
