@@ -112,7 +112,7 @@ license that can be found in the LICENSE file.
                 <!--img class="profile-photo" src="images/{{model.attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/--> 
                 <div class="round" style="background-color:{{model.attributes.LastName | iconColor}}">{{model.attributes.FirstName | uppercaseFirstChar}}{{model.attributes.LastName | uppercaseFirstChar}}</div>
                 <div flex style="margin-left: 10px">
-                  <div style="font-size: 1.1em;">{{model.attributes.FirstName}} {{model.attributes.LastName}}</div>
+                  <div style="font-size: 1.1em; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{model.attributes.FirstName}} {{model.attributes.LastName}}</div>
                   <span style="font-size: 0.9em; color: #696969; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
                 </div>
                 <status-icon props="{{model.attributes}}"></status-icon>

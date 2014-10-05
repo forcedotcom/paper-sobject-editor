@@ -56,9 +56,19 @@
             this.resetCount++;
             if (this.autosync) this.fetch();
         },
-        fetch: function() {
+        fetchMore: function() {
+            if ((this.maxsize < 0 || this.maxsize > this.collection.size())
+                && this.collection.hasMore()) return this.collection.getMore();
+        },
+        fetch: function(fetchAll) {
             var collection = this.collection;
             var resetCount = this.resetCount; // captured for closure below
+
+            var timingtag = Date.now() + ':force-ui-collection:fetch:' + this.parentElement.tagName + ':' + this.id;
+            console.time(timingtag);
+            console.log(timingtag);
+            console.log(JSON.stringify(collection.config));
+            console.trace();
 
             var onFetch = function() {
                 if (this.resetCount > resetCount) {
@@ -71,10 +81,9 @@
                     return;
                 }
 
-                if ((this.maxsize < 0 || this.maxsize > collection.size())
-                    && collection.hasMore())
-                    collection.getMore().then(onFetch);
+                if (fetchAll) this.getMore().then(onFetch);
                     //this.async(function() { collection.getMore().then(onFetch); }); // Do async so as to avoid blocking UI thread
+                else console.timeEnd(timingtag);
 
             }.bind(this);
 

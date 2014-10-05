@@ -4,16 +4,22 @@
 
     var viewProps = {
         sobject: null,
-        query: "",
+        query: null,
         maxsize: -1,
         pagesize: 2000
     };
 
     Polymer('force-sobject-sync', _.extend({}, viewProps, {
+        observe: {
+            'sobject query': 'fetch'
+        },
         ready: function() {
+            document.addEventListener('sync', this.syncEvent.bind(this));
+        },
+        fetch: function() {
             var store = this.$.store;
             var that = this;
-            if (SFDC.isOnline()) {
+            if (SFDC.isOnline() && this.sobject && this.query) {
                 $.when(store.cacheReady, SFDC.launcher)
                 .then(function() {
                     mockSmartSyncPlugin.syncDown(
@@ -25,8 +31,6 @@
                     );
                 });
             }
-
-            document.addEventListener('sync', this.syncEvent.bind(this));
         },
         syncEvent: function(e) {
             if (this.syncId >= 0 && e.detail.syncId == this.syncId) {

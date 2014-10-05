@@ -46,8 +46,11 @@
               cachemode: Force.CACHE_MODE.CACHE_ONLY,
               ready: function() {
                 this.super();
+                this.async(this.initialize);
+              },
+
+              initialize: function() {
                 this.fetchData();
-                this.setupSyncQuery();
                 var scrollHeader = this.$.scrollHeader;
                 var input = this.$.search.$.input.$.input;
                 scrollHeader.addEventListener('transitionend', function() {
@@ -60,12 +63,24 @@
                         input.focus(); // required by chrome
                   } else scrollHeader.style.top = '0px';
                 });
+                this._viewportHeight = window.innerHeight * 2; // Adding safety margin
+                this.$.uilist.addEventListener('scroll', this.scrollHandler.bind(this), false);
+              },
+
+              scrollHandler: function(e, detail) {
+                var scrollTop = e.detail ? e.detail.target.scrollTop : e.target.scrollTop;
+                var totalHeight = this.resultHeight * this.$.list.collection.size();
+                if (scrollTop > (totalHeight - this._viewportHeight)) 
+                  this.async(function() { this.$.list.fetchMore(); });
               },
 
               searchFocused: function() {
-                this.$.search.$.input.$.input.focus();
-                this.$.search.$.input.$.input.style.visibility = 'hidden';
-                this.$.scrollHeader.classList.add('search', 'animating');
+                if (!this._searchFocued) {
+                  this._searchFocued = true;
+                  this.$.search.$.input.$.input.focus();
+                  this.$.search.$.input.$.input.style.visibility = 'hidden';
+                  this.$.scrollHeader.classList.add('search', 'animating');
+                }
               },
               cancelSearch: function() {
                 var scrollHeader = this.$.scrollHeader;
@@ -77,6 +92,7 @@
                 this.async(function() { 
                      scrollHeader.classList.add('animating');
                      scrollHeader.classList.remove('search');
+                     this._searchFocued = false;
                 });
               },
 
@@ -94,9 +110,10 @@
                   if (this.$.list.collection.size() > 0) {
                     this.$.loading.style.display = "none";
                     this.$.list.autosync = true;
-                  }
+                  } else this.setupSyncQuery();
                   this.$.list.removeEventListener('sync', onFetch);
                 }.bind(this);
+
                 if (!this.$.list.autosync) {
                   this.$.list.addEventListener('sync', onFetch);
                   this.async(function() { this.$.list.fetch(); });
@@ -108,7 +125,7 @@
                 var fieldsToFetch = this.fieldstofetch ? this.fieldstofetch.trim().split(/\s+/) : [];
                 fieldsToFetch = _.union(searchFields, fieldsToFetch);
 
-                this.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " LIMIT 200";
+                this.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " LIMIT 4000";
               },
 
               stopClick: function(e) {
