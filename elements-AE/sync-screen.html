@@ -73,23 +73,39 @@
         doSync: function() {
             var that = this;
             var sobjects = this.$.listview.querySelectorAll('force-sobject');
+            var syncStatuses = [];
 
             this.failedIds = [];
-            var saveOptions = {
-                cacheMode: Force.CACHE_MODE.SERVER_FIRST,
-                success: function() {
-                    that.$.list.fetch();
-                },
-                error: function(model) {
-                    that.failedIds.push(model.id);
-                    that.$.list.fetch();
+            var saveOptions = function(deferred) {
+                return {
+                    cacheMode: Force.CACHE_MODE.SERVER_FIRST,
+                    success: function() {
+                        that.$.list.fetch();
+                        that.fire('item-synced');
+                        deferred.resolve();
+                    },
+                    error: function(model) {
+                        that.failedIds.push(model.id);
+                        that.$.list.fetch();
+                        deferred.resolve();
+                    }
                 }
             }
 
             _.each(sobjects, function(sobject) {
+                var statusDeferred = $.Deferred();
+                var options = saveOptions(statusDeferred);
+
                 if (sobject.fields['__locally_deleted__'])
-                    sobject.destroy(saveOptions);
-                else sobject.save(saveOptions);
+                    sobject.destroy(options);
+                else sobject.save(options);
+
+                //Track save status and fire a complete event when all saves are finished
+                syncStatuses.push(statusDeferred.promise());
+            });
+
+            return $.when.apply($, syncStatuses).then(function() {
+                that.fire('sync-complete');
             });
         },
 

@@ -104,7 +104,7 @@ license that can be found in the LICENSE file.
 
         <force-signin consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXjHqR_EeHHhvOg6eRlANYorN6WUok0BtdumUcrK_YCCnpoZSziVa.t8QB3.z" callbackurl="https://sobject-smartsync.herokuapp.com" proxyurl="{{proxyhost}}" on-success="{{startRouting}}" on-offline="{{startRouting}}"></force-signin>
 
-        <core-animated-pages id="pages" transitions="slide-from-right" on-save="{{refresh}}" on-destroy="{{refresh}}" style="overflow-x:hidden">
+        <core-animated-pages id="pages" transitions="slide-from-right" on-destroy="{{refresh}}" style="overflow-x:hidden">
 
           <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}" resultHeight="71" on-core-activate="{{openEdit}}" on-syncup="{{silentsync}}">
             <template>
@@ -121,9 +121,9 @@ license that can be found in the LICENSE file.
             </template>
           </search-screen>
 
-          <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync="{{refreshList}}"></sync-screen>
+          <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync-complete="{{syncComplete}}"></sync-screen>
 
-          <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-route-changed="{{showDetail}}"></detail-screen>
+          <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-save="{{refresh}}" on-route-changed="{{showDetail}}"></detail-screen>
 
         </core-animated-pages>
 
@@ -156,15 +156,15 @@ license that can be found in the LICENSE file.
             window.location.hash = "#edit/" + params.detail.data.id;
           },
           refresh: function() {
-          	this.$.listview.refresh();
-          	this.$.syncview.refresh();
+            this.$.listview.refresh();
+            this.$.syncview.refresh();
           },
           toggleConnection: function() {
             this.onlinestatus = !this.onlinestatus;
           },
-          refreshList: function() {
-          	this.$.listview.refresh();
-          	this.$.listview.syncComplete();
+          syncComplete: function() {
+            this.$.listview.refresh();
+            this.$.listview.syncComplete();
           },
           showList: function(ev) {
             this.$.pages.selected = 0;
