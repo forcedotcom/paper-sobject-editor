@@ -4,7 +4,7 @@
         <core-toolbar id="toolbar" style="background-color: #f40009;">
           <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 45px; height: 45px; margin: -5px;" on-touchend="{{stopClick}}"></core-icon>
           <div flex></div>
-          <div on-tap="{{doSave}}" style="color:white; line-height: 50px;">
+          <div on-tap="{{doSave}}" style="color:white; line-height: 50px; width: 80px;" layout horizontal end-justified>
             <template if="{{!sync && !$.detail.model.attributes.__locally_deleted__}}">Save</template>
             <template if="{{sync}}">Overwrite</template>
             <template if="{{$.detail.model.attributes.__locally_deleted__}}">Undelete</template>
@@ -14,7 +14,7 @@
             <force-paper-detail id="detail" sobject="{{sobject}}" recordid="{{recordid}}" foredit="true" fieldlist="FirstName LastName Title Department Phone Email HomePhone">
             </force-paper-detail>
             <template if="{{recordid && !$.detail.model.attributes.__locally_deleted__}}">
-                <div on-tap="{{ doToggleDelete }}" horizontal layout center center-justified style="background-color: white; margin: 20px; color: rgb(255, 68, 68); height: 40px; font-size: 20px;border: 1px rgb(204, 204, 204) solid;border-radius: 5px;">Delete</div>
+                <div on-tap="{{ doDelete }}" horizontal layout center center-justified style="background-color: white; margin: 20px; color: rgb(255, 68, 68); height: 40px; font-size: 20px;border: 1px rgb(204, 204, 204) solid;border-radius: 5px;">Delete</div>
             </template>
         </div>
     </template>
@@ -45,11 +45,7 @@
                 mergeMode: mergeMode,
                 success: this.navigateBack,
                 error: function(data, err, options) {
-                    var error = new Force.Error(err);
-                    if (error.type == "ConflictError") {
-                        $(that.$.mergeButton).show();
-                        $(that.$.overwriteButton).show();
-                    }
+                    console.log(err);
                 }
             };
         },
@@ -63,28 +59,17 @@
 
         doSave: function() {
             var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : Force.CACHE_MODE.CACHE_ONLY;
-            // If model is locally deleted, then undelete. Else save
-            if (this.$.detail.model.attributes.__locally_deleted__) this.doToggleDelete();
-            else this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED, cacheMode));
+            // If model is locally deleted, then undelete. Otherwise continue with the save
+            if (this.$.detail.$.force_sobject.fields.__locally_deleted__) {
+                this.$.detail.$.force_sobject.fields.__locally_deleted__ = false;
+            }
+            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.OVERWRITE, cacheMode));
         },
 
-        doToggleDelete: function() {
+        doDelete: function() {
             var that = this;
-            var force_sobject = this.$.detail.$.force_sobject;
-            if (force_sobject.fields.__locally_deleted__) {
-                force_sobject.fields.__locally_deleted__ = false;
-                var saveOptions = this.getSaveOptions(null, Force.CACHE_MODE.CACHE_ONLY);
-                force_sobject.save(saveOptions);
-            }
-            else {
-                force_sobject.destroy({
-                    success: this.navigateBack,
-                    error: function(data, err, options) {
-                        var error = new Force.Error(err);
-                        alert("Failed to delete " + that.sobject + ": " + (error.type === "RestError" ? error.details[0].message : "Remote change detected - delete aborted"));
-                    }
-                });
-            }
+            var saveOptions = this.getSaveOptions(null, Force.CACHE_MODE.CACHE_ONLY);
+            this.$.detail.$.force_sobject.destroy(saveOptions);
         }
       })
     </script>
