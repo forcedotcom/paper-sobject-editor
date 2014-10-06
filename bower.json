@@ -18,6 +18,6 @@
     "core-scroll-header-panel": "Polymer/core-scroll-header-panel#>=0.4.0 <1.0.0",
     "paper-item": "Polymer/paper-item#>=0.4.0 <1.0.0",
     "paper-menu-button": "Polymer/paper-menu-button#>=0.4.0 <1.0.0",
-    "core-list": "Polymer/core-list#master"
+    "core-list": "Polymer/core-list#>=0.4.0 <1.0.0"
   }
 }
