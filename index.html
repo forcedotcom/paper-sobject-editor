@@ -108,7 +108,7 @@ license that can be found in the LICENSE file.
 
         <core-drawer-panel id="drawer_panel">
     
-          <div drawer style="background:rgb(243, 243, 243); padding: 10px;" layout vertical><paper-button raised on-tap="{{logout}}">Logout</paper-button></div>
+          <div drawer style="background:rgb(243, 243, 243); padding: 10px;" layout vertical touch-action="none"><paper-button raised on-tap="{{logout}}">Logout</paper-button></div>
             
           <core-animated-pages id="pages" main transitions="slide-from-right" on-destroy="{{refresh}}" style="overflow-x:hidden">
 
