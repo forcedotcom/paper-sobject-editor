@@ -123,7 +123,7 @@ license that can be found in the LICENSE file.
 
           <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync-complete="{{syncComplete}}"></sync-screen>
 
-          <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-save="{{refresh}}" on-route-changed="{{showDetail}}"></detail-screen>
+          <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-save="{{refresh}}" on-route-changed="{{showDetail}}" displayfields="{{displayfields}}"></detail-screen>
 
         </core-animated-pages>
 
@@ -187,7 +187,7 @@ license that can be found in the LICENSE file.
 
     </polymer-element>
 
-    <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="Title Phone Email Name Department HomePhone"></mobile-app>
+    <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="FirstName LastName Title Phone Email Name Department HomePhone"></mobile-app>
 
     <script>
       (function() {

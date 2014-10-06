@@ -1,4 +1,4 @@
-<polymer-element name="detail-screen" extends="force-route" attributes="sobject recordid sync" on-route-changed="{{render}}">
+<polymer-element name="detail-screen" extends="force-route" attributes="sobject recordid sync displayfields" on-route-changed="{{render}}">
     <template>
         <link rel="stylesheet" href="detail.css"/>
         <core-toolbar id="toolbar" style="background-color: #f40009;">
@@ -11,7 +11,7 @@
           </div>
         </core-toolbar>
         <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;" touch-action="pan-y">
-            <force-paper-detail id="detail" sobject="{{sobject}}" recordid="{{recordid}}" foredit="true" fieldlist="FirstName LastName Title Department Phone Email HomePhone">
+            <force-paper-detail id="detail" sobject="{{sobject}}" recordid="{{recordid}}" foredit="true" fieldlist="{{displayfields}}">
             </force-paper-detail>
             <template if="{{recordid && !$.detail.model.attributes.__locally_deleted__}}">
                 <div on-tap="{{ doDelete }}" horizontal layout center center-justified style="background-color: white; margin: 20px; color: rgb(255, 68, 68); height: 40px; font-size: 20px;border: 1px rgb(204, 204, 204) solid;border-radius: 5px;">Delete</div>
