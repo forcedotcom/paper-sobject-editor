@@ -23,6 +23,7 @@ license that can be found in the LICENSE file.
 	<link href="dependencies/core-animated-pages/transitions/slide-from-right.html" rel="import">
 	<link href="dependencies/core-scroll-header-panel/core-scroll-header-panel.html" rel="import">
 	<link href="dependencies/core-toolbar/core-toolbar.html" rel="import">
+	<link href="dependencies/core-drawer-panel/core-drawer-panel.html" rel="import">
 
 	<!-- Paper Elements -->
 	<link href="dependencies/paper-item/paper-item.html" rel="import">
@@ -30,6 +31,7 @@ license that can be found in the LICENSE file.
 	<link href="dependencies/paper-menu-button/paper-menu-button.html" rel="import">
 	<link href="dependencies/paper-input/paper-input.html" rel="import">
 	<link href="dependencies/paper-checkbox/paper-checkbox.html" rel="import">
+	<link href="dependencies/paper-button/paper-button.html" rel="import">
 	
 	
 	<!-- Mobile UI Elements -->
@@ -102,30 +104,36 @@ license that can be found in the LICENSE file.
           }
         </style>
 
-        <force-signin consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXjHqR_EeHHhvOg6eRlANYorN6WUok0BtdumUcrK_YCCnpoZSziVa.t8QB3.z" callbackurl="https://sobject-smartsync.herokuapp.com" proxyurl="{{proxyhost}}" on-success="{{startRouting}}" on-offline="{{startRouting}}"></force-signin>
+        <force-signin id="signin" consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXjHqR_EeHHhvOg6eRlANYorN6WUok0BtdumUcrK_YCCnpoZSziVa.t8QB3.z" callbackurl="https://sobject-smartsync.herokuapp.com" proxyurl="{{proxyhost}}" on-success="{{startRouting}}" on-offline="{{startRouting}}"></force-signin>
 
-        <core-animated-pages id="pages" transitions="slide-from-right" on-destroy="{{refresh}}" style="overflow-x:hidden">
+        <core-drawer-panel id="drawer_panel">
+    
+          <div drawer style="background:rgb(243, 243, 243); padding: 10px;" layout vertical><paper-button raised on-tap="{{logout}}">Logout</paper-button></div>
+            
+          <core-animated-pages id="pages" main transitions="slide-from-right" on-destroy="{{refresh}}" style="overflow-x:hidden">
 
-          <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}" resultHeight="71" on-core-activate="{{openEdit}}" on-syncup="{{silentsync}}">
-            <template>
-              <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
-                <!--img class="profile-photo" src="images/{{model.attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/--> 
-                <div class="round" style="background-color:{{model.attributes.LastName | iconColor}}">{{model.attributes.FirstName | uppercaseFirstChar}}{{model.attributes.LastName | uppercaseFirstChar}}</div>
-                <div flex style="margin-left: 10px">
-                  <div style="font-size: 1.1em; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{model.attributes.FirstName}} {{model.attributes.LastName}}</div>
-                  <span style="font-size: 0.9em; color: #696969; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
+            <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}" resultHeight="71" on-core-activate="{{openEdit}}" on-syncup="{{silentsync}}">
+              <template>
+                <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
+                  <!--img class="profile-photo" src="images/{{model.attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/--> 
+                  <div class="round" style="background-color:{{model.attributes.LastName | iconColor}}">{{model.attributes.FirstName | uppercaseFirstChar}}{{model.attributes.LastName | uppercaseFirstChar}}</div>
+                  <div flex style="margin-left: 10px">
+                    <div style="font-size: 1.1em; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{model.attributes.FirstName}} {{model.attributes.LastName}}</div>
+                    <span style="font-size: 0.9em; color: #696969; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
+                  </div>
+                  <status-icon props="{{model.attributes}}"></status-icon>
+                  <core-icon icon="chevron-right" style="fill: black"></core-icon>
                 </div>
-                <status-icon props="{{model.attributes}}"></status-icon>
-                <core-icon icon="chevron-right" style="fill: black"></core-icon>
-              </div>
-            </template>
-          </search-screen>
+              </template>
+            </search-screen>
 
-          <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync-complete="{{syncComplete}}"></sync-screen>
+            <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync-complete="{{syncComplete}}"></sync-screen>
 
-          <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-save="{{refresh}}" on-route-changed="{{showDetail}}" displayfields="{{displayfields}}"></detail-screen>
+            <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-save="{{refresh}}" on-route-changed="{{showDetail}}" displayfields="{{displayfields}}"></detail-screen>
 
-        </core-animated-pages>
+          </core-animated-pages>
+          
+        </core-drawer-panel>
 
         <core-icon id="network_icon" icon="{{cloudicon}}" style="position: fixed; width: 60px; height: 60px; bottom: 0; right: 0; margin: 10px; fill: green" on-tap="{{toggleConnection}}"></core-icon>
 
@@ -138,6 +146,10 @@ license that can be found in the LICENSE file.
           proxyhost: (location.protocol === 'file:') ? null : location.origin,
           ready: function() {
             var that = this;
+
+            this.$.listview.showMenu = function() {
+              that.$.drawer_panel.togglePanel();
+            }
             // Add online/offline event listeners if inside cordova container & not using mock cordova
             if (window.cordova && !cordova.interceptExec) {
               document.addEventListener("online", function() { that.onlinestatus = true; }, false);
@@ -181,13 +193,16 @@ license that can be found in the LICENSE file.
           silentsync: function() {
             if (this.$.syncview.hasLocalChanges()) this.$.syncview.doSync();
             else this.$.listview.syncComplete();
+          },
+          logout: function() {
+            this.$.signin.logout();
           }
         })
       </script>
 
     </polymer-element>
 
-    <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="FirstName LastName Title Phone Email Name Department HomePhone"></mobile-app>
+    <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="FirstName LastName Title Phone Email Department HomePhone"></mobile-app>
 
     <script>
       (function() {

@@ -74,6 +74,11 @@
                     this.fire('offline');
                 }
             },
+            logout: function() {
+                if (window.cordova && !cordova.interceptExec) {
+                    cordova.require("com.salesforce.plugin.oauth").logout();
+                } else location.href = this.instanceurl + "/secur/logout.jsp";
+            },
             ready: function() {
                 if (!(this.accesstoken && this.instanceurl)) {
                     this.async(this.authenticate);

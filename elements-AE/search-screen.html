@@ -10,7 +10,7 @@
         <core-scroll-header-panel id="scrollHeader" touch-action="pan-y">
             
             <core-toolbar id="header" class="header-toolbar">
-                <core-icon id="menu-icon" class="icon" icon="menu"></core-icon>
+                <core-icon id="menu-icon" class="icon" icon="menu" on-tap="{{showMenu}}"></core-icon>
                 <div class="title" flex>{{$.list.collection.models.length || ""}} {{sobject}}s</div>
             </core-toolbar>
 

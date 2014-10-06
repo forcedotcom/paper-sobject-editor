@@ -41,6 +41,10 @@ Polymer('search-screen', {
     }
   },
 
+  showMenu: function() {
+    // Dummy method. Parent page will override this.
+  },
+
   searchFocused: function() {
     var input = this.$.search.$.input.$.input;
     if (!this._searchFocued) {
