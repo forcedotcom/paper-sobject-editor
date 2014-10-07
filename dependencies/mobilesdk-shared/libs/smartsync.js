@@ -1359,7 +1359,7 @@
                     })
                     .fail(function() {
                         console.timeEnd(tag);
-                        options.errors.apply(null, arguments);
+                        options.error.apply(null, arguments);
                     });
             }
         });
