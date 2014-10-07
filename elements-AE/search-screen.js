@@ -98,6 +98,8 @@ Polymer('search-screen', {
 
   syncComplete: function() {
     this.$.sync_icon.classList.remove('sync-animation');
+    this.$.status_toast.text = 'Sync completed successfully.';
+    this.$.status_toast.show();
   },
 
   handleSyncResponse: function(e) {
