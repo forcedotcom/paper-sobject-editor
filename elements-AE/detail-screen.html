@@ -11,7 +11,7 @@
           </div>
         </core-toolbar>
         <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;" touch-action="pan-y">
-            <force-paper-detail id="detail" sobject="{{sobject}}" recordid="{{recordid}}" foredit="true" fieldlist="{{displayfields}}">
+            <force-paper-detail id="detail" sobject="{{sobject}}" foredit="true" fieldlist="{{displayfields}}">
             </force-paper-detail>
             <template if="{{recordid && !$.detail.model.attributes.__locally_deleted__}}">
                 <div on-tap="{{ doDelete }}" horizontal layout center center-justified style="background-color: white; margin: 20px; color: rgb(255, 68, 68); height: 40px; font-size: 20px;border: 1px rgb(204, 204, 204) solid;border-radius: 5px;">Delete</div>
@@ -20,15 +20,22 @@
     </template>
     <script>
       Polymer('detail-screen', {
+        _active: false,
         sync: false,
         ready: function() {
             this.super();
             this.$.detail.fetchCacheMode = Force.CACHE_MODE.CACHE_ONLY;
+            // This is a bit of hack to avoid page load until animation is complete.
+            document.addEventListener('core-animated-pages-transition-end', function() {
+                if (this._active) this.$.detail.recordid = this.recordid;
+                else if (this.$.detail.model) this.$.detail.model.clear();
+            }.bind(this));
         },
         get model() {
             return (this.$ ? this.$.detail.$.force_sobject : null);
         },
         render: function() {
+            this._active = true;
             // Force detail re-render if recordid didn't change
             if (this.$.detail.model && this.$.detail.model.id == this.recordid) this.$.detail.render();
         },
@@ -36,6 +43,7 @@
             e.preventDefault();
         },
         navigateBack: function(ev) {
+            this._active = false;
             window.history.back();
         },
         getSaveOptions: function(mergeMode, cacheMode) {
