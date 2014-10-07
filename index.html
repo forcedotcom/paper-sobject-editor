@@ -173,7 +173,9 @@ license that can be found in the LICENSE file.
           },*/
           syncComplete: function() {
             this.$.listview.refresh();
-            this.$.listview.syncComplete();
+            this.$.listview.syncComplete({
+              failures: this.$.syncview.failedIds.length
+            });
           },
           showList: function(ev) {
             this.$.pages.selected = 0;

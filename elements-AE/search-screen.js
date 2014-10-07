@@ -96,9 +96,11 @@ Polymer('search-screen', {
     }
   },
 
-  syncComplete: function() {
+  syncComplete: function(result) {
     this.$.sync_icon.classList.remove('sync-animation');
-    this.$.status_toast.text = 'Sync completed successfully.';
+    if (result && result.failures > 0) 
+      this.$.status_toast.text = 'Sync completed with ' + result.failures + ' failures.';
+    else this.$.status_toast.text = 'Sync completed successfully.';
     this.$.status_toast.show();
   },
 
