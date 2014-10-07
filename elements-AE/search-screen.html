@@ -2,6 +2,7 @@
 <link rel="import" href="../dependencies/core-toolbar/core-toolbar.html">
 <link rel="import" href="../dependencies/core-icon-button/core-icon-button.html">
 <link rel="import" href="../dependencies/core-list/core-list.html">
+<link rel="import" href="../dependencies/paper-toast/paper-toast.html">
 <polymer-element name="search-screen" extends="force-route" attributes="sobject searchfields fieldstofetch resultHeight">
     <template>
 
@@ -28,7 +29,7 @@
 
             <div class="content">
                 <img id="loading" class="loadingInd" src="loading-gray.gif"/>
-                <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-sync-progress="{{fetchData}}" on-sync-complete="{{fetchData}}"></force-sobject-sync>
+                <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-sync-progress="{{handleSyncResponse}}" on-sync-complete="{{handleSyncResponse}}"></force-sobject-sync>
                 <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" autosync="false"></force-sobject-collection>
                 <core-list id="uilist" height="{{resultHeight}}" data="{{$.list.collection.models}}" on-touchend="{{stopClick}}">
                     <content select="*"></content>
@@ -37,6 +38,8 @@
             </div>
 
         </core-scroll-header-panel>
+
+        <paper-toast id="status_toast" text=""></paper-toast>
 
     </template>
     <script src="search-screen.js"></script>

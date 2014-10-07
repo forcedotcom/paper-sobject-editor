@@ -4,19 +4,27 @@ Polymer('search-screen', {
     this.super();
     this.async(this.initialize);
     // Add online/offline event listeners to toggle the sync icon
-    var _boundSyncIcon = this.setSyncIcon.bind(this);
-    document.addEventListener("online", _boundSyncIcon, false);
-    document.addEventListener("offline", _boundSyncIcon, false);
+    var _boundNetworkStatus = this.setNetworkStatus.bind(this);
+    document.addEventListener("online", _boundNetworkStatus, false);
+    document.addEventListener("offline", _boundNetworkStatus, false);
   },
 
-  setSyncIcon: function() {
-    if (SFDC.isOnline()) this.$.sync_icon.setAttribute('icon', "notification:sync");
-    else this.$.sync_icon.setAttribute('icon', "cloud-off");
+  setNetworkStatus: function() {
+    var toastMsg = 'You are now ';
+    if (SFDC.isOnline()) {
+      toastMsg += 'online.';
+      this.$.sync_icon.setAttribute('icon', "notification:sync");
+    } else {
+      toastMsg += 'offline.';
+      this.$.sync_icon.setAttribute('icon', "cloud-off");
+    }
+    this.$.status_toast.text = toastMsg;
+    this.$.status_toast.show();
   },
 
   initialize: function() {
     console.log('calling initialize');
-    this.setSyncIcon();
+    this.setNetworkStatus();
     this.fetchData();
     var scrollHeader = this.$.scrollHeader;
     var input = this.$.search.$.input.$.input;
@@ -90,6 +98,14 @@ Polymer('search-screen', {
 
   syncComplete: function() {
     this.$.sync_icon.classList.remove('sync-animation');
+  },
+
+  handleSyncResponse: function(e) {
+    if (e.detail.status == 'DONE') {
+      this.$.status_toast.text = 'Finished syncing ' + e.detail.totalSize + ' records.';
+      this.$.status_toast.show();
+    }
+    this.fetchData();
   },
 
   fetchData: function() {

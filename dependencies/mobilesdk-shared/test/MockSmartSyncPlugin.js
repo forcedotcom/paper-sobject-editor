@@ -81,7 +81,7 @@ var MockSmartSyncPlugin = (function(window) {
                     self.sendUpdate(syncId, "RUNNING", progress);
                 }
                 else {
-                    self.sendUpdate(syncId, "DONE", 100);
+                    self.sendUpdate(syncId, "DONE", 100, {totalSize: collection.size()});
                 }
             };
 
