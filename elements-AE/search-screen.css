@@ -75,6 +75,9 @@ core-icon.icon {
     height: 35px; 
     margin: 0px;
 }
+.icon[icon="cloud-off"] {
+    color: red;
+}
 .search-icon {
     color: rgb(167, 167, 167);
     margin-right: 5px;

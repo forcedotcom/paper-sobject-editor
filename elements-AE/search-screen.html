@@ -28,7 +28,7 @@
 
             <div class="content">
                 <img id="loading" class="loadingInd" src="loading-gray.gif"/>
-                <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-synccomplete="{{fetchData}}"></force-sobject-sync>
+                <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-sync-progress="{{fetchData}}" on-sync-complete="{{fetchData}}"></force-sobject-sync>
                 <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" autosync="false"></force-sobject-collection>
                 <core-list id="uilist" height="{{resultHeight}}" data="{{$.list.collection.models}}" on-touchend="{{stopClick}}">
                     <content select="*"></content>

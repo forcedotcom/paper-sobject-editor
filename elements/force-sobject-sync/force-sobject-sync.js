@@ -34,7 +34,10 @@
         },
         syncEvent: function(e) {
             if (this.syncId >= 0 && e.detail.syncId == this.syncId) {
-                if (e.detail.status == 'DONE') this.fire('synccomplete');
+                if (e.detail.status == 'DONE') this.fire('sync-complete');
+                else if (e.detail.status == 'RUNNING') {
+                    this.fire('sync-progress', {progress: e.detail.progress});
+                }
             }
         }
     }));

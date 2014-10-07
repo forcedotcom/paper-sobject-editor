@@ -135,7 +135,7 @@ license that can be found in the LICENSE file.
           
         </core-drawer-panel>
 
-        <core-icon id="network_icon" icon="{{cloudicon}}" style="position: fixed; width: 60px; height: 60px; bottom: 0; right: 0; margin: 10px; fill: green" on-tap="{{toggleConnection}}"></core-icon>
+        <!--core-icon id="network_icon" icon="{{cloudicon}}" style="position: fixed; width: 60px; height: 60px; bottom: 0; right: 0; margin: 10px; fill: green" on-tap="{{toggleConnection}}"></core-icon-->
 
       </template>
 
@@ -150,16 +150,10 @@ license that can be found in the LICENSE file.
             this.$.listview.showMenu = function() {
               that.$.drawer_panel.togglePanel();
             }
-            // Add online/offline event listeners if inside cordova container & not using mock cordova
-            if (window.cordova && !cordova.interceptExec) {
-              document.addEventListener("online", function() { that.onlinestatus = true; }, false);
-              document.addEventListener("offline", function() { that.onlinestatus = false; }, false);
-            }
+            // Add online event listeners to trigger sync
+            document.addEventListener("online", function() { that.syncOfflineChanges(); }, false);
           },
-          onlinestatusChanged: function() {
-            this.cloudicon = SFDC.isOnline() ? "cloud-done" : "cloud-off";
-            this.$.network_icon.style.fill = SFDC.isOnline() ? 'green' : 'red';
-
+          syncOfflineChanges: function() {
             if (this.$.pages.selected == 0 && SFDC.isOnline() && this.$.syncview.hasLocalChanges()) {
               window.location.hash = "#sync";
             }
@@ -171,9 +165,12 @@ license that can be found in the LICENSE file.
             this.$.listview.refresh();
             this.$.syncview.refresh();
           },
-          toggleConnection: function() {
+          /*toggleConnection: function() {
             this.onlinestatus = !this.onlinestatus;
-          },
+            this.cloudicon = SFDC.isOnline() ? "cloud-done" : "cloud-off";
+            this.$.network_icon.style.fill = SFDC.isOnline() ? 'green' : 'red';
+            this.fire(SFDC.isOnline() ? 'online' : 'offline');
+          },*/
           syncComplete: function() {
             this.$.listview.refresh();
             this.$.listview.syncComplete();

@@ -3,10 +3,20 @@ Polymer('search-screen', {
   ready: function() {
     this.super();
     this.async(this.initialize);
+    // Add online/offline event listeners to toggle the sync icon
+    var _boundSyncIcon = this.setSyncIcon.bind(this);
+    document.addEventListener("online", _boundSyncIcon, false);
+    document.addEventListener("offline", _boundSyncIcon, false);
+  },
+
+  setSyncIcon: function() {
+    if (SFDC.isOnline()) this.$.sync_icon.setAttribute('icon', "notification:sync");
+    else this.$.sync_icon.setAttribute('icon', "cloud-off");
   },
 
   initialize: function() {
     console.log('calling initialize');
+    this.setSyncIcon();
     this.fetchData();
     var scrollHeader = this.$.scrollHeader;
     var input = this.$.search.$.input.$.input;
@@ -72,8 +82,10 @@ Polymer('search-screen', {
   },
 
   fireSyncUp: function() {
-    this.$.sync_icon.classList.add('sync-animation');
-    this.fire('syncup');
+    if (SFDC.isOnline()) {
+      this.$.sync_icon.classList.add('sync-animation');
+      this.fire('syncup');
+    }
   },
 
   syncComplete: function() {
