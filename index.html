@@ -11,100 +11,71 @@ license that can be found in the LICENSE file.
       window.location = 'https://' + location.hostname;
   </script>
   
-	<meta name="viewport" content="width=device-width, user-scalable=no">
+  <meta name="viewport" content="width=device-width, user-scalable=no">
 
-	<!-- Platform polyfill import -->
-	<script src="dependencies/platform/platform.js"></script>
+  <!-- Platform polyfill import -->
+  <script src="dependencies/platform/platform.js"></script>
 
-	<!-- Core Polymer Elements -->
-	<link href="dependencies/core-icons/core-icons.html" rel="import">
-	<link href="dependencies/core-icons/notification-icons.html" rel="import">
-	<link href="dependencies/core-animated-pages/core-animated-pages.html" rel="import">
-	<link href="dependencies/core-animated-pages/transitions/slide-from-right.html" rel="import">
-	<link href="dependencies/core-scroll-header-panel/core-scroll-header-panel.html" rel="import">
-	<link href="dependencies/core-toolbar/core-toolbar.html" rel="import">
-	<link href="dependencies/core-drawer-panel/core-drawer-panel.html" rel="import">
+  <!-- Core Polymer Elements -->
+  <link href="dependencies/core-icons/core-icons.html" rel="import">
+  <link href="dependencies/core-icons/notification-icons.html" rel="import">
+  <link href="dependencies/core-animated-pages/core-animated-pages.html" rel="import">
+  <link href="dependencies/core-animated-pages/transitions/slide-from-right.html" rel="import">
+  <link href="dependencies/core-scroll-header-panel/core-scroll-header-panel.html" rel="import">
+  <link href="dependencies/core-toolbar/core-toolbar.html" rel="import">
+  <link href="dependencies/core-drawer-panel/core-drawer-panel.html" rel="import">
 
-	<!-- Paper Elements -->
-	<link href="dependencies/paper-item/paper-item.html" rel="import">
-	<link href="dependencies/paper-shadow/paper-shadow.html" rel="import">
-	<link href="dependencies/paper-menu-button/paper-menu-button.html" rel="import">
-	<link href="dependencies/paper-input/paper-input.html" rel="import">
-	<link href="dependencies/paper-checkbox/paper-checkbox.html" rel="import">
-	<link href="dependencies/paper-button/paper-button.html" rel="import">
-	
-	
-	<!-- Mobile UI Elements -->
-	<link rel="import" href="elements/force-ui-app/force-ui-app.html">
-	<link rel="import" href="elements/force-ui-search/force-ui-search.html">
-	<link rel="import" href="elements/force-sobject-sync/force-sobject-sync.html">
-	<link rel="import" href="elements/force-sobject-collection/force-sobject-collection.html">
-	<link rel="import" href="elements/force-route/force-route.html">
-	<link rel="import" href="elements/force-signin/force-signin.html">
+  <!-- Paper Elements -->
+  <link href="dependencies/paper-item/paper-item.html" rel="import">
+  <link href="dependencies/paper-shadow/paper-shadow.html" rel="import">
+  <link href="dependencies/paper-menu-button/paper-menu-button.html" rel="import">
+  <link href="dependencies/paper-input/paper-input.html" rel="import">
+  <link href="dependencies/paper-checkbox/paper-checkbox.html" rel="import">
+  <link href="dependencies/paper-button/paper-button.html" rel="import">
+  
+  
+  <!-- Mobile UI Elements -->
+  <link rel="import" href="elements/force-ui-app/force-ui-app.html">
+  <link rel="import" href="elements/force-ui-search/force-ui-search.html">
+  <link rel="import" href="elements/force-sobject-sync/force-sobject-sync.html">
+  <link rel="import" href="elements/force-sobject-collection/force-sobject-collection.html">
+  <link rel="import" href="elements/force-route/force-route.html">
+  <link rel="import" href="elements/force-signin/force-signin.html">
 
-	<!-- Account Editor Polymer Elements -->
-	<link rel="import" href="elements-AE/force-paper-detail.html">
-	<link rel="import" href="elements-AE/search-screen.html">
-	<link rel="import" href="elements-AE/sync-screen.html">
-	<link rel="import" href="elements-AE/detail-screen.html">
-	<link rel="import" href="elements-AE/status-icon.html">
+  <!-- Account Editor Polymer Elements -->
+  <link rel="import" href="elements-AE/force-paper-detail.html">
+  <link rel="import" href="elements-AE/search-screen.html">
+  <link rel="import" href="elements-AE/sync-screen.html">
+  <link rel="import" href="elements-AE/detail-screen.html">
+  <link rel="import" href="elements-AE/status-icon.html">
 
-	<!-- Local Browser Testing. Mocked cordova and Smartstore -->
-	<script src="dependencies/mobilesdk-shared/test/MockCordova.js"></script>
-	<script src="dependencies/mobilesdk-shared/libs/cordova.force.js"></script>
-	<script src="dependencies/mobilesdk-shared/test/MockSmartStore.js"></script>
-	<script src="dependencies/mobilesdk-shared/test/MockSmartSyncPlugin.js"></script>
-	<!-- End Local Testing -->
+  <!-- Local Browser Testing. Mocked cordova and Smartstore -->
+  <script src="dependencies/mobilesdk-shared/test/MockCordova.js"></script>
+  <script src="dependencies/mobilesdk-shared/libs/cordova.force.js"></script>
+  <script src="dependencies/mobilesdk-shared/test/MockSmartStore.js"></script>
+  <script src="dependencies/mobilesdk-shared/test/MockSmartSyncPlugin.js"></script>
+  <!-- End Local Testing -->
 
-	<!-- Mobile SDK container script includes ->
-	<script type="text/javascript" src="cordova.js"></script>
-	<script type="text/javascript" src="cordova_plugins.js"></script>
-	<script src="dependencies/mobilesdk-shared/test/MockSmartSyncPlugin.js"></script>
-	<!-- End Mobile SDK script includes -->
+  <!-- Mobile SDK container script includes -/->
+  <script type="text/javascript" src="cordova.js"></script>
+  <script type="text/javascript" src="cordova_plugins.js"></script>
+  <!-- End Mobile SDK script includes -->
 
-
-	<style shim-shadowdom>
-		body {
-			margin: 0;
-			font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-			font-size: 14px;
-		}
-		* {
-			-webkit-tap-highlight-color: rgba(0,0,0,0);
-		}
-		body /deep/ .round {
-			width:50px;
-			height:50px;
-			background:#1abc9c;
-			border-radius: 50%;
-			text-align: center;
-			display: table-cell; 
-			vertical-align: middle; 
-			color: white;
-			font-size: 19px;
-			line-height: 50px;
-		}
-	</style>
+  <link rel="stylesheet" href="styles.css"  shim-shadowdom/>
 </head>
 
 <body unresolved touch-action="none">
 
+    <!-- ACCOUNTS -->
+    <mobile-app sobject="Account" searchfields="Name" displayfields="Name Phone Industry BillingCity Description"></mobile-app>
+    <!-- -->
+    
+    <!-- CONTACTS -/->
+    <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="FirstName LastName Title Phone Email Department HomePhone"></mobile-app>
+    <!-- -->
+
     <polymer-element name="mobile-app" attributes="sobject searchfields displayfields">
       <template>
-
-        <style>
-          core-animated-pages {
-            position: absolute;
-            top: 0; bottom: 0;
-            left: 0; right: 0;
-          }
-          core-animated-pages#pages > * {
-            -webkit-transition-duration: 0.5s;
-            transition-duration: 0.5s;
-          }
-        </style>
-
-        <force-signin id="signin" consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXjHqR_EeHHhvOg6eRlANYorN6WUok0BtdumUcrK_YCCnpoZSziVa.t8QB3.z" callbackurl="https://sobject-smartsync.herokuapp.com" proxyurl="{{proxyhost}}" on-success="{{startRouting}}" on-offline="{{startRouting}}"></force-signin>
 
         <core-drawer-panel id="drawer_panel">
     
@@ -114,8 +85,24 @@ license that can be found in the LICENSE file.
 
             <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}" resultHeight="71" on-core-activate="{{openEdit}}" on-syncup="{{silentsync}}">
               <template>
+                  
+                <!-- ACCOUNTS -->
+                 
+                 <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
+                 
+                 <div class="round" style="background-color:{{model.attributes.Name | iconColor}}">{{model.attributes.Name | uppercaseFirstChar}}</div>
+                 <div flex style="margin-left: 10px">
+                 <div style="font-size: 1.1em; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{model.attributes.Name}}</div>
+                 <span style="font-size: 0.9em; color: #696969; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: block; padding-right: 10px;">{{model.attributes.BillingCity}}</span>
+                 </div>
+                 <status-icon props="{{model.attributes}}"></status-icon>
+                 <core-icon icon="chevron-right" style="fill: black"></core-icon>
+                 </div>
+                 
+                <!-- -->
+                
+                <!-- CONTACTS -/->
                 <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
-                  <!--img class="profile-photo" src="images/{{model.attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/--> 
                   <div class="round" style="background-color:{{model.attributes.LastName | iconColor}}">{{model.attributes.FirstName | uppercaseFirstChar}}{{model.attributes.LastName | uppercaseFirstChar}}</div>
                   <div flex style="margin-left: 10px">
                     <div style="font-size: 1.1em; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{model.attributes.FirstName}} {{model.attributes.LastName}}</div>
@@ -124,6 +111,7 @@ license that can be found in the LICENSE file.
                   <status-icon props="{{model.attributes}}"></status-icon>
                   <core-icon icon="chevron-right" style="fill: black"></core-icon>
                 </div>
+                <!-- -->
               </template>
             </search-screen>
 
@@ -134,6 +122,20 @@ license that can be found in the LICENSE file.
           </core-animated-pages>
           
         </core-drawer-panel>
+        
+        <force-signin id="signin" consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXjHqR_EeHHhvOg6eRlANYorN6WUok0BtdumUcrK_YCCnpoZSziVa.t8QB3.z" callbackurl="https://sobject-smartsync.herokuapp.com" proxyurl="{{proxyhost}}" on-success="{{startRouting}}" on-offline="{{startRouting}}"></force-signin>
+        
+        <style>
+            core-animated-pages {
+                position: absolute;
+                top: 0; bottom: 0;
+                left: 0; right: 0;
+            }
+        core-animated-pages#pages > * {
+            -webkit-transition-duration: 0.5s;
+            transition-duration: 0.5s;
+        }
+        </style>
 
         <!--core-icon id="network_icon" icon="{{cloudicon}}" style="position: fixed; width: 60px; height: 60px; bottom: 0; right: 0; margin: 10px; fill: green" on-tap="{{toggleConnection}}"></core-icon-->
 
@@ -200,8 +202,6 @@ license that can be found in the LICENSE file.
       </script>
 
     </polymer-element>
-
-    <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="FirstName LastName Title Phone Email Department HomePhone"></mobile-app>
 
     <script>
       (function() {

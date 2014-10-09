@@ -71,7 +71,7 @@
 			                    html += ('<paper-checkbox checked?="{{' + displayField + '}}" disabled style="margin-top: 25px; margin-bottom: 25px; float:left;"></paper-checkbox><span style="padding-left: 20px;line-height: 68px;">' + fieldLabel + '</span>');
 			                else if (fieldInfo.htmlFormatted) //TBD: See if we need to do anything for HTML type fields in polymer.
 			                    html += '<force-html-output value="{{' + displayField + '}}"></force-html-output>';
-			                else html += ('<force-paper-input label="' + fieldLabel + '" disabled floatingLabel value="{{' + displayField + '}}" type="' + inputType(fieldType) + '" maxlength="' + fieldInfo.length + '"></force-paper-input>');
+			                else html += ('<force-paper-input label="' + fieldLabel + '" disabled floatingLabel value="{{' + displayField + '}}" type="' + inputType(fieldType) + '" maxlength="' + fieldInfo.length + '"' + (fieldType == 'textarea' ? ' multiline ' : '') + '></force-paper-input>');
 			            }
 			            return html + '</span>';
 			        }

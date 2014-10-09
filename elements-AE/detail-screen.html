@@ -1,7 +1,7 @@
 <polymer-element name="detail-screen" extends="force-route" attributes="sobject recordid sync displayfields" on-route-changed="{{render}}">
     <template>
         <link rel="stylesheet" href="detail.css"/>
-        <core-toolbar id="toolbar" style="background-color: #f40009;">
+        <core-toolbar id="toolbar">
           <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 45px; height: 45px; margin: -5px;" on-touchend="{{stopClick}}"></core-icon>
           <div flex></div>
           <div on-tap="{{doSave}}" style="color:white; line-height: 50px; width: 80px;" layout horizontal end-justified>
@@ -26,7 +26,7 @@
             this.super();
             this.$.detail.fetchCacheMode = Force.CACHE_MODE.CACHE_ONLY;
             // This is a bit of hack to avoid page load until animation is complete.
-            document.addEventListener('core-animated-pages-transition-end', function() {
+            this.addEventListener('transitionend', function() {
                 if (this._active) this.$.detail.recordid = this.recordid;
                 else if (this.$.detail.model) this.$.detail.model.clear();
             }.bind(this));
@@ -36,8 +36,6 @@
         },
         render: function() {
             this._active = true;
-            // Force detail re-render if recordid didn't change
-            //if (this.$.detail.model && this.$.detail.model.id == this.recordid) this.$.detail.render();
         },
         stopClick: function(e) {
             e.preventDefault();

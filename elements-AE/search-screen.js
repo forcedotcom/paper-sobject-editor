@@ -54,7 +54,10 @@ Polymer('search-screen', {
       this._fetching = true;
       this.async(function() { 
         var that = this;
-        this.$.list.fetchMore().always(function() { that._fetching = false; }); 
+        var promise = this.$.list.fetchMore();
+        // Promise may be null if no more records are to be fetched
+        if (promise) promise.always(function() { that._fetching = false; }); 
+        else that._fetching = false;
       });
     }
   },

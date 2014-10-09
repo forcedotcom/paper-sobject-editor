@@ -22,18 +22,19 @@
             if (SFDC.isOnline() && this.sobject && this.query) {
                 $.when(store.cacheReady, SFDC.launcher)
                 .then(function() {
-                    mockSmartSyncPlugin.syncDown(
+                    cordova.require('com.salesforce.plugin.smartsync').syncDown(
                         {type:"soql", query:that.query}, 
-                        store.cache.soupName, null, 
+                        store.cache.soupName, {}, 
                         function(result) {
-                            that.syncId = result.syncId;
+                            that.syncId = result._soupEntryId || result.syncId;
                         }
                     );
                 });
             }
         },
         syncEvent: function(e) {
-            if (this.syncId >= 0 && e.detail.syncId == this.syncId) {
+            var syncId = e.detail._soupEntryId || e.detail.syncId;
+            if (this.syncId >= 0 && syncId == this.syncId) {
                 if (e.detail.status == 'DONE') this.fire('sync-complete', e.detail);
                 else if (e.detail.status == 'RUNNING') {
                     this.fire('sync-progress', e.detail);

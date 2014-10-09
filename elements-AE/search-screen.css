@@ -60,9 +60,6 @@ core-scroll-header-panel.search .cancelBtn {
 core-toolbar {
     color: #f1f1f1;
 }
-core-toolbar.header-toolbar {
-    background-color: #f40009;
-}
 core-toolbar.search-toolbar {
     background-color: #bdc3c7;
 }
