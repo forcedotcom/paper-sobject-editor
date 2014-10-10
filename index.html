@@ -90,7 +90,7 @@ license that can be found in the LICENSE file.
                  
                  <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
                  
-                 <div class="round" style="background-color:{{model.attributes.Name | iconColor}}">{{model.attributes.Name | uppercaseFirstChar}}</div>
+                 <div class="round" _style="background-color:{{model.attributes.Name | iconColor}}">{{model.attributes.Name | uppercaseFirstChar}}</div>
                  <div flex style="margin-left: 10px">
                  <div style="font-size: 1.1em; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{model.attributes.Name}}</div>
                  <span style="font-size: 0.9em; color: #696969; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: block; padding-right: 10px;">{{model.attributes.BillingCity}}</span>
@@ -103,7 +103,7 @@ license that can be found in the LICENSE file.
                 
                 <!-- CONTACTS -/->
                 <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
-                  <div class="round" style="background-color:{{model.attributes.LastName | iconColor}}">{{model.attributes.FirstName | uppercaseFirstChar}}{{model.attributes.LastName | uppercaseFirstChar}}</div>
+                  <div class="round" _style="background-color:{{model.attributes.LastName | iconColor}}">{{model.attributes.FirstName | uppercaseFirstChar}}{{model.attributes.LastName | uppercaseFirstChar}}</div>
                   <div flex style="margin-left: 10px">
                     <div style="font-size: 1.1em; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{model.attributes.FirstName}} {{model.attributes.LastName}}</div>
                     <span style="font-size: 0.9em; color: #696969; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
