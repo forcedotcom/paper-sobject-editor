@@ -5,6 +5,10 @@ body {
   margin: 0;
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
   font-size: 14px;
+  -webkit-user-select:none;
+  -moz-user-select:   -moz-none;
+  -ms-user-select:    none;
+  user-select:        none;
 }
 body /deep/ .round {
   width:50px;
@@ -17,6 +21,10 @@ body /deep/ .round {
   color: white;
   font-size: 19px;
   line-height: 50px;
+}
+input,
+textarea {
+  -moz-user-select: text;
 }
 body /deep/ core-toolbar.header-toolbar,
 body /deep/ detail-screen::shadow #toolbar,
