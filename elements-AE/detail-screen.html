@@ -28,7 +28,7 @@
             // This is a bit of hack to avoid page load until animation is complete.
             this.addEventListener('transitionend', function() {
                 if (this._active) this.$.detail.recordid = this.recordid;
-                else if (this.$.detail.model) this.$.detail.model.clear();
+                else if (this.$.detail.model) this.$.detail.recordid = null;
             }.bind(this));
         },
         get model() {
