@@ -132,11 +132,21 @@ Polymer('search-screen', {
   },
 
   setupSyncQuery: function() {
+    var that = this;
+
     var searchFields = this.searchfields.trim().split(/\s+/);
     var fieldsToFetch = this.fieldstofetch ? this.fieldstofetch.trim().split(/\s+/) : [];
     fieldsToFetch = _.union(searchFields, fieldsToFetch);
 
-    this.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + this.sobject + " LIMIT 4000";
+    var sobjectType = SFDC.getSObjectType(this.sobject);
+    sobjectType.describe()
+    .then(function(describeResult) {
+      if (describeResult) {
+        fieldsToFetch = _.intersection(fieldsToFetch, _.pluck(describeResult.fields, 'name'));
+      }
+    }).then(function() {
+      that.syncQuery = "SELECT Id, " + fieldsToFetch.join(',') + " FROM " + that.sobject + " LIMIT 4000";
+    });
   },
 
   stopClick: function(e) {
