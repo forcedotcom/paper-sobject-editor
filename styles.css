@@ -22,9 +22,19 @@ body /deep/ .round {
   font-size: 19px;
   line-height: 50px;
 }
-input,
-textarea {
+body /deep/ input,
+body /deep/ textarea {
   -moz-user-select: text;
+}
+body /deep/ .text-overflow-ellipsis {
+  text-overflow: ellipsis; 
+  overflow: hidden; 
+  white-space: nowrap;
+}
+body /deep/ .user-detail {
+  margin-top: 60px; 
+  border-bottom: solid 2px #f40009; 
+  padding-bottom: 10px;
 }
 body /deep/ core-toolbar.header-toolbar,
 body /deep/ detail-screen::shadow #toolbar,

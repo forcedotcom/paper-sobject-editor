@@ -41,6 +41,7 @@ license that can be found in the LICENSE file.
   <link rel="import" href="elements/force-sobject-collection/force-sobject-collection.html">
   <link rel="import" href="elements/force-route/force-route.html">
   <link rel="import" href="elements/force-signin/force-signin.html">
+  <link rel="import" href="elements/force-keyvalue-store/force-keyvalue-store.html">
 
   <!-- Account Editor Polymer Elements -->
   <link rel="import" href="elements-AE/force-paper-detail.html">
@@ -77,9 +78,17 @@ license that can be found in the LICENSE file.
     <polymer-element name="mobile-app" attributes="sobject searchfields displayfields">
       <template>
 
-        <core-drawer-panel id="drawer_panel">
+        <core-drawer-panel id="drawer_panel" responsiveWidth="10000px">
     
-          <div drawer style="background:rgb(243, 243, 243); padding: 10px;" layout vertical touch-action="none"><paper-button raised on-tap="{{logout}}">Logout</paper-button></div>
+          <div drawer style="background:rgb(243, 243, 243); padding: 10px;" layout vertical center touch-action="none">
+            <div class="user-detail">
+              <img class="profile-photo" src="{{$.signin.userInfo.photos.thumbnail || 'images/empty.jpeg'}}" style="height: 80px;width: 80px;border-radius: 50%;border: solid 2px rgb(78, 78, 78);margin-bottom: 10px;">
+              <div  class="text-overflow-ellipsis" style="font-weight: bold;margin: 5px;">{{$.signin.userInfo.display_name}}</div>
+              <div  class="text-overflow-ellipsis" style="margin: 5px;">{{$.signin.userInfo.username}}</div>
+            </div>
+            <div flex></div>
+            <paper-button raised on-tap="{{logout}}" style="width:220px">Logout</paper-button>
+          </div>
             
           <core-animated-pages id="pages" main transitions="slide-from-right" on-destroy="{{refresh}}" style="overflow-x:hidden">
 
@@ -92,8 +101,8 @@ license that can be found in the LICENSE file.
                  
                  <div class="round" _style="background-color:{{model.attributes.Name | iconColor}}">{{model.attributes.Name | uppercaseFirstChar}}</div>
                  <div flex style="margin-left: 10px">
-                 <div style="font-size: 1.1em; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{model.attributes.Name}}</div>
-                 <span style="font-size: 0.9em; color: #696969; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: block; padding-right: 10px;">{{model.attributes.BillingCity}}</span>
+                 <div style="font-size: 1.1em;" class="text-overflow-ellipsis">{{model.attributes.Name}}</div>
+                 <span  class="text-overflow-ellipsis" style="font-size: 0.9em; color: #696969;display: block; padding-right: 10px;">{{model.attributes.BillingCity}}</span>
                  </div>
                  <status-icon props="{{model.attributes}}"></status-icon>
                  <core-icon icon="chevron-right" style="fill: black"></core-icon>
@@ -105,8 +114,8 @@ license that can be found in the LICENSE file.
                 <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
                   <div class="round" _style="background-color:{{model.attributes.LastName | iconColor}}">{{model.attributes.FirstName | uppercaseFirstChar}}{{model.attributes.LastName | uppercaseFirstChar}}</div>
                   <div flex style="margin-left: 10px">
-                    <div style="font-size: 1.1em; text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">{{model.attributes.FirstName}} {{model.attributes.LastName}}</div>
-                    <span style="font-size: 0.9em; color: #696969; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
+                    <div style="font-size: 1.1em;" class="text-overflow-ellipsis">{{model.attributes.FirstName}} {{model.attributes.LastName}}</div>
+                    <span  class="text-overflow-ellipsis" style="font-size: 0.9em; color: #696969; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
                   </div>
                   <status-icon props="{{model.attributes}}"></status-icon>
                   <core-icon icon="chevron-right" style="fill: black"></core-icon>
@@ -124,6 +133,8 @@ license that can be found in the LICENSE file.
         </core-drawer-panel>
         
         <force-signin id="signin" consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXjHqR_EeHHhvOg6eRlANYorN6WUok0BtdumUcrK_YCCnpoZSziVa.t8QB3.z" callbackurl="https://sobject-smartsync.herokuapp.com" proxyurl="{{proxyhost}}" on-success="{{startRouting}}" on-offline="{{startRouting}}"></force-signin>
+
+        <force-keyvalue-store id="userInfoStore" key="user-info" value="{{$.signin.userInfo}}"></force-keyvalue-store>
         
         <style>
             core-animated-pages {
@@ -131,10 +142,10 @@ license that can be found in the LICENSE file.
                 top: 0; bottom: 0;
                 left: 0; right: 0;
             }
-        core-animated-pages#pages > * {
-            -webkit-transition-duration: 0.5s;
-            transition-duration: 0.5s;
-        }
+            core-animated-pages#pages > * {
+                -webkit-transition-duration: 0.5s;
+                transition-duration: 0.5s;
+            }
         </style>
 
         <!--core-icon id="network_icon" icon="{{cloudicon}}" style="position: fixed; width: 60px; height: 60px; bottom: 0; right: 0; margin: 10px; fill: green" on-tap="{{toggleConnection}}"></core-icon-->
@@ -142,6 +153,7 @@ license that can be found in the LICENSE file.
       </template>
 
       <script>
+
         Polymer('mobile-app', {
           onlinestatus: true,
           cloudicon: 'cloud-done',
@@ -189,6 +201,8 @@ license that can be found in the LICENSE file.
             this.$.pages.selected = 2;
           },
           startRouting: function() {
+            // Starting backbone routing
+            Backbone.history.start();
             window.location.hash = '';
           },
           silentsync: function() {
@@ -227,8 +241,6 @@ license that can be found in the LICENSE file.
               return colors[code % 19];
             } else return colors[0];
           }
-          // Starting backbone routing
-          Backbone.history.start();
         });
         if (window.mockStore) mockStore.useSessionStorage();
       })();
