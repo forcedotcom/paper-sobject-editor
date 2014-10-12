@@ -15,7 +15,7 @@
                 // reset user info
                 this.userInfo = null;
                 this.getUserInfo();
-                
+
                 // launch ui elements
                 SFDC.launch({
                     accessToken: this.accesstoken,
@@ -58,7 +58,13 @@
                         console.log('OAuth success!');
                         that.accesstoken = oauthClient.oauthResponse.access_token;
                         that.instanceurl = oauthClient.oauthResponse.instance_url;
-                        that.idUrl = oauthClient.oauthResponse.id;
+
+                        // parse id url to use instance url for hostname.
+                        // login.salesforce.com sometimes returns 403 for no reason
+                        var anchor = document.createElement('a');
+                        anchor.href = oauthClient.oauthResponse.id;
+                        that.idUrl = that.instanceurl + anchor.pathname;
+
                         that.fire('success');
                     },
 
