@@ -148,7 +148,7 @@ license that can be found in the LICENSE file.
             }
         </style>
 
-        <!--core-icon id="network_icon" icon="{{cloudicon}}" style="position: fixed; width: 60px; height: 60px; bottom: 0; right: 0; margin: 10px; fill: green" on-tap="{{toggleConnection}}"></core-icon-->
+        <core-icon id="network_icon" icon="{{cloudicon}}" style="position: fixed; width: 60px; height: 60px; bottom: 0; right: 0; margin: 10px; fill: green" on-tap="{{toggleConnection}}"></core-icon>
 
       </template>
 
@@ -179,12 +179,12 @@ license that can be found in the LICENSE file.
             this.$.listview.refresh();
             this.$.syncview.refresh();
           },
-          /*toggleConnection: function() {
+          toggleConnection: function() {
             this.onlinestatus = !this.onlinestatus;
             this.cloudicon = SFDC.isOnline() ? "cloud-done" : "cloud-off";
             this.$.network_icon.style.fill = SFDC.isOnline() ? 'green' : 'red';
             this.fire(SFDC.isOnline() ? 'online' : 'offline');
-          },*/
+          },
           syncComplete: function() {
             this.$.listview.refresh();
             this.$.listview.syncComplete({
