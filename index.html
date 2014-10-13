@@ -67,11 +67,11 @@ license that can be found in the LICENSE file.
 
 <body unresolved touch-action="none">
 
-    <!-- ACCOUNTS -->
+    <!-- ACCOUNTS -/->
     <mobile-app sobject="Account" searchfields="Name" displayfields="Name Phone Industry BillingCity Description"></mobile-app>
     <!-- -->
     
-    <!-- CONTACTS -/->
+    <!-- CONTACTS -->
     <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="FirstName LastName Title Phone Email Department HomePhone"></mobile-app>
     <!-- -->
 
@@ -95,7 +95,7 @@ license that can be found in the LICENSE file.
             <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}" resultHeight="71" on-core-activate="{{openEdit}}" on-syncup="{{silentsync}}">
               <template>
                   
-                <!-- ACCOUNTS -->
+                <!-- ACCOUNTS -/->
                  
                  <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
                  
@@ -110,7 +110,7 @@ license that can be found in the LICENSE file.
                  
                 <!-- -->
                 
-                <!-- CONTACTS -/->
+                <!-- CONTACTS -->
                 <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
                   <div class="round" _style="background-color:{{model.attributes.LastName | iconColor}}">{{model.attributes.FirstName | uppercaseFirstChar}}{{model.attributes.LastName | uppercaseFirstChar}}</div>
                   <div flex style="margin-left: 10px">
