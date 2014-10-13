@@ -12,23 +12,11 @@ paper-menu-button /deep/ div#overlay {
     margin-right: 20px;
 }
 
-:host /deep/ force-paper-input[focused]::shadow .floated-label {
-  color: #00adef;
-}
-
-:host /deep/ force-paper-input::shadow .focused-underline {
-  background-color: #00adef;
-}
-
-:host /deep/ force-paper-input::shadow .cursor {
-  background-color: #00adef;
-}
-
 :host /deep/ h1.sf-layout-section-heading {
   line-height: 40px;
   color: #484848;
   /*color: white;
-  background-color: #00adef;*/
+  background-color: #f40009;*/
 }
 
 :host /deep/ .ui-responsive {

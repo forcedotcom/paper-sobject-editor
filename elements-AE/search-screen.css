@@ -1,0 +1,113 @@
+force-ui-search {
+    margin: -14px 0px;
+}
+force-ui-search /deep/ .floated-label,
+force-ui-search /deep/ .underline {
+    display: none;
+}
+force-ui-search /deep/ .cursor {
+    background-color: rgb(167, 167, 167);
+}
+force-ui-search /deep/ .label {
+    color: rgb(167, 167, 167);
+}
+force-ui-search /deep/ input {
+    color: rgb(100, 100, 100);
+}
+force-ui-search /deep/ .label {
+    padding-top: 0.3em;
+}
+force-ui-search /deep/ .input-container {
+    top: 0.3em;
+}
+
+core-scroll-header-panel {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 0; right: 0;
+    -webkit-overflow-scrolling: touch;
+}
+core-scroll-header-panel .content,
+core-scroll-header-panel .content core-list {
+    height: 100%;
+}
+core-scroll-header-panel.animating {
+    transition: transform 100ms linear;
+    -webkit-transition: -webkit-transform 100ms linear;
+}
+core-scroll-header-panel::shadow #mainContainer {
+    margin-top: 64px;
+}
+core-scroll-header-panel.search {
+    -webkit-transform: translate3d(0, -64px, 0);
+    transform: translate3d(0, -64px, 0);
+}
+core-scroll-header-panel.search .search-box {
+    background-color: white;
+    margin: 0;
+}
+core-scroll-header-panel .cancelBtn,
+core-scroll-header-panel.search .search-toolbar .icon {
+    display: none;
+}
+core-scroll-header-panel.search .cancelBtn {
+    margin: 0 0 0 10px;
+    color: white; 
+    line-height: 50px;
+    display: block;
+}
+
+core-toolbar {
+    color: #f1f1f1;
+}
+core-toolbar.search-toolbar {
+    background-color: #bdc3c7;
+}
+
+.title {
+    font-size: 1.5em;
+}
+core-icon.icon {
+    width: 35px; 
+    height: 35px; 
+    margin: 0px;
+}
+.icon[icon="cloud-off"] {
+    color: red;
+}
+.search-icon {
+    color: rgb(167, 167, 167);
+    margin-right: 5px;
+}
+.search-box {
+    background: rgb(230, 228, 228); 
+    border-radius: 10px; 
+    padding: 0 10px;
+}
+.loadingInd {
+    position: absolute; 
+    top: 50%; left: 45%; 
+    width: 32px;
+}
+
+.sync-animation {
+    -webkit-animation: rotateAntiClockwise 1s infinite; /* Safari 4+ */
+    -moz-animation:    rotateAntiClockwise 1s infinite; /* Fx 5+ */
+    -o-animation:      rotateAntiClockwise 1s infinite; /* Opera 12+ */
+    animation:         rotateAntiClockwise 1s infinite; /* IE 10+, Fx 29+ */
+}
+
+@keyframes rotateAntiClockwise {
+  0% { transform:  rotate(0deg); }
+  100% { transform:  rotate(-360deg); }
+}
+
+@-webkit-keyframes rotateAntiClockwise  {
+  0% { -webkit-transform:  rotate(0deg); }
+  100% { -webkit-transform:  rotate(-360deg); }
+}
+
+@-ms-keyframes rotateAntiClockwise  {
+  0% { -ms-transform:  rotate(0deg); }
+  100% { -ms-transform:  rotate(-360deg); }
+}

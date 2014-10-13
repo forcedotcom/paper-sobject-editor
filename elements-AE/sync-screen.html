@@ -24,13 +24,10 @@
         </style>
         <paper-shadow target="{{$.toolbar}}"></paper-shadow>
 
-        <core-toolbar id="toolbar" style="background-color: #00adef;">
-          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}"></core-icon>
+        <core-toolbar id="toolbar">
+          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 45px; height: 45px; margin: -5px;" on-touchend="{{stopClick}}"></core-icon>
           <div flex></div>
-          <paper-menu-button icon="more-vert" halign="right">
-            <paper-item label="Sync" on-tap="{{doSync}}"></paper-item>
-            <paper-item label="Cancel" on-tap="{{navigateBack}}"></paper-item>
-          </paper-menu-button>
+          <div on-tap="{{doSync}}" style="color:white; line-height: 50px; width: 80px;" layout horizontal end-justified>Sync</div>
         </core-toolbar>
 
         <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;">
@@ -61,6 +58,10 @@
             return Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED;
         },
 
+        stopClick: function(e) {
+            e.preventDefault();
+        },
+
         refresh: function() {
             this.$.list.fetch();
         },
@@ -72,23 +73,39 @@
         doSync: function() {
             var that = this;
             var sobjects = this.$.listview.querySelectorAll('force-sobject');
+            var syncStatuses = [];
 
             this.failedIds = [];
-            var saveOptions = {
-                cacheMode: Force.CACHE_MODE.SERVER_FIRST,
-                success: function() {
-                    that.$.list.fetch();
-                },
-                error: function(model) {
-                    that.failedIds.push(model.id);
-                    that.$.list.fetch();
+            var saveOptions = function(deferred) {
+                return {
+                    cacheMode: Force.CACHE_MODE.SERVER_FIRST,
+                    success: function() {
+                        that.$.list.fetch();
+                        that.fire('item-synced');
+                        deferred.resolve();
+                    },
+                    error: function(model) {
+                        that.failedIds.push(model.id);
+                        that.$.list.fetch();
+                        deferred.resolve();
+                    }
                 }
             }
 
             _.each(sobjects, function(sobject) {
+                var statusDeferred = $.Deferred();
+                var options = saveOptions(statusDeferred);
+
                 if (sobject.fields['__locally_deleted__'])
-                    sobject.destroy(saveOptions);
-                else sobject.save(saveOptions);
+                    sobject.destroy(options);
+                else sobject.save(options);
+
+                //Track save status and fire a complete event when all saves are finished
+                syncStatuses.push(statusDeferred.promise());
+            });
+
+            return $.when.apply($, syncStatuses).then(function() {
+                that.fire('sync-complete');
             });
         },
 
@@ -103,41 +120,6 @@
         viewLoaded: function() {
             if (!this.hasLocalChanges()) this.navigateBack();  
         }
-        /*
-        doSync: function() {
-            var that = this;
-            var collection = this.$.list.collection;
-            if (collection.length == 0 || collection.at(0).get("__sync_failed__")) {
-                // we push sync failures back to the end of the list - if we encounter one, it means we are done
-                return;
-            }
-            else {
-                var record = collection.shift();
-
-                var options = {
-                    mergeMode: Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED,
-                    success: function() {
-                        if (collection.length == 0) {
-                            app.router.navigateFirst();
-                        }
-                        else {
-                            that.doSync();
-                        }
-                    },
-                    error: function() {
-                        record = record.set("__sync_failed__", true);
-                        collection.push(record);
-                        that.doSync();
-                    },
-                    fieldlist: _.intersection(_.keys(record.attributes), app.editablefieldlist),
-                    cache: collection.cache,
-                    cacheForOriginals: collection.cacheForOriginals
-                };
-
-                return record.get("__locally_deleted__") ? record.destroy(options) : record.save(null, options);
-            }
-        },
-        */
     });
     </script>
 </polymer-element>

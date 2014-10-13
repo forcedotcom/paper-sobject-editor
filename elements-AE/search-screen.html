@@ -1,121 +1,46 @@
 <link rel="import" href="../dependencies/core-scroll-header-panel/core-scroll-header-panel.html">
 <link rel="import" href="../dependencies/core-toolbar/core-toolbar.html">
 <link rel="import" href="../dependencies/core-icon-button/core-icon-button.html">
-<polymer-element name="search-screen" extends="force-route" attributes="sobject searchfields fieldstofetch">
+<link rel="import" href="../dependencies/core-list/core-list.html">
+<link rel="import" href="../dependencies/paper-toast/paper-toast.html">
+<polymer-element name="search-screen" extends="force-route" attributes="sobject searchfields fieldstofetch resultHeight">
     <template>
 
-        <style>
-            force-ui-search /deep/ paper-input::shadow #floatedLabel {
-                display: none;
-            }
-            force-ui-search /deep/ paper-input::shadow #errorContainer {
-                display: none;
-            }
-            force-ui-search /deep/ #underline>div {
-                background-color: white
-            }
-            force-ui-search /deep/ .cursor {
-                background-color: white
-            }
-            force-ui-search /deep/ input {
-                color: white;
-            }
+        <link rel="stylesheet" href="search-screen.css"/>
 
-            core-scroll-header-panel {
-                position: absolute;
-                top: 0; bottom: 0;
-                left: 0; right: 0;
-            }
+        <core-scroll-header-panel id="scrollHeader" touch-action="pan-y">
+            
+            <core-toolbar id="header" class="header-toolbar">
+                <core-icon id="menu-icon" class="icon" icon="menu" on-tap="{{showMenu}}"></core-icon>
+                <div class="title" flex>{{sobject}}s</div>
+            </core-toolbar>
 
-            :host /deep/ core-icon {
-                fill: #fff;
-            }
+            <core-toolbar id="toolbar" class="search-toolbar">
 
-            /* background for toolbar when it is at its full size */
-            core-scroll-header-panel::shadow #headerBg {
-                background-image: url(banner.jpg);
-            }
-
-            /* background for toolbar when it is condensed */
-            core-scroll-header-panel::shadow #condensedHeaderBg {
-                background-color: #00adef;
-            }
-
-            core-toolbar {
-                color: #f1f1f1;
-                fill: #f1f1f1;
-                background-color: transparent;
-            }
-
-            .title {
-                font-size: 40px;
-            }
-            .content {
-                padding: 10px 0px;
-            }
-
-        </style>
-
-        <core-scroll-header-panel condenses style="-webkit-overflow-scrolling: touch;" touch-action="pan-y">
-        	
-            <paper-shadow></paper-shadow>
-            <core-toolbar id="toolbar" class="tall paper-shadow-top paper-shadow-top-z-1">
-    
-                <core-icon id="search-icon" icon="search"></core-icon>
-                <div flex>
-                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}"></force-ui-search>
+                <core-icon id="sync_icon" class="icon" icon="notification:sync" on-tap="{{fireSyncUp}}"></core-icon>
+                <div class="search-box" flex layout horizontal center>
+                    <core-icon id="search_icon" icon="search" class="search-icon"></core-icon>
+                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" cachemode="{{cachemode}}" flex on-down="{{searchFocused}}" on-touchend="{{stopClick}}"></force-ui-search>
                 </div>
-                <core-icon id="create-icon" icon="add" on-tap="{{navigateToCreate}}"></core-icon>
-                <div id="title" class="bottom indent title">Contacts</div>
-		      
+                <core-icon id="create_icon" class="icon" icon="add" on-tap="{{navigateToCreate}}"></core-icon>
+                <div class="cancelBtn" on-tap="{{cancelSearch}}">Cancel</div>
+              
             </core-toolbar>
 
             <div class="content">
-
-                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" on-sync="{{updateListview}}" style="display:none"></force-sobject-collection>
-                <div id="listview">
+                <img id="loading" class="loadingInd" src="loading-gray.gif"/>
+                <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-sync-progress="{{handleSyncResponse}}" on-sync-complete="{{handleSyncResponse}}"></force-sobject-sync>
+                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" autosync="false"></force-sobject-collection>
+                <core-list id="uilist" height="{{resultHeight}}" data="{{$.list.collection.models}}" on-touchend="{{stopClick}}">
                     <content select="*"></content>
-                </div>
+                </core-list>
 
             </div>
 
         </core-scroll-header-panel>
 
-    </template>
-    <script>
-    	(function() {
-	        var titleStyle;
+        <paper-toast id="status_toast" text=""></paper-toast>
 
-	        Polymer('search-screen', {
-	          ready: function() {
-	            this.super();
-	            titleStyle = this.$.title.style;
-                this.addEventListener('core-header-transform', this.titleTransform.bind(this), false);
-	          },
-	          updateListview: function() {
-                this.template = this.querySelector('template');
-                if (this.template) {
-                    this.template.setAttribute('repeat', '');
-                    this.template.model = this.$.list.collection.models;
-                }
-	          },
-	          updateConnection: function() {
-	            this.$.search.computeQuery();
-	          },
-	          refresh: function() {
-	            this.$.list.fetch();
-	          },
-	          navigateToCreate: function() {
-	            window.location.hash = "#edit";
-	          },
-	          titleTransform: function(e) {
-	              var d = e.detail;
-	              var m = d.height - d.condensedHeight;
-	              var scale = Math.max(0.75, (m - d.y) / (m / 0.25)  + 0.75);
-	              titleStyle.webkitTransform = titleStyle.transform = 
-	                  'scale(' + scale + ') translateZ(0)';
-	          }
-	        });
-		})();
-    </script>
+    </template>
+    <script src="search-screen.js"></script>
 </polymer-element>

@@ -11,158 +11,185 @@ license that can be found in the LICENSE file.
       window.location = 'https://' + location.hostname;
   </script>
   
-	<meta name="viewport" content="width=device-width, user-scalable=no">
+  <meta name="viewport" content="width=device-width, user-scalable=no">
 
-	<!-- Platform polyfill import -->
-	<script src="dependencies/platform/platform.js"></script>
+  <!-- Platform polyfill import -->
+  <script src="dependencies/platform/platform.js"></script>
 
-	<!-- Core Polymer Elements -->
-	<link href="dependencies/core-icons/core-icons.html" rel="import">
-	<link href="dependencies/core-animated-pages/core-animated-pages.html" rel="import">
-	<link href="dependencies/core-animated-pages/transitions/slide-from-right.html" rel="import">
-	<link href="dependencies/core-scroll-header-panel/core-scroll-header-panel.html" rel="import">
-	<link href="dependencies/core-toolbar/core-toolbar.html" rel="import">
+  <!-- Core Polymer Elements -->
+  <link href="dependencies/core-icons/core-icons.html" rel="import">
+  <link href="dependencies/core-icons/notification-icons.html" rel="import">
+  <link href="dependencies/core-animated-pages/core-animated-pages.html" rel="import">
+  <link href="dependencies/core-animated-pages/transitions/slide-from-right.html" rel="import">
+  <link href="dependencies/core-scroll-header-panel/core-scroll-header-panel.html" rel="import">
+  <link href="dependencies/core-toolbar/core-toolbar.html" rel="import">
+  <link href="dependencies/core-drawer-panel/core-drawer-panel.html" rel="import">
 
-	<!-- Paper Elements -->
-	<link href="dependencies/paper-item/paper-item.html" rel="import">
-	<link href="dependencies/paper-shadow/paper-shadow.html" rel="import">
-	<link href="dependencies/paper-menu-button/paper-menu-button.html" rel="import">
-	<link href="dependencies/paper-input/paper-input.html" rel="import">
-	<link href="dependencies/paper-checkbox/paper-checkbox.html" rel="import">
-	
-	
-	<!-- Mobile UI Elements -->
-	<link rel="import" href="elements/force-ui-app/force-ui-app.html">
-	<link rel="import" href="elements/force-ui-search/force-ui-search.html">
-	<link rel="import" href="elements/force-sobject-collection/force-sobject-collection.html">
-	<link rel="import" href="elements/force-route/force-route.html">
-	<link rel="import" href="elements/force-signin/force-signin.html">
+  <!-- Paper Elements -->
+  <link href="dependencies/paper-item/paper-item.html" rel="import">
+  <link href="dependencies/paper-shadow/paper-shadow.html" rel="import">
+  <link href="dependencies/paper-menu-button/paper-menu-button.html" rel="import">
+  <link href="dependencies/paper-input/paper-input.html" rel="import">
+  <link href="dependencies/paper-checkbox/paper-checkbox.html" rel="import">
+  <link href="dependencies/paper-button/paper-button.html" rel="import">
+  
+  
+  <!-- Mobile UI Elements -->
+  <link rel="import" href="elements/force-ui-app/force-ui-app.html">
+  <link rel="import" href="elements/force-ui-search/force-ui-search.html">
+  <link rel="import" href="elements/force-sobject-sync/force-sobject-sync.html">
+  <link rel="import" href="elements/force-sobject-collection/force-sobject-collection.html">
+  <link rel="import" href="elements/force-route/force-route.html">
+  <link rel="import" href="elements/force-signin/force-signin.html">
+  <link rel="import" href="elements/force-keyvalue-store/force-keyvalue-store.html">
 
-	<!-- Account Editor Polymer Elements -->
-	<link rel="import" href="elements-AE/force-paper-detail.html">
-	<link rel="import" href="elements-AE/search-screen.html">
-	<link rel="import" href="elements-AE/sync-screen.html">
-	<link rel="import" href="elements-AE/detail-screen.html">
-	<link rel="import" href="elements-AE/status-icon.html">
+  <!-- Account Editor Polymer Elements -->
+  <link rel="import" href="elements-AE/force-paper-detail.html">
+  <link rel="import" href="elements-AE/search-screen.html">
+  <link rel="import" href="elements-AE/sync-screen.html">
+  <link rel="import" href="elements-AE/detail-screen.html">
+  <link rel="import" href="elements-AE/status-icon.html">
 
-	<!-- Local Browser Testing. Mocked cordova and Smartstore -->
-	<script src="dependencies/mobilesdk-shared/test/MockCordova.js"></script>
-	<script src="dependencies/mobilesdk-shared/libs/cordova.force.js"></script>
-	<script src="dependencies/mobilesdk-shared/test/MockSmartStore.js"></script>
-	<!-- End Local Testing -->
+  <!-- Local Browser Testing. Mocked cordova and Smartstore -->
+  <script src="dependencies/mobilesdk-shared/test/MockCordova.js"></script>
+  <script src="dependencies/mobilesdk-shared/libs/cordova.force.js"></script>
+  <script src="dependencies/mobilesdk-shared/test/MockSmartStore.js"></script>
+  <script src="dependencies/mobilesdk-shared/test/MockSmartSyncPlugin.js"></script>
+  <!-- End Local Testing -->
 
-	<!-- Mobile SDK container script includes ->
-	<script type="text/javascript" src="cordova.js"></script>
-	<!-- End Mobile SDK script includes -->
+  <!-- Mobile SDK container script includes -/->
+  <script type="text/javascript" src="cordova.js"></script>
+  <script type="text/javascript" src="cordova_plugins.js"></script>
+  <!-- End Mobile SDK script includes -->
 
-
-	<style shim-shadowdom>
-		body {
-			margin: 0;
-			font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-			font-size: 14px;
-		}
-		* {
-			-webkit-tap-highlight-color: rgba(0,0,0,0);
-		}
-		body /deep/ .round {
-			width:50px;
-			height:50px;
-			background:#1abc9c;
-			border-radius: 50%;
-			text-align: center;
-			display: table-cell; 
-			vertical-align: middle; 
-			color: white;
-			font-size: 19px;
-			line-height: 50px;
-		}
-	</style>
+  <link rel="stylesheet" href="styles.css"  shim-shadowdom/>
 </head>
 
 <body unresolved touch-action="none">
 
+    <!-- ACCOUNTS -->
+    <mobile-app sobject="Account" searchfields="Name" displayfields="Name Phone Industry BillingCity Description"></mobile-app>
+    <!-- -->
+    
+    <!-- CONTACTS -/->
+    <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="FirstName LastName Title Phone Email Department HomePhone"></mobile-app>
+    <!-- -->
+
     <polymer-element name="mobile-app" attributes="sobject searchfields displayfields">
       <template>
 
+        <core-drawer-panel id="drawer_panel" responsiveWidth="10000px">
+    
+          <div drawer style="background:rgb(243, 243, 243); padding: 10px;" layout vertical center touch-action="none">
+            <div class="user-detail">
+              <img class="profile-photo" src="{{$.signin.userInfo.photos.thumbnail || 'images/empty.jpeg'}}" style="height: 80px;width: 80px;border-radius: 50%;border: solid 2px rgb(78, 78, 78);margin-bottom: 10px;">
+              <div  class="text-overflow-ellipsis" style="font-weight: bold;margin: 5px;">{{$.signin.userInfo.display_name}}</div>
+              <div  class="text-overflow-ellipsis" style="margin: 5px;">{{$.signin.userInfo.username}}</div>
+            </div>
+            <div flex></div>
+            <paper-button raised on-tap="{{logout}}" style="width:220px">Logout</paper-button>
+          </div>
+            
+          <core-animated-pages id="pages" main transitions="slide-from-right" on-destroy="{{refresh}}" style="overflow-x:hidden">
+
+            <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}" resultHeight="71" on-core-activate="{{openEdit}}" on-syncup="{{silentsync}}">
+              <template>
+                  
+                <!-- ACCOUNTS -->
+                 
+                 <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
+                 
+                 <div class="round" _style="background-color:{{model.attributes.Name | iconColor}}">{{model.attributes.Name | uppercaseFirstChar}}</div>
+                 <div flex style="margin-left: 10px">
+                 <div style="font-size: 1.1em;" class="text-overflow-ellipsis">{{model.attributes.Name}}</div>
+                 <span  class="text-overflow-ellipsis" style="font-size: 0.9em; color: #696969;display: block; padding-right: 10px;">{{model.attributes.BillingCity}}</span>
+                 </div>
+                 <status-icon props="{{model.attributes}}"></status-icon>
+                 <core-icon icon="chevron-right" style="fill: black"></core-icon>
+                 </div>
+                 
+                <!-- -->
+                
+                <!-- CONTACTS -/->
+                <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
+                  <div class="round" _style="background-color:{{model.attributes.LastName | iconColor}}">{{model.attributes.FirstName | uppercaseFirstChar}}{{model.attributes.LastName | uppercaseFirstChar}}</div>
+                  <div flex style="margin-left: 10px">
+                    <div style="font-size: 1.1em;" class="text-overflow-ellipsis">{{model.attributes.FirstName}} {{model.attributes.LastName}}</div>
+                    <span  class="text-overflow-ellipsis" style="font-size: 0.9em; color: #696969; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
+                  </div>
+                  <status-icon props="{{model.attributes}}"></status-icon>
+                  <core-icon icon="chevron-right" style="fill: black"></core-icon>
+                </div>
+                <!-- -->
+              </template>
+            </search-screen>
+
+            <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync-complete="{{syncComplete}}"></sync-screen>
+
+            <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-save="{{refresh}}" on-route-changed="{{showDetail}}" displayfields="{{displayfields}}"></detail-screen>
+
+          </core-animated-pages>
+          
+        </core-drawer-panel>
+        
+        <force-signin id="signin" consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXqqSdv4wEGLXlDQaydmbK.Q1rzeKuQ43zC4tDnAIrL24Y9O4Dz1QVMzN1Slr" callbackurl="https://sfdc-sobject-editor.herokuapp.com" proxyurl="{{proxyhost}}" on-success="{{startRouting}}" on-offline="{{startRouting}}"></force-signin>
+
+        <force-keyvalue-store id="userInfoStore" key="user-info" value="{{$.signin.userInfo}}"></force-keyvalue-store>
+        
         <style>
-          core-animated-pages {
-            position: absolute;
-            top: 0; bottom: 0;
-            left: 0; right: 0;
-          }
-          core-animated-pages#pages > * {
-            -webkit-transition-duration: 0.5s;
-            transition-duration: 0.5s;
-          }
+            core-animated-pages {
+                position: absolute;
+                top: 0; bottom: 0;
+                left: 0; right: 0;
+            }
+            core-animated-pages#pages > * {
+                -webkit-transition-duration: 0.5s;
+                transition-duration: 0.5s;
+            }
         </style>
 
-        <force-signin consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXqqSdv4wEGLXlDQaydmbK.Q1rzeKuQ43zC4tDnAIrL24Y9O4Dz1QVMzN1Slr" callbackurl="https://sfdc-sobject-editor.herokuapp.com" proxyurl="{{proxyhost}}" on-success="{{startRouting}}" on-offline="{{startRouting}}"></force-signin>
-
-        <core-animated-pages id="pages" transitions="slide-from-right" on-save="{{refresh}}" on-destroy="{{refresh}}" style="overflow-x:hidden">
-
-          <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}">
-            <template>
-                <a href="#edit/{{id}}" style="text-decoration: none; color: inherit; -webkit-tap-highlight-color: rgba(0,0,0,0);">
-                    <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
-                      <!--img class="profile-photo" src="images/{{model.attributes.Photo__c || 'empty.jpeg'}}" style="height: 50px;width: 50px;border-radius: 50%;"/--> 
-                      <div class="round" style="background-color:{{attributes.LastName | iconColor}}">{{attributes.FirstName | uppercaseFirstChar}}{{attributes.LastName | uppercaseFirstChar}}</div>
-                      <div flex style="margin-left: 10px">
-                        <div style="font-size: 1.1em;">{{attributes.FirstName}} {{attributes.LastName}}</div>
-                        <span style="font-size: 0.9em; color: #696969">{{attributes.Title}}</span>
-                      </div>
-                      <status-icon props="{{attributes}}"></status-icon>
-                      <core-icon icon="chevron-right" style="fill: black"></core-icon>
-                    </div>
-                </a>
-            </template>
-          </search-screen>
-
-          <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync="{{resetConnection}}"></sync-screen>
-
-          <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-route-changed="{{showDetail}}"></detail-screen>
-
-        </core-animated-pages>
-
-        <core-icon id="network_icon" icon="{{cloudicon}}" style="position: fixed; width: 60px; height: 60px; bottom: 0; right: 0; margin: 10px; fill: green" on-tap="{{toggleConnection}}"></core-icon>
+        <!--core-icon id="network_icon" icon="{{cloudicon}}" style="position: fixed; width: 60px; height: 60px; bottom: 0; right: 0; margin: 10px; fill: green" on-tap="{{toggleConnection}}"></core-icon-->
 
       </template>
 
       <script>
+
         Polymer('mobile-app', {
-          _onlineStatus: true,
+          onlinestatus: true,
           cloudicon: 'cloud-done',
           proxyhost: (location.protocol === 'file:') ? null : location.origin,
           ready: function() {
             var that = this;
-            // Add online/offline event listeners if inside cordova container & not using mock cordova
-            if (window.cordova && !cordova.interceptExec) {
-              document.addEventListener("online", function() { that.onlinestatus = true; }, false);
-              document.addEventListener("offline", function() { that.onlinestatus = false; }, false);
+
+            this.$.listview.showMenu = function() {
+              that.$.drawer_panel.togglePanel();
+            }
+            // Add online event listeners to trigger sync
+            document.addEventListener("online", function() { that.syncOfflineChanges(); }, false);
+          },
+          syncOfflineChanges: function() {
+            if (this.$.pages.selected == 0 && SFDC.isOnline() && this.$.syncview.hasLocalChanges()) {
+              window.location.hash = "#sync";
             }
           },
-          get onlinestatus() {
-            return this._onlineStatus;
-          },
-          set onlinestatus(newStatus) {
-            this._onlineStatus = newStatus;
-            this.cloudicon = newStatus ? "cloud-done" : "cloud-off";
-            this.$.network_icon.style.fill = newStatus ? 'green' : 'red';
+          openEdit: function(params) {
+            window.location.hash = "#edit/" + params.detail.data.id;
           },
           refresh: function() {
-          	this.$.listview.refresh();
-          	this.$.syncview.refresh();
+            this.$.listview.refresh();
+            this.$.syncview.refresh();
           },
-          toggleConnection: function() {
-          	if (this.$.pages.selected == 0) {
-	            this.onlinestatus = !this.onlinestatus;
-	            if (this.onlinestatus) {
-	            	window.location.hash = "#sync";
-	            } else this.resetConnection();
-	        }
-          },
-          resetConnection: function() {
-          	this.$.listview.updateConnection();
+          /*toggleConnection: function() {
+            this.onlinestatus = !this.onlinestatus;
+            this.cloudicon = SFDC.isOnline() ? "cloud-done" : "cloud-off";
+            this.$.network_icon.style.fill = SFDC.isOnline() ? 'green' : 'red';
+            this.fire(SFDC.isOnline() ? 'online' : 'offline');
+          },*/
+          syncComplete: function() {
+            this.$.listview.refresh();
+            this.$.listview.syncComplete({
+              failures: this.$.syncview.failedIds.length
+            });
           },
           showList: function(ev) {
             this.$.pages.selected = 0;
@@ -174,14 +201,21 @@ license that can be found in the LICENSE file.
             this.$.pages.selected = 2;
           },
           startRouting: function() {
+            // Starting backbone routing
+            Backbone.history.start();
             window.location.hash = '';
+          },
+          silentsync: function() {
+            if (this.$.syncview.hasLocalChanges()) this.$.syncview.doSync();
+            else this.$.listview.syncComplete();
+          },
+          logout: function() {
+            this.$.signin.logout();
           }
         })
       </script>
 
     </polymer-element>
-
-    <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="Title"></mobile-app>
 
     <script>
       (function() {
@@ -189,10 +223,13 @@ license that can be found in the LICENSE file.
           // Overriding online status
           var originalIsOnline = SFDC.isOnline;
           var mobileApp = document.querySelector('mobile-app');
-          mobileApp.onlinestatus = SFDC.isOnline();
           SFDC.isOnline = function() {
             return originalIsOnline() && mobileApp.onlinestatus;
           };
+          // Force cache only actions by default
+          SFDC.cacheMode = function() {
+            return SFDC.isOnline() ? Force.CACHE_MODE.CACHE_FIRST : Force.CACHE_MODE.CACHE_ONLY;
+          }
           // Setting up polymer expressions
           PolymerExpressions.prototype.uppercaseFirstChar = function(value) {
             return (value && value.length) ? value.charAt(0).toUpperCase() : '';
@@ -204,8 +241,6 @@ license that can be found in the LICENSE file.
               return colors[code % 19];
             } else return colors[0];
           }
-          // Starting backbone routing
-          Backbone.history.start();
         });
         if (window.mockStore) mockStore.useSessionStorage();
       })();

@@ -27,7 +27,7 @@
 (function($j) {
 
 // Version this js was shipped with
-var SALESFORCE_MOBILE_SDK_VERSION = "2.3.0";
+var SALESFORCE_MOBILE_SDK_VERSION = "3.0.0";
 
 /*
  * JavaScript library to wrap REST API on Visualforce. Leverages Ajax Proxy
@@ -269,17 +269,24 @@ if (forcetk.Client === undefined) {
     }
 
     // Internal method to generate the key/value pairs of all the required headers for xhr.
-    var getRequestHeaders = function(client) {
+    forcetk.Client.prototype.getRequestHeaders = function(requestUrl, headerParams) {
         var headers = {};
 
-        headers[client.authzHeader] = "Bearer " + client.sessionId;
+        headers[this.authzHeader] = "OAuth " + this.sessionId;
         headers['Cache-Control'] = 'no-store';
         // See http://www.salesforce.com/us/developer/docs/chatterapi/Content/intro_requesting_bearer_token_url.htm#kanchor36
         headers["X-Connect-Bearer-Urls"] = true;
-        if (client.userAgentString !== null) {
-            headers['User-Agent'] = client.userAgentString;
-            headers['X-User-Agent'] = client.userAgentString;
+        if (this.userAgentString !== null) {
+            headers['User-Agent'] = this.userAgentString;
+            headers['X-User-Agent'] = this.userAgentString;
         }
+        if (this.proxyUrl !== null) headers['SalesforceProxy-Endpoint'] = requestUrl;
+
+        //Add any custom headers
+        for (paramName in (headerParams || {})) {
+            headers[paramName] = headerParams[paramName];
+        }
+
         return headers;
     }
 
@@ -292,10 +299,12 @@ if (forcetk.Client === undefined) {
      * @param [payload=null] payload for POST/PATCH etc
      * @param [headerParams={headerName:"headerValue",...}] parameters to send as header values for POST/PATCH etc
      */
+    var ajaxRequestId = 0;
     forcetk.Client.prototype.ajax = function(path, callback, error, method, payload, headerParams) {
+        var tag = "";
         var that = this;
         var retryCount = 0;
-        var url = (path.indexOf(this.instanceUrl) == 0 ? path : this.instanceUrl + '/services/data' + path);
+        var url = (path.indexOf(this.instanceUrl) == 0 ? path : this.instanceUrl + (path.indexOf('/services/data') == 0 ? path : '/services/data' + path));
         return $j.ajax({
             type: method || "GET",
             async: this.asyncAjax,
@@ -305,9 +314,13 @@ if (forcetk.Client === undefined) {
             processData: false,
             dataType: "json",
             data: payload,
-            headers: getRequestHeaders(this),
-            success: callback,
+            headers: this.getRequestHeaders((this.proxyUrl !== null) ? url : null, headerParams),
+            success: function() {
+                console.timeEnd(tag);
+                callback.apply(null, arguments);
+            },
             error: function(jqXHR, textStatus, errorThrown) {
+                console.timeEnd(tag);
                 var xhr = this;
                 var errorCallback = function() {
                     if (typeof error == 'function') {
@@ -322,13 +335,12 @@ if (forcetk.Client === undefined) {
                 } else errorCallback();
             },
             beforeSend: function(xhr) {
-                if (that.proxyUrl !== null) {
-                    xhr.setRequestHeader('SalesforceProxy-Endpoint', url);
-                }
-                //Add any custom headers
-                for (paramName in (headerParams || {})) {
-                    xhr.setRequestHeader(paramName, headerParams[paramName]);
-                }
+                // Timing
+                ajaxRequestId++;
+                var a = document.createElement("a");
+                a.href = url;
+                tag = "TIMING " + a.pathname + "(#" + ajaxRequestId + ")";
+                console.time(tag);
             }
         });
     }
@@ -339,7 +351,7 @@ if (forcetk.Client === undefined) {
      * @param xhr xhr request to be replayed.
      */
     forcetk.Client.prototype.replay = function(xhr) {
-        xhr.headers = getRequestHeaders(this);
+        xhr.headers[this.authzHeader] = "Bearer " + this.sessionId;
         $j.ajax(xhr);
     }
 

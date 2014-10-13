@@ -56,7 +56,11 @@
             this.resetCount++;
             if (this.autosync) this.fetch();
         },
-        fetch: function() {
+        fetchMore: function() {
+            if ((this.maxsize < 0 || this.maxsize > this.collection.size())
+                && this.collection.hasMore()) return this.collection.getMore();
+        },
+        fetch: function(fetchAll) {
             var collection = this.collection;
             var resetCount = this.resetCount; // captured for closure below
 
@@ -71,9 +75,7 @@
                     return;
                 }
 
-                if ((this.maxsize < 0 || this.maxsize > collection.size())
-                    && collection.hasMore())
-                    this.async(function() { collection.getMore().then(onFetch); }); // Do async so as to avoid blocking UI thread
+                if (fetchAll) this.getMore().then(onFetch);
 
             }.bind(this);
 

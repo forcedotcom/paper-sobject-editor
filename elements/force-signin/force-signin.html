@@ -9,14 +9,19 @@
             loginurl: "https://login.salesforce.com/",
             usePopupWindow: false,
             observe: {
-                accesstoken: "launch",
-                instanceurl: "launch"
+                "accesstoken instanceurl": "launch"
             },
             launch: function() {
+                // reset user info
+                this.userInfo = null;
+                this.getUserInfo();
+
+                // launch ui elements
                 SFDC.launch({
                     accessToken: this.accesstoken,
                     instanceUrl: this.instanceurl,
-                    proxyUrl: this.proxyurl
+                    proxyUrl: this.proxyurl,
+                    authProvider: this.authenticate.bind(this)
                 });
             },
             authenticateWithPlugin: function() {
@@ -31,6 +36,7 @@
                             console.log('OAuth success!');
                             that.accesstoken = creds.accessToken;
                             that.instanceurl = creds.instanceUrl;
+                            that.idUrl = creds.instanceUrl + '/id/' + creds.orgId + '/' + creds.userId;
                             that.fire('success');
                         },
                         function (error) {
@@ -52,6 +58,13 @@
                         console.log('OAuth success!');
                         that.accesstoken = oauthClient.oauthResponse.access_token;
                         that.instanceurl = oauthClient.oauthResponse.instance_url;
+
+                        // parse id url to use instance url for hostname.
+                        // login.salesforce.com sometimes returns 403 for no reason
+                        var anchor = document.createElement('a');
+                        anchor.href = oauthClient.oauthResponse.id;
+                        that.idUrl = that.instanceurl + anchor.pathname;
+
                         that.fire('success');
                     },
 
@@ -73,9 +86,37 @@
                     this.fire('offline');
                 }
             },
+            logout: function() {
+                if (window.cordova && !cordova.interceptExec) {
+                    cordova.require("com.salesforce.plugin.oauth").logout();
+                } else location.href = this.instanceurl + "/secur/logout.jsp";
+            },
             ready: function() {
                 if (!(this.accesstoken && this.instanceurl)) {
                     this.async(this.authenticate);
+                }
+            },
+            getUserInfo: function() {
+                var that = this;
+
+                if (this.userInfo) return $.when(this.userInfo);
+                // Fetch user information. Ideally we should use the SDK, but it doesn't have sufficient info right now.
+                else if (SFDC.isOnline()) {
+                    var forcetkClient = new forcetk.Client(null, null, this.proxyurl);
+                    forcetkClient.setSessionToken(this.accesstoken, null, this.instanceurl);
+                    var url = this.idUrl + "?oauth_token=" + this.accesstoken;
+                    var request = {
+                        type: 'GET',
+                        url: this.proxyurl || url,
+                        dataType: "json",
+                        headers: forcetkClient.getRequestHeaders(url),
+                        success: function(result) {
+                            that.userInfo = result;
+                            that.userInfo.photos.picture += "?oauth_token=" + that.accesstoken;
+                            that.userInfo.photos.thumbnail += "?oauth_token=" + that.accesstoken;
+                        }
+                    }
+                    return $.ajax(request).then(function() { return that.userInfo; });
                 }
             }
         });

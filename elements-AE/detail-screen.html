@@ -1,41 +1,47 @@
-<polymer-element name="detail-screen" extends="force-route" attributes="sobject recordid sync" on-route-changed="{{render}}">
+<polymer-element name="detail-screen" extends="force-route" attributes="sobject recordid sync displayfields" on-route-changed="{{render}}">
     <template>
         <link rel="stylesheet" href="detail.css"/>
-        <core-toolbar id="toolbar" style="background-color: #00adef;">
-          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 40px; height: 40px;" on-touchend="{{stopClick}}"></core-icon>
+        <core-toolbar id="toolbar">
+          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 45px; height: 45px; margin: -5px;" on-touchend="{{stopClick}}"></core-icon>
           <div flex></div>
-          <paper-menu-button icon="more-vert" halign="right">
-            <template if="{{!$.detail.model.attributes.__locally_deleted__}}">
-                <paper-item label="Save" on-tap="{{doSave}}"></paper-item>
-                <paper-item label="Delete" on-tap="{{doToggleDelete}}"></paper-item>
-            </template>
-            <template if="{{sync}}">
-                <paper-item label="Merge" on-tap="{{doSaveMerge}}"></paper-item>
-                <paper-item label="Overwrite" on-tap="{{doSaveOverwrite}}"></paper-item>
-            </template>
-            <template if="{{$.detail.model.attributes.__locally_deleted__}}">
-                <paper-item label="Undelete" on-tap="{{doToggleDelete}}"></paper-item>
-            </template>
-          </paper-menu-button>
+          <div on-tap="{{doSave}}" style="color:white; line-height: 50px; width: 80px;" layout horizontal end-justified>
+            <template if="{{!sync && !$.detail.model.attributes.__locally_deleted__}}">Save</template>
+            <template if="{{sync}}">Overwrite</template>
+            <template if="{{$.detail.model.attributes.__locally_deleted__}}">Undelete</template>
+          </div>
         </core-toolbar>
         <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;" touch-action="pan-y">
-            <force-paper-detail id="detail" sobject="{{sobject}}" recordid="{{recordid}}" foredit="true"></force-paper-detail>
+            <force-paper-detail id="detail" sobject="{{sobject}}" foredit="true" fieldlist="{{displayfields}}">
+            </force-paper-detail>
+            <template if="{{recordid && !$.detail.model.attributes.__locally_deleted__}}">
+                <div on-tap="{{ doDelete }}" horizontal layout center center-justified style="background-color: white; margin: 20px; color: rgb(255, 68, 68); height: 40px; font-size: 20px;border: 1px rgb(204, 204, 204) solid;border-radius: 5px;">Delete</div>
+            </template>
         </div>
     </template>
     <script>
       Polymer('detail-screen', {
+        _active: false,
         sync: false,
+        ready: function() {
+            this.super();
+            this.$.detail.fetchCacheMode = Force.CACHE_MODE.CACHE_ONLY;
+            // This is a bit of hack to avoid page load until animation is complete.
+            this.addEventListener('transitionend', function() {
+                if (this._active) this.$.detail.recordid = this.recordid;
+                else if (this.$.detail.model) this.$.detail.recordid = null;
+            }.bind(this));
+        },
         get model() {
             return (this.$ ? this.$.detail.$.force_sobject : null);
         },
         render: function() {
-            // Force detail re-render if recordid didn't change
-            if (this.$.detail.model && this.$.detail.model.id == this.recordid) this.$.detail.render();
+            this._active = true;
         },
         stopClick: function(e) {
             e.preventDefault();
         },
         navigateBack: function(ev) {
+            this._active = false;
             window.history.back();
         },
         getSaveOptions: function(mergeMode, cacheMode) {
@@ -45,11 +51,7 @@
                 mergeMode: mergeMode,
                 success: this.navigateBack,
                 error: function(data, err, options) {
-                    var error = new Force.Error(err);
-                    if (error.type == "ConflictError") {
-                        $(that.$.mergeButton).show();
-                        $(that.$.overwriteButton).show();
-                    }
+                    console.log(err);
                 }
             };
         },
@@ -62,37 +64,18 @@
         },
 
         doSave: function() {
-            var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : null;
-            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED, cacheMode));
-        },
-
-        doSaveMerge: function() {
-            var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : null;
-            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.MERGE_ACCEPT_YOURS, cacheMode));
-        },
-
-        doSaveOverwrite: function() {
-            var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : null;
+            var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : Force.CACHE_MODE.CACHE_ONLY;
+            // If model is locally deleted, then undelete. Otherwise continue with the save
+            if (this.$.detail.$.force_sobject.fields.__locally_deleted__) {
+                this.$.detail.$.force_sobject.fields.__locally_deleted__ = false;
+            }
             this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.OVERWRITE, cacheMode));
         },
 
-        doToggleDelete: function() {
+        doDelete: function() {
             var that = this;
-            var force_sobject = this.$.detail.$.force_sobject;
-            if (force_sobject.fields.__locally_deleted__) {
-                force_sobject.fields.__locally_deleted__ = false;
-                var saveOptions = this.getSaveOptions(null, Force.CACHE_MODE.CACHE_ONLY);
-                force_sobject.save(saveOptions);
-            }
-            else {
-                force_sobject.destroy({
-                    success: this.navigateBack,
-                    error: function(data, err, options) {
-                        var error = new Force.Error(err);
-                        alert("Failed to delete " + that.sobject + ": " + (error.type === "RestError" ? error.details[0].message : "Remote change detected - delete aborted"));
-                    }
-                });
-            }
+            var saveOptions = this.getSaveOptions(null, Force.CACHE_MODE.CACHE_ONLY);
+            this.$.detail.$.force_sobject.destroy(saveOptions);
         }
       })
     </script>

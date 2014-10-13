@@ -97,11 +97,18 @@
         },
         fetch: function(opts) {
 
+            var timingtag = Date.now() + ':force-sobject:fetch:' + this.id;
+            console.time(timingtag);
+            console.log(timingtag);
+            console.log(JSON.stringify(this.fields));
+            console.trace();
+
             var operation = function() {
                 var model = this._model;
                 if (model && model.id) {
                     this.whenModelReady().then(function() {
                         model.fetch(opts);
+                        console.timeEnd(timingtag);
                     });
                 } else if (!this.autosync) {
                     //if sync was not auto initiated, trigger a 'invalid' event
@@ -119,6 +126,12 @@
         */
         save: function(options) {
 
+            var timingtag = Date.now() + ':force-sobject:save:' + this.id;
+            console.time(timingtag);
+            console.log(timingtag);
+            console.log(JSON.stringify(this.fields));
+            console.trace();
+
             var operation = function() {
                 var that = this,
                     model = that._model,
@@ -131,6 +144,7 @@
                     that.recordid = model.id;
                     that.fire('save');
                     if (successCB) successCB(arguments);
+                    console.timeEnd(timingtag);
                 }
 
                 var getEditableFieldList = function() {
@@ -188,6 +202,12 @@
         },
         destroy: function(options) {
 
+            var timingtag = Date.now() + ':force-sobject:destroy:' + this.id;
+            console.time(timingtag);
+            console.log(timingtag);
+            console.log(JSON.stringify(this.fields));
+            console.trace();
+
             var operation = function() {
                 var model = this._model;
                 options = _.extend({mergeMode: this.mergemode, wait: true}, options);
@@ -195,6 +215,7 @@
                     this.whenModelReady().then(function() {
                         // Perform delete of record against the server
                         model.destroy(options);
+                        console.timeEnd(timingtag);
                     });
                 } else if (!this.autosync) {
                     //if sync was not auto initiated, trigger a 'invalid' event
