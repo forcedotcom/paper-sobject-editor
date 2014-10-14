@@ -8,41 +8,17 @@ Install
 * [GitHub Client](http://mac.github.com/) (with Git Terminal option)
 * [Safari](http://www.apple.com/safari/)
 
-and then open Terminal:
-
-    $ sudo npm install -g grunt-cli
-
 ### Project Setup
 
     $ git clone https://github.com/ForceDotComLabs/paper-sobject-editor.git
     $ cd paper-sobject-editor
     $ npm install
-    $ bower install
 
-To build the project and fetch all the dependencies, execute:
+Run a local node server:
 
-    $ grunt
+    $ node proxy.js 
 
-To build the project for distribution, execute (all assets will be generated in dist directory):
-
-    $ grunt dist
-
-To run the sample app in Safari:
-
-```
-1. Open index.html in an editor
-2. At line 55, plug in the salesforce session Id. You can use salesforce debugshell to get the session Id.
-3. At line 56, plug in the instance url of the org. Eg. https://na1.salesforce.com
-4. Open index.html in Safari and you should be able to browse a simple list and detail of an account.
-```
-
-Obtaining salesforce session Id for running the sample app:
-
-```
-1. Login into salesforce using your web browser.
-2. Open the salesforce API debugshell by going to https://<your org instance url>/soap/ajax/30.0/debugshell.html
-3. In debugshell, run the following command to obtain the session ID: sforce.connection.sessionId
-```
+You can now launch the [Sample App](http://localhost:9000/index.html). It will go through the OAuth flow to obtain user session and render data.
 
 ## License ##
 Copyright (c) 2014, salesforce.com, inc. All rights reserved.

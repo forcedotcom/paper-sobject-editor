@@ -37,16 +37,4 @@ module.exports = function (grunt) {
             }
         }
     });
-
-    grunt.registerTask('build', [
-        'clean'
-    ]);
-
-    grunt.registerTask('dist', [
-        'build',
-        'vulcanize',
-        'uglify:dist'
-    ]);
-
-    grunt.registerTask('default', ['build']);
 };
