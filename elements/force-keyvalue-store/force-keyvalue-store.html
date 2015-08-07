@@ -1,18 +1,24 @@
 <link rel="import" href="../../dependencies/polymer/polymer.html">
 <link rel="import" href="../force-app/force-app.html">
-<polymer-element name="force-keyvalue-store">
+<dom-module id="force-keyvalue-store">
     <script>
     	(function() {
-    		Polymer('force-keyvalue-store', {
-    			publish: {
-    				storename: null,
-    				key: null,
-    				value: null,
-    				usedefault: true,
+    		Polymer({
+                is: 'force-keyvalue-store', 
+                properties: {
+    				storename: String,
+    				key: String,
+    				value: {
+                        type: Object,
+                        value: null,
+                        notify: true
+                    },
+    				usedefault: {
+                        type: Boolean,
+                        value: true
+                    }
     			},
-				observe: {
-					'storename key value': 'sync'
-				},
+				observers: ["sync(storename, key, value)"],
 				sync: function() {
 					var that = this;
 					var smartstore = navigator.smartstore;
@@ -34,4 +40,4 @@
     		});
     	})();
     </script>
-</polymer-element>
+</dom-module>

@@ -1,29 +1,35 @@
-<polymer-element name="detail-screen" extends="force-route" attributes="sobject recordid sync displayfields" on-route-changed="{{render}}">
+<dom-module id="detail-screen" on-route-changed="render">
+    <link rel="stylesheet" href="detail.css"/>
     <template>
-        <link rel="stylesheet" href="detail.css"/>
-        <core-toolbar id="toolbar">
-          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 45px; height: 45px; margin: -5px;" on-touchend="{{stopClick}}"></core-icon>
+        <paper-toolbar id="toolbar">
+          <iron-icon id="back-icon" icon="chevron-left" on-tap="navigateBack" style="width: 45px; height: 45px; margin: -5px;" on-touchend="stopClick"></iron-icon>
           <div flex></div>
-          <div on-tap="{{doSave}}" style="color:white; line-height: 50px; width: 80px;" layout horizontal end-justified>
-            <template if="{{!sync && !$.detail.model.attributes.__locally_deleted__}}">Save</template>
+          <div on-tap="doSave" style="color:white; line-height: 50px; width: 80px;" layout horizontal end-justified>
+            <!--template if="{{!sync && !$.detail.model.attributes.__locally_deleted__}}">Save</template>
             <template if="{{sync}}">Overwrite</template>
-            <template if="{{$.detail.model.attributes.__locally_deleted__}}">Undelete</template>
+            <template if="{{$.detail.model.attributes.__locally_deleted__}}">Undelete</template-->
           </div>
-        </core-toolbar>
+        </paper-toolbar>
         <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;" touch-action="pan-y">
             <force-paper-detail id="detail" sobject="{{sobject}}" foredit="true" fieldlist="{{displayfields}}">
             </force-paper-detail>
-            <template if="{{recordid && !$.detail.model.attributes.__locally_deleted__}}">
-                <div on-tap="{{ doDelete }}" horizontal layout center center-justified style="background-color: white; margin: 20px; color: rgb(255, 68, 68); height: 40px; font-size: 20px;border: 1px rgb(204, 204, 204) solid;border-radius: 5px;">Delete</div>
-            </template>
+            <!--template if="{{recordid && !$.detail.model.attributes.__locally_deleted__}}">
+                <div on-tap="doDelete" horizontal layout center center-justified style="background-color: white; margin: 20px; color: rgb(255, 68, 68); height: 40px; font-size: 20px;border: 1px rgb(204, 204, 204) solid;border-radius: 5px;">Delete</div>
+            </template-->
         </div>
     </template>
     <script>
-      Polymer('detail-screen', {
-        _active: false,
-        sync: false,
+      Polymer({
+        is: 'detail-screen', 
+        _active: Boolean,
+        properties: {
+            sobject: String,
+            recordid: String,
+            displayfields: String,
+            sync: Boolean
+        },
+        behaviors: [SFDC.RoutingBehavior],
         ready: function() {
-            this.super();
             this.$.detail.fetchCacheMode = Force.CACHE_MODE.CACHE_ONLY;
             // This is a bit of hack to avoid page load until animation is complete.
             this.addEventListener('transitionend', function() {
@@ -79,4 +85,4 @@
         }
       })
     </script>
-</polymer-element>
+</dom-module>

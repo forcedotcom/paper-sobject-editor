@@ -42,6 +42,9 @@ var SmartStoreTestSuite = function () {
                                          {path:"Name", type:"string"}, 
                                          {path:"Id", type:"string"}
                                      ]);
+
+    // To run specific tests
+    // this.testsToRun = ["testSmartQueryWithIntegerCompare"];
 };
 
 // We are sub-classing AbstractSmartStoreTestSuite
@@ -54,7 +57,7 @@ SmartStoreTestSuite.prototype.constructor = SmartStoreTestSuite;
  */
 SmartStoreTestSuite.prototype.stuffTestSoup = function() {
     console.log("In SFSmartStoreTestSuite.stuffTestSoup");
-    var myEntry1 = { Name: "Todd Stellanova", Id: "00300A",  attributes:{type:"Contact"} };
+    var myEntry1 = { Name: "Todd Stellanova", Id: "00300A", attributes:{type:"Contact"} };
     var myEntry2 = { Name: "Pro Bono Bonobo",  Id: "00300B", attributes:{type:"Contact"}  };
     var myEntry3 = { Name: "Robot", Id: "00300C", attributes:{type:"Contact"}  };
     var entries = [myEntry1, myEntry2, myEntry3];
@@ -87,6 +90,78 @@ SmartStoreTestSuite.prototype.testGetDatabaseSize  = function() {
         });
 };
 
+/** 
+ * TEST global store vs regular store with registerSoup / soupExists / removeSoup
+ */
+SmartStoreTestSuite.prototype.testRegisterRemoveSoupGlobalStore = function()  {
+    console.log("In SFSmartStoreTestSuite.testRegisterRemoveSoupGlobalStore");
+    var soupName = "soupForTestRegisterRemoveSoupGlobalStore";
+
+    var self = this;
+    var GLOBAL_STORE = true;
+    var REGULAR_STORE = false;
+
+    // Start clean
+    $.when(self.removeSoup(REGULAR_STORE, soupName),
+           self.removeSoup(GLOBAL_STORE, soupName))
+        .pipe(function() {
+            // Check soup does not exist in either stores
+            return $.when(self.soupExists(REGULAR_STORE, soupName),
+                          self.soupExists(GLOBAL_STORE, soupName));
+        })
+        .pipe(function(exists, existsGlobal) {
+            QUnit.equals(exists, false, "soup should not already exist in regular store");
+            QUnit.equals(existsGlobal, false, "soup should not already exist in global store");
+            // Create soup in global store
+            return self.registerSoup(GLOBAL_STORE, soupName, self.defaultSoupIndexes);
+        })
+        .pipe(function(soupName2) {
+            QUnit.equals(soupName2,soupName,"registered soup OK in global store");
+            // Check soup exist only in global store
+            return $.when(self.soupExists(REGULAR_STORE, soupName),
+                          self.soupExists(GLOBAL_STORE, soupName));
+        })
+        .pipe(function(exists, existsGlobal) {
+            QUnit.equals(exists, false, "soup should not exist in regular store");
+            QUnit.equals(existsGlobal, true, "soup should now exist in global store");
+            // Create soup in regular store
+            return self.registerSoup(REGULAR_STORE, soupName, self.defaultSoupIndexes);
+        })
+        .pipe(function(soupName2) {
+            QUnit.equals(soupName2,soupName,"registered soup OK in regular store");
+            // Check soup exist only in both stores
+            return $.when(self.soupExists(REGULAR_STORE, soupName),
+                          self.soupExists(GLOBAL_STORE, soupName));
+        })
+        .pipe(function(exists, existsGlobal) {
+            QUnit.equals(exists, true, "soup should now exist in regular store");
+            QUnit.equals(existsGlobal, true, "soup should exist in global store");
+            // Remove soup from global store
+            return self.removeSoup(GLOBAL_STORE, soupName);
+        })
+        .pipe(function() {
+            // Check soup exist only in regular store
+            return $.when(self.soupExists(REGULAR_STORE, soupName),
+                          self.soupExists(GLOBAL_STORE, soupName));
+        })
+        .pipe(function(exists, existsGlobal) {
+            QUnit.equals(exists, true, "soup should still exist in regular store");
+            QUnit.equals(existsGlobal, false, "soup should no longer exist in global store");
+            // Remove soup from regular store
+            return self.removeSoup(REGULAR_STORE, soupName);
+        })
+        .pipe(function() {
+            // Check soup no longer exist in either store
+            return $.when(self.soupExists(REGULAR_STORE, soupName),
+                          self.soupExists(GLOBAL_STORE, soupName));
+        })
+        .done(function(exists, existsGlobal) {
+            QUnit.equals(exists, false, "soup should no longer exist in regular store");
+            QUnit.equals(existsGlobal, false, "soup should no longer exist in global store");
+            self.finalizeTest();
+        });
+};
+    
 /** 
  * TEST registerSoup / soupExists / removeSoup 
  */
@@ -134,7 +209,7 @@ SmartStoreTestSuite.prototype.testRegisterRemoveSoup = function()  {
 
 
 /** 
- * TEST registerSoup
+ * TEST registerSoup with bogus soup
  */
 SmartStoreTestSuite.prototype.testRegisterBogusSoup = function()  {
     console.log("In SFSmartStoreTestSuite.testRegisterBogusSoup");
@@ -153,7 +228,7 @@ SmartStoreTestSuite.prototype.testRegisterBogusSoup = function()  {
 
 
 /** 
- * TEST registerSoup
+ * TEST registerSoup with no indices
  */
 SmartStoreTestSuite.prototype.testRegisterSoupNoIndices = function()  {
     console.log("In SFSmartStoreTestSuite.testRegisterSoupNoIndices");
@@ -182,7 +257,7 @@ SmartStoreTestSuite.prototype.testRegisterSoupNoIndices = function()  {
 }
 
 /** 
- * TEST upsertSoupEntries
+ * TEST upsertSoupEntries 
  */
 SmartStoreTestSuite.prototype.testUpsertSoupEntries = function()  {
     console.log("In SFSmartStoreTestSuite.testUpsertSoupEntries");
@@ -261,7 +336,7 @@ SmartStoreTestSuite.prototype.testUpsertSoupEntriesWithExternalId = function()  
 
 
 /** 
- * TEST upsertSoupEntries
+ * TEST upsertSoupEntries to non existent soup
  */
 SmartStoreTestSuite.prototype.testUpsertToNonexistentSoup = function()  {
     console.log("In SFSmartStoreTestSuite.testUpsertToNonexistentSoup");
@@ -280,7 +355,7 @@ SmartStoreTestSuite.prototype.testUpsertToNonexistentSoup = function()  {
 };
     
 /**
- * TEST retrieveSoupEntries
+ * TEST retrieveSoupEntries 
  */
 SmartStoreTestSuite.prototype.testRetrieveSoupEntries = function()  {
     console.log("In SFSmartStoreTestSuite.testRetrieveSoupEntries");
@@ -348,10 +423,10 @@ SmartStoreTestSuite.prototype.testRemoveFromSoup = function()  {
 };
 
 /**
- * TEST querySoup
+ * TEST querySoup with exact query
  */
-SmartStoreTestSuite.prototype.testQuerySoup = function()  {
-    console.log("In SFSmartStoreTestSuite.testQuerySoup"); 
+SmartStoreTestSuite.prototype.testQuerySoupWithExactQuery = function()  {
+    console.log("In SFSmartStoreTestSuite.testQuerySoupWithExactQuery"); 
     
     var self = this;
     self.stuffTestSoup()
@@ -376,10 +451,10 @@ SmartStoreTestSuite.prototype.testQuerySoup = function()  {
 
 
 /**
- * TEST querySoup
+ * TEST querySoup with all query with descending sort order
  */
-SmartStoreTestSuite.prototype.testQuerySoupDescending = function()  {
-    console.log("In SFSmartStoreTestSuite.testQuerySoupDescending");   
+SmartStoreTestSuite.prototype.testQuerySoupWithAllQueryDescending = function()  {
+    console.log("In SFSmartStoreTestSuite.testQuerySoupWithAllQueryDescending");   
     
     var self = this;
     self.stuffTestSoup().
@@ -404,7 +479,38 @@ SmartStoreTestSuite.prototype.testQuerySoupDescending = function()  {
 };
 
 /**
- * TEST querySoup
+ * TEST querySoup with range query using order path
+ */
+SmartStoreTestSuite.prototype.testQuerySoupWithRangeQueryWithOrderPath = function()  {
+    console.log("In SFSmartStoreTestSuite.testQuerySoupWithRangeQueryWithOrderPath");   
+    
+    var self = this;
+    self.stuffTestSoup().
+        pipe(function(entries) {
+            QUnit.equal(entries.length, 3);
+            var querySpec = navigator.smartstore.buildRangeQuerySpec("Id", null, "00300B", "ascending", 3, "Name");
+            // should match 00300A and 00300B but sort by name
+            return self.querySoup(self.defaultSoupName, querySpec);
+        })
+        .pipe(function(cursor) {
+            QUnit.equal(cursor.totalEntries, 2, "totalEntries correct");
+            QUnit.equal(cursor.totalPages, 1, "totalPages correct");
+            QUnit.equal(cursor.currentPageOrderedEntries.length, 2, "check currentPageOrderedEntries");
+            QUnit.equal(cursor.currentPageOrderedEntries[0].Name,"Pro Bono Bonobo","verify first entry");
+            QUnit.equal(cursor.currentPageOrderedEntries[0].Id,"00300B","verify first entry");
+            QUnit.equal(cursor.currentPageOrderedEntries[1].Name,"Todd Stellanova","verify last entry");
+            QUnit.equal(cursor.currentPageOrderedEntries[1].Id,"00300A","verify last entry");
+
+            return self.closeCursor(cursor);
+        })
+        .done(function(param) { 
+            QUnit.ok(true,"closeCursor ok"); 
+            self.finalizeTest(); 
+        });
+};
+
+/**
+ * TEST querySoup with bad query spec
  */
 SmartStoreTestSuite.prototype.testQuerySoupBadQuerySpec = function()  {
     console.log("In SFSmartStoreTestSuite.testQuerySoupBadQuerySpec"); 
@@ -641,12 +747,14 @@ SmartStoreTestSuite.prototype.testQuerySpecFactories = function() {
     var query =  navigator.smartstore.buildExactQuerySpec(path,beginKey,pageSize);
     QUnit.equal(query.queryType,"exact","check queryType");
     QUnit.equal(query.indexPath,path,"check indexPath");
+    QUnit.equal(query.orderPath,path,"check orderPath");
     QUnit.equal(query.matchKey,beginKey,"check matchKey");
     QUnit.equal(query.pageSize,pageSize,"check pageSize");
     
     query =  navigator.smartstore.buildRangeQuerySpec(path,beginKey,endKey,order,pageSize);
     QUnit.equal(query.queryType,"range","check queryType");
     QUnit.equal(query.indexPath,path,"check indexPath");
+    QUnit.equal(query.orderPath,path,"check orderPath");
     QUnit.equal(query.beginKey,beginKey,"check beginKey");
     QUnit.equal(query.endKey,endKey,"check endKey");
     QUnit.equal(query.order,order,"check order");
@@ -655,6 +763,7 @@ SmartStoreTestSuite.prototype.testQuerySpecFactories = function() {
     query =  navigator.smartstore.buildLikeQuerySpec(path,beginKey,order,pageSize);
     QUnit.equal(query.queryType,"like","check queryType");
     QUnit.equal(query.indexPath,path,"check indexPath");
+    QUnit.equal(query.orderPath,path,"check orderPath");
     QUnit.equal(query.likeKey,beginKey,"check likeKey");
     QUnit.equal(query.order,order,"check order");
     QUnit.equal(query.pageSize,pageSize,"check pageSize");
@@ -662,6 +771,7 @@ SmartStoreTestSuite.prototype.testQuerySpecFactories = function() {
     var query =  navigator.smartstore.buildAllQuerySpec(path,order,pageSize);
     QUnit.equal(query.queryType,"range","check queryType");
     QUnit.equal(query.indexPath,path,"check indexPath");
+    QUnit.equal(query.orderPath,path,"check orderPath");
     QUnit.equal(query.beginKey,null,"check beginKey");
     QUnit.equal(query.endKey,null,"check endKey");
     QUnit.equal(query.order,order,"check order");
@@ -686,6 +796,7 @@ SmartStoreTestSuite.prototype.testLikeQuerySpecStartsWith  = function() {
         .pipe(function(cursor) {
             var nEntries = cursor.currentPageOrderedEntries.length;
             QUnit.equal(nEntries, 1, "currentPageOrderedEntries correct");
+            QUnit.equal(cursor.currentPageOrderedEntries[0].Name,"Todd Stellanova","verify entry");
             return self.closeCursor(cursor);
         })
         .done(function(param) { 
@@ -711,6 +822,7 @@ SmartStoreTestSuite.prototype.testLikeQuerySpecEndsWith  = function() {
         .pipe(function(cursor) {
             var nEntries = cursor.currentPageOrderedEntries.length;
             QUnit.equal(nEntries, 1, "currentPageOrderedEntries correct");
+            QUnit.equal(cursor.currentPageOrderedEntries[0].Name,"Todd Stellanova","verify entry");
             return self.closeCursor(cursor);
         })
         .done(function(param) { 
@@ -735,6 +847,7 @@ SmartStoreTestSuite.prototype.testLikeQueryInnerText  = function() {
         .pipe(function(cursor) {
             var nEntries = cursor.currentPageOrderedEntries.length;
             QUnit.equal(nEntries, 1, "currentPageOrderedEntries correct");
+            QUnit.equal(cursor.currentPageOrderedEntries[0].Name,"Pro Bono Bonobo","verify entry");
             return self.closeCursor(cursor);
         })
         .done(function(param) { 
@@ -743,6 +856,93 @@ SmartStoreTestSuite.prototype.testLikeQueryInnerText  = function() {
         });
 };
 
+/**
+ * TEST full-text search
+ */
+SmartStoreTestSuite.prototype.testFullTextSearch  = function() {
+    console.log("In SFSmartStoreTestSuite.testFullTextSearch");
+    var self = this;
+    var myEntry1 = { name: "elephant", description:"large mammals", colors:"grey"};
+    var myEntry2 = { name: "cat", description:"small mammals", colors:"black tabby white"};
+    var myEntry3 = { name: "dog", description:"medium mammals", colors:"grey black"};
+    var myEntry4 = { name: "lizard", description:"small reptilian", colors:"black green white"};
+    var rawEntries = [myEntry1, myEntry2, myEntry3, myEntry4];
+    var soupName = "animals";
+
+    self.removeAndRecreateSoup(soupName, [{path:"name", type:"string"},  {path:"description", type:"full_text"}, {path:"colors", type:"full_text"}])
+        .pipe(function() {
+            return self.upsertSoupEntries(soupName,rawEntries);
+        })
+        .pipe(function(entries) {
+            // Searching across fields with one term
+            var querySpec = navigator.smartstore.buildMatchQuerySpec(null, "grey", "ascending", 10, "name");
+            return self.tryFullTextSearch(soupName, querySpec, ["dog", "elephant"]);
+        })
+        .pipe(function() {
+            // Searching across fields with multiple terms
+            var querySpec = navigator.smartstore.buildMatchQuerySpec(null, "small black", "descending", 10, "name");
+            return self.tryFullTextSearch(soupName, querySpec, ["lizard", "cat"]);
+        })
+        .pipe(function() {
+            // Searching across fields with one term starred
+            var querySpec = navigator.smartstore.buildMatchQuerySpec(null, "gr*", "ascending", 10, "name");
+            return self.tryFullTextSearch(soupName, querySpec, ["dog", "elephant", "lizard"]);
+        })
+        .pipe(function() {
+            // Searching across fields with multiple terms one being negated
+            var querySpec = navigator.smartstore.buildMatchQuerySpec(null, "black NOT tabby", "descending", 10, "name");
+            return self.tryFullTextSearch(soupName, querySpec, ["lizard", "dog"]);
+        })
+        .pipe(function() {
+            // Searching across fields with multiple terms (one starred, one negated)
+            var querySpec = navigator.smartstore.buildMatchQuerySpec(null, "gr* NOT small", "ascending", 10, "name");
+            return self.tryFullTextSearch(soupName, querySpec, ["dog", "elephant"]);
+        })
+        .pipe(function(entries) {
+            // Searching one field with one term
+            return self.run
+            var querySpec = navigator.smartstore.buildMatchQuerySpec("colors", "grey");
+            return self.tryFullTextSearch(soupName, querySpec, ["elephant", "dog"]);
+        })
+        .pipe(function() {
+            // Searching one field with multiple terms
+            var querySpec = navigator.smartstore.buildMatchQuerySpec("colors", "white black", "ascending", 10, "name");
+            return self.tryFullTextSearch(soupName, querySpec, ["cat", "lizard"]);
+        })
+        .pipe(function() {
+            // Searching one field with one term starred
+            var querySpec = navigator.smartstore.buildMatchQuerySpec("colors", "gr*", "ascending", 10, "name");
+            return self.tryFullTextSearch(soupName, querySpec, ["dog", "elephant", "lizard"]);
+        })
+        .pipe(function() {
+            // Searching one field with multiple terms one being negated
+            var querySpec = navigator.smartstore.buildMatchQuerySpec("colors", "black NOT tabby", "descending", 10, "name");
+            return self.tryFullTextSearch(soupName, querySpec, ["lizard", "dog"]);
+        })
+        .pipe(function() {
+            // Searching one with multiple terms (one starred, one negated)
+            var querySpec = navigator.smartstore.buildMatchQuerySpec("description", "m* NOT small", "ascending", 10, "name");
+            return self.tryFullTextSearch(soupName, querySpec, ["dog", "elephant"]);
+        })
+        .done(function(param) { 
+            QUnit.ok(true,"closeCursor ok"); 
+            self.finalizeTest();
+        });
+};
+
+SmartStoreTestSuite.prototype.tryFullTextSearch = function(soupName, querySpec, expectedNames) {
+    var self = this;
+    return self.querySoup(soupName, querySpec)
+        .pipe(function(cursor) {
+            QUnit.equal(cursor.currentPageOrderedEntries.length, expectedNames.length, "check currentPageOrderedEntries when trying match '" + querySpec.matchKey + "'");
+            for (var i=0; i<cursor.currentPageOrderedEntries.length; i++) {
+                QUnit.equal(cursor.currentPageOrderedEntries[i].name,expectedNames[i],"verify that entry " + i + " is " + expectedNames[i] + " when trying match '" + querySpec.matchKey + "'");
+            }
+            return self.closeCursor(cursor);
+        })
+};
+
+    
 /**
  * TEST query with compound path
  */
@@ -828,6 +1028,9 @@ SmartStoreTestSuite.prototype.testIntegerQuerySpec  = function() {
     });
 };
 
+/**
+ * TEST smart query with count
+ */
 SmartStoreTestSuite.prototype.testSmartQueryWithCount  = function() {
     console.log("In SFSmartStoreTestSuite.testSmartQueryWithCount");
     var self = this;
@@ -850,6 +1053,215 @@ SmartStoreTestSuite.prototype.testSmartQueryWithCount  = function() {
         });
 };
 
+/**
+ * TEST smart query with compare on integer field
+ */
+SmartStoreTestSuite.prototype.testSmartQueryWithIntegerCompare  = function() {
+
+    var self = this;
+    var myEntry1 = { Name: "A", rank:1 };
+    var myEntry2 = { Name: "B", rank:2 };
+    var myEntry3 = { Name: "C", rank:3 };
+    var myEntry4 = { Name: "D", rank:4 };
+    var myEntry5 = { Name: "E", rank:5 };
+    var rawEntries = [myEntry1, myEntry2, myEntry3, myEntry4, myEntry5];
+    var soupName = "alphabetSoup";
+
+    var pluckNames = function(cursor) {
+        var names = "";
+        for (var i=0; i<cursor.currentPageOrderedEntries.length; i++) {
+            names += cursor.currentPageOrderedEntries[i][0].Name;
+        }
+        return names;
+    };
+
+    var buildQuerySpec = function(comparison) {
+        var smartQuery = "select {alphabetSoup:_soup} from {alphabetSoup} where {alphabetSoup:rank} " + comparison + " order by lower({alphabetSoup:Name})";
+        return navigator.smartstore.buildSmartQuerySpec(smartQuery, 5);
+    };
+
+    self.removeAndRecreateSoup(soupName, [{path:"Name", type:"string"}, {path:"rank", type:"integer"}])
+        .pipe(function() {
+            return self.upsertSoupEntries(soupName,rawEntries);
+        })
+        .pipe(function(entries) {
+            return self.runSmartQuery(buildQuerySpec("!= 3"));
+        })
+        .pipe(function(cursor) {
+            QUnit.equal(pluckNames(cursor), "ABDE");
+            return self.closeCursor(cursor);
+        })
+        .pipe(function(param) { 
+            QUnit.ok(true,"closeCursor ok"); 
+            return self.runSmartQuery(buildQuerySpec("= 3"));
+        })
+        .pipe(function(cursor) {
+            QUnit.equal(pluckNames(cursor), "C");
+            return self.closeCursor(cursor);
+        })
+        .pipe(function(param) { 
+            QUnit.ok(true,"closeCursor ok"); 
+            return self.runSmartQuery(buildQuerySpec("< 3"));
+        })
+        .pipe(function(cursor) {
+            QUnit.equal(pluckNames(cursor), "AB");
+            return self.closeCursor(cursor);
+        })
+        .pipe(function(param) { 
+            QUnit.ok(true,"closeCursor ok"); 
+            return self.runSmartQuery(buildQuerySpec("<= 3"));
+        })
+        .pipe(function(cursor) {
+            QUnit.equal(pluckNames(cursor), "ABC");
+            return self.closeCursor(cursor);
+        })
+        .pipe(function(param) { 
+            QUnit.ok(true,"closeCursor ok"); 
+            return self.runSmartQuery(buildQuerySpec("> 3"));
+        })
+        .pipe(function(cursor) {
+            QUnit.equal(pluckNames(cursor), "DE");
+            return self.closeCursor(cursor);
+        })
+        .pipe(function(param) { 
+            QUnit.ok(true,"closeCursor ok"); 
+            return self.runSmartQuery(buildQuerySpec(">= 3"));
+        })
+        .pipe(function(cursor) {
+            QUnit.equal(pluckNames(cursor), "CDE");
+            return self.closeCursor(cursor);
+        })
+        .done(function(param) { 
+            QUnit.ok(true,"closeCursor ok"); 
+            self.finalizeTest();
+        });
+};
+
+/**
+ * TEST smartQuery with a WHERE x LIKE y clause.
+ */
+SmartStoreTestSuite.prototype.testSmartQueryWithWhereLikeClause  = function() {
+    console.log("In SFSmartStoreTestSuite.testSmartQueryWithCount");
+    var self = this;
+    var testEntries;
+    
+    self.stuffTestSoup()
+        .pipe(function(entries) {
+            testEntries = entries;
+            QUnit.equal(entries.length, 3, "check stuffTestSoup result");
+            var querySpec = navigator.smartstore.buildSmartQuerySpec("SELECT {myPeopleSoup:_soup} FROM {myPeopleSoup} WHERE {myPeopleSoup:Name} LIKE '%bo%'", 10);
+            return self.runSmartQuery(querySpec);
+        })
+        .pipe(function(cursor) {
+            var rows = cursor.currentPageOrderedEntries;
+            QUnit.equal(2, rows.length, "check number of rows returned");
+            var actualNames = [rows[0][0].Name, rows[1][0].Name];
+            actualNames.sort();
+
+            // Should return 2nd and 3rd entries.
+            QUnit.equal("Pro Bono Bonobo",  actualNames[0]);
+            QUnit.equal("Robot",  actualNames[1]);
+            return self.closeCursor(cursor);
+        })
+        .done(function(param) { 
+            QUnit.ok(true,"closeCursor ok"); 
+            self.finalizeTest();
+        });
+};
+
+/**
+ * TEST smartQuery with a WHERE x LIKE y ORDER BY LOWER({z}) clause.
+ */
+SmartStoreTestSuite.prototype.testSmartQueryWithWhereLikeClauseOrdered  = function() {
+    console.log("In SFSmartStoreTestSuite.testSmartQueryWithCount");
+    var self = this;
+    var testEntries;
+    
+    self.stuffTestSoup()
+        .pipe(function(entries) {
+            testEntries = entries;
+            QUnit.equal(entries.length, 3, "check stuffTestSoup result");
+            var querySpec = navigator.smartstore.buildSmartQuerySpec("SELECT {myPeopleSoup:_soup} FROM {myPeopleSoup} WHERE {myPeopleSoup:Name} LIKE '%o%' ORDER BY LOWER({myPeopleSoup:Name})", 10);
+            return self.runSmartQuery(querySpec);
+        })
+        .pipe(function(cursor) {
+            var rows = cursor.currentPageOrderedEntries;
+            QUnit.equal(3, rows.length, "check number of rows returned");
+            var actualNames = [rows[0][0].Name, rows[1][0].Name, rows[2][0].Name];
+
+            // Should return all entries sorted
+            QUnit.equal("Pro Bono Bonobo",  actualNames[0]);
+            QUnit.equal("Robot",  actualNames[1]);
+            QUnit.equal("Todd Stellanova", actualNames[2]);
+            return self.closeCursor(cursor);
+        })
+        .done(function(param) { 
+            QUnit.ok(true,"closeCursor ok"); 
+            self.finalizeTest();
+        });
+};
+
+/**
+ * TEST smartQuery SELECT a FROM c WHERE d IN (values) type clause.
+ */
+SmartStoreTestSuite.prototype.testSmartQueryWithSingleFieldAndWhereInClause  = function() {
+    console.log("In SFSmartStoreTestSuite.testSmartQueryWithCount");
+    var self = this;
+    var testEntries;
+    
+    self.stuffTestSoup()
+        .pipe(function(entries) {
+            testEntries = entries;
+            QUnit.equal(entries.length, 3, "check stuffTestSoup result");
+            var querySpec = navigator.smartstore.buildSmartQuerySpec("SELECT {myPeopleSoup:Name} FROM {myPeopleSoup} WHERE {myPeopleSoup:Id} IN ('00300A', '00300B')", 10);
+            return self.runSmartQuery(querySpec);
+        })
+        .pipe(function(cursor) {
+            QUnit.equal(2, cursor.currentPageOrderedEntries.length, "check number of rows returned");
+            QUnit.equal(1, cursor.currentPageOrderedEntries[0].length, "check number of fields returned");
+
+            // Should return 1st and 2nd entries.
+            QUnit.equal(JSON.stringify([testEntries[0].Name]), JSON.stringify(cursor.currentPageOrderedEntries[0]), "check currentPageOrderedEntries[0]");
+            QUnit.equal(JSON.stringify([testEntries[1].Name]), JSON.stringify(cursor.currentPageOrderedEntries[1]), "check currentPageOrderedEntries[1]");
+            return self.closeCursor(cursor);
+        })
+        .done(function(param) { 
+            QUnit.ok(true,"closeCursor ok"); 
+            self.finalizeTest();
+        });
+};
+
+/**
+ * TEST smartQuery SELECT a, b FROM c WHERE d IN (values) type clause.
+ */
+SmartStoreTestSuite.prototype.testSmartQueryWithMultipleFieldsAndWhereInClause  = function() {
+    console.log("In SFSmartStoreTestSuite.testSmartQueryWithCount");
+    var self = this;
+    var testEntries;
+    
+    self.stuffTestSoup()
+        .pipe(function(entries) {
+            testEntries = entries;
+            QUnit.equal(entries.length, 3, "check stuffTestSoup result");
+            var querySpec = navigator.smartstore.buildSmartQuerySpec("SELECT {myPeopleSoup:Name}, {myPeopleSoup:Id} FROM {myPeopleSoup} WHERE {myPeopleSoup:Id} IN ('00300A', '00300C')", 10);
+            return self.runSmartQuery(querySpec);
+        })
+        .pipe(function(cursor) {
+            QUnit.equal(2, cursor.currentPageOrderedEntries.length, "check number of rows returned");
+            QUnit.equal(2, cursor.currentPageOrderedEntries[0].length, "check number of fields returned");
+
+            // Should return 1st and 3rd entries.
+            QUnit.equal(JSON.stringify([testEntries[0].Name, testEntries[0].Id]), 
+                JSON.stringify(cursor.currentPageOrderedEntries[0]), "check currentPageOrderedEntries[0]");
+            QUnit.equal(JSON.stringify([testEntries[2].Name, testEntries[2].Id]), 
+                JSON.stringify(cursor.currentPageOrderedEntries[1]), "check currentPageOrderedEntries[1]");
+            return self.closeCursor(cursor);
+        })
+        .done(function(param) { 
+            QUnit.ok(true,"closeCursor ok"); 
+            self.finalizeTest();
+        });
+};
 
 /**
  * TEST query with special field

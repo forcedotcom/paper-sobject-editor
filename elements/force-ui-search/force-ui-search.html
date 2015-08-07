@@ -9,22 +9,45 @@
 <!-- TBD: Improve query update process to chunk the changes and minimize the server calls -->
 <link rel="import" href="../force-sobject-store/force-sobject-store.html">
 <link rel="import" href="../../dependencies/paper-input/paper-input.html">
-<polymer-element name="force-ui-search" attributes="sobject searchfields fieldstofetch cachemode">
+<dom-module id="force-ui-search">
   <template>
-      <paper-input id="input" label="Search" class="search-key" inputValue="{{criteria}}" style="width:100%"></paper-input>
+      <paper-input id="input" label="Search" class="search-key" inputValue="{{criteria}}" style="width:100%" focused="{{inputFocused}}"></paper-input>
       <force-sobject-store id="store" sobject="{{sobject}}" fieldstoindex="{{searchfields}}"></force-sobject-store>
   </template>
   <script>
-    Polymer('force-ui-search', {
-        searchfields: "Name",
-        criteria: "",
-        querytype: "soql",
-        query: null,
-        cachemode: Force.CACHE_MODE.SERVER_FIRST,
-        observe: {
-          "$.input.focused": "blurAction",
-          "sobject": "computeQuery"
+    Polymer({
+        is: 'force-ui-search', 
+        properties: {
+          sobject: String,
+          fieldstofetch: String,
+          searchfields: {
+            type: String, 
+            value: "Name"
+          },
+          criteria: {
+            type: String, 
+            value: "",
+            observer: "criteriaChanged"
+          },
+          querytype: {
+            type: String, 
+            value: "soql",
+            notify: true
+          },
+          query: {
+            type: String,
+            notify: true
+          },
+          cachemode: {
+            type: String, 
+            value: Force.CACHE_MODE.SERVER_FIRST
+          },
+          inputFocused: Boolean
         },
+        observers: [
+          "blurAction(inputFocused)",
+          "computeQuery(sobject)"
+        ],
         ready: function() {
           if(this.sobject) this.computeQuery();
         },
@@ -74,4 +97,4 @@
         }
     });
   </script>
-</polymer-element>
+</dom-module>

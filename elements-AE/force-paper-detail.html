@@ -1,6 +1,6 @@
 <link rel="import" href="../elements/force-ui-detail/force-ui-detail.html">
 <link href="../dependencies/paper-toggle-button/paper-toggle-button.html" rel="import">
-<polymer-element name="force-paper-detail" extends="force-ui-detail">
+<dom-module id="force-paper-detail" extends="force-ui-detail">
 	<template>
 		<shadow></shadow>
 	</template>
@@ -41,7 +41,8 @@
 	            }
 	        }
 
-	        Polymer('force-paper-detail', {
+	        Polymer({
+	        	is: 'force-paper-detail', 
 
 				compileTemplate: function(layoutSections) {
 
@@ -130,17 +131,18 @@
 
 		})();
 	</script>
-</polymer-element>
-<polymer-element name="force-paper-input" extends="paper-input">
+</dom-module>
+<dom-module id="force-paper-input" extends="paper-input">
 	<template>
 		<shadow></shadow>
 	</template>
 	<script type="text/javascript">
-		Polymer('force-paper-input', {
+		Polymer({
+			is: 'force-paper-input', 
 			invalidChanged: function() {
 				if (this.invalid) this.classList.add('invalid');
 				else this.classList.remove('invalid');
 			}
 		})
 	</script>
-</polymer-element>
+</dom-module>

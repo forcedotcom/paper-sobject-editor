@@ -1,6 +1,6 @@
 cordova.define("com.salesforce.util.bootstrap", function(require, exports, module) {
 /*
- * Copyright (c) 2012-14, salesforce.com, inc.
+ * Copyright (c) 2012-15, salesforce.com, inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided
@@ -26,7 +26,7 @@ cordova.define("com.salesforce.util.bootstrap", function(require, exports, modul
  */
 
 // Version this js was shipped with
-var SALESFORCE_MOBILE_SDK_VERSION = "3.0.0";
+var SALESFORCE_MOBILE_SDK_VERSION = "3.3.0";
 
 var logger = require("com.salesforce.util.logger");
 
@@ -42,7 +42,8 @@ var deviceIsOnline = function() {
         logger.logToConsole("deviceIsOnline connType is undefined.");
     }
     
-    if (typeof connType !== 'undefined') {
+    // Android Chrome has navigator.connection but not window.Connection, which is cordova object.
+    if (typeof connType !== 'undefined' && window.Connection) {
         // Cordova's connection object.  May be more accurate?
         return (connType && connType != Connection.NONE && connType != Connection.UNKNOWN);
     } else {

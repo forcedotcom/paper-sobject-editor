@@ -14,20 +14,20 @@ license that can be found in the LICENSE file.
   <meta name="viewport" content="width=device-width, user-scalable=no">
 
   <!-- Platform polyfill import -->
-  <script src="dependencies/platform/platform.js"></script>
+  <script src="dependencies/webcomponentsjs/webcomponents-lite.min.js"></script>
 
   <!-- Core Polymer Elements -->
-  <link href="dependencies/core-icons/core-icons.html" rel="import">
-  <link href="dependencies/core-icons/notification-icons.html" rel="import">
-  <link href="dependencies/core-animated-pages/core-animated-pages.html" rel="import">
-  <link href="dependencies/core-animated-pages/transitions/slide-from-right.html" rel="import">
-  <link href="dependencies/core-scroll-header-panel/core-scroll-header-panel.html" rel="import">
-  <link href="dependencies/core-toolbar/core-toolbar.html" rel="import">
-  <link href="dependencies/core-drawer-panel/core-drawer-panel.html" rel="import">
+  <link href="dependencies/iron-icons/iron-icons.html" rel="import">
+  <link href="dependencies/iron-icons/notification-icons.html" rel="import">
+  <link href="dependencies/neon-animation/neon-animated-pages.html" rel="import">
+  <link href="dependencies/neon-animation/animations/slide-from-right-animation.html" rel="import">
+  <link href="dependencies/paper-scroll-header-panel/paper-scroll-header-panel.html" rel="import">
+  <link href="dependencies/paper-toolbar/paper-toolbar.html" rel="import">
+  <link href="dependencies/paper-drawer-panel/paper-drawer-panel.html" rel="import">
 
   <!-- Paper Elements -->
   <link href="dependencies/paper-item/paper-item.html" rel="import">
-  <link href="dependencies/paper-shadow/paper-shadow.html" rel="import">
+  <link href="dependencies/paper-material/paper-material.html" rel="import">
   <link href="dependencies/paper-menu-button/paper-menu-button.html" rel="import">
   <link href="dependencies/paper-input/paper-input.html" rel="import">
   <link href="dependencies/paper-checkbox/paper-checkbox.html" rel="import">
@@ -75,89 +75,81 @@ license that can be found in the LICENSE file.
     <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="FirstName LastName Title Phone Email Department HomePhone"></mobile-app>
     <!-- -->
 
-    <polymer-element name="mobile-app" attributes="sobject searchfields displayfields">
+    <dom-module id="mobile-app">
       <template>
 
-        <core-drawer-panel id="drawer_panel" responsiveWidth="10000px">
+        <force-sobject-store sobject="{{sobject}}" fieldstoindex="{{searchfields}}" cache-ready="{{cachePromise}}" autocreate></force-sobject-store>
+
+        <paper-drawer-panel id="drawer_panel" responsiveWidth="10000px">
     
           <div drawer style="background:rgb(243, 243, 243); padding: 10px;" layout vertical center touch-action="none">
             <div class="user-detail">
-              <img class="profile-photo" src="{{$.signin.userInfo.photos.thumbnail || 'images/empty.jpeg'}}" style="height: 80px;width: 80px;border-radius: 50%;border: solid 2px rgb(78, 78, 78);margin-bottom: 10px;">
-              <div  class="text-overflow-ellipsis" style="font-weight: bold;margin: 5px;">{{$.signin.userInfo.display_name}}</div>
-              <div  class="text-overflow-ellipsis" style="margin: 5px;">{{$.signin.userInfo.username}}</div>
+              <img class="profile-photo" src="{{userInfo.photos.thumbnail || 'images/empty.jpeg'}}" style="height: 80px;width: 80px;border-radius: 50%;border: solid 2px rgb(78, 78, 78);margin-bottom: 10px;">
+              <div  class="text-overflow-ellipsis" style="font-weight: bold;margin: 5px;">{{userInfo.display_name}}</div>
+              <div  class="text-overflow-ellipsis" style="margin: 5px;">{{userInfo.username}}</div>
             </div>
             <div flex></div>
-            <paper-button raised on-tap="{{logout}}" style="width:220px">Logout</paper-button>
+            <paper-button raised on-tap="logout" style="width:220px">Logout</paper-button>
           </div>
             
-          <core-animated-pages id="pages" main transitions="slide-from-right" on-destroy="{{refresh}}" style="overflow-x:hidden">
+          <neon-animated-pages id="pages" main transitions="slide-from-right" on-destroy="refresh" style="overflow-x:hidden">
 
-            <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" on-route-changed="{{showList}}" resultHeight="71" on-core-activate="{{openEdit}}" on-syncup="{{silentsync}}">
-              <template>
-                  
-                <!-- ACCOUNTS -/->
-                 
-                 <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
-                 
-                 <div class="round" _style="background-color:{{model.attributes.Name | iconColor}}">{{model.attributes.Name | uppercaseFirstChar}}</div>
-                 <div flex style="margin-left: 10px">
-                 <div style="font-size: 1.1em;" class="text-overflow-ellipsis">{{model.attributes.Name}}</div>
-                 <span  class="text-overflow-ellipsis" style="font-size: 0.9em; color: #696969;display: block; padding-right: 10px;">{{model.attributes.BillingCity}}</span>
-                 </div>
-                 <status-icon props="{{model.attributes}}"></status-icon>
-                 <core-icon icon="chevron-right" style="fill: black"></core-icon>
-                 </div>
-                 
-                <!-- -->
-                
-                <!-- CONTACTS -->
-                <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
-                  <div class="round" _style="background-color:{{model.attributes.LastName | iconColor}}">{{model.attributes.FirstName | uppercaseFirstChar}}{{model.attributes.LastName | uppercaseFirstChar}}</div>
-                  <div flex style="margin-left: 10px">
-                    <div style="font-size: 1.1em;" class="text-overflow-ellipsis">{{model.attributes.FirstName}} {{model.attributes.LastName}}</div>
-                    <span  class="text-overflow-ellipsis" style="font-size: 0.9em; color: #696969; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
-                  </div>
-                  <status-icon props="{{model.attributes}}"></status-icon>
-                  <core-icon icon="chevron-right" style="fill: black"></core-icon>
-                </div>
-                <!-- -->
-              </template>
+            <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" cache-promise="[[cachePromise]]" on-route-changed="showList" resultHeight="71" on-core-activate="openEdit" on-syncup="silentsync">
+              
             </search-screen>
 
-            <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="{{showSync}}" on-sync-complete="{{syncComplete}}"></sync-screen>
+            <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="showSync" on-sync-complete="syncComplete"></sync-screen>
 
-            <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-save="{{refresh}}" on-route-changed="{{showDetail}}" displayfields="{{displayfields}}"></detail-screen>
+            <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-save="refresh" on-route-changed="showDetail" displayfields="{{displayfields}}"></detail-screen>
 
-          </core-animated-pages>
+          </neon-animated-pages>
           
-        </core-drawer-panel>
+        </paper-drawer-panel>
         
-        <force-signin id="signin" consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXgW0xeFBfLMzPRJ4aNy8z7MsSSDjNj.NLu4pSY4B8V3sbYSLrhAMJWxs39jB" callbackurl="http://localhost:9000" proxyurl="{{proxyhost}}" on-success="{{startRouting}}" on-offline="{{startRouting}}"></force-signin>
+        <force-signin id="signin" accesstoken="00DU0000000Hb57!AR0AQATwVwSwNOnHzKOlcN82z704m9AeNuBtF7TIsHcM3JeXoQPXVJFXczJrFaSkWHnn2.GAqOdd2N83BLJ0ehMcBwBWGEUY" instanceurl="https://na12.salesforce.com" consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXgW0xeFBfLMzPRJ4aNy8z7MsSSDjNj.NLu4pSY4B8V3sbYSLrhAMJWxs39jB" callbackurl="http://localhost:9000" proxyurl="[[proxyhost]]" user-info="{{userInfo}}" on-success="startRouting" on-offline="startRouting" auto></force-signin>
 
-        <force-keyvalue-store id="userInfoStore" key="user-info" value="{{$.signin.userInfo}}"></force-keyvalue-store>
+        <force-keyvalue-store id="userInfoStore" key="user-info" value="[[userInfo]]"></force-keyvalue-store>
         
         <style>
-            core-animated-pages {
+            neon-animated-pages {
                 position: absolute;
                 top: 0; bottom: 0;
                 left: 0; right: 0;
             }
-            core-animated-pages#pages > * {
+            neon-animated-pages#pages > * {
                 -webkit-transition-duration: 0.5s;
                 transition-duration: 0.5s;
             }
         </style>
 
-        <core-icon id="network_icon" icon="{{cloudicon}}" style="position: fixed; width: 60px; height: 60px; bottom: 0; right: 0; margin: 10px; fill: green" on-tap="{{toggleConnection}}"></core-icon>
+        <iron-icon id="network_icon" icon="{{cloudicon}}" style="position: fixed; width: 60px; height: 60px; bottom: 0; right: 0; margin: 10px; fill: green" on-tap="toggleConnection"></iron-icon>
 
       </template>
 
       <script>
 
-        Polymer('mobile-app', {
-          onlinestatus: true,
-          cloudicon: 'cloud-done',
-          proxyhost: (location.protocol === 'file:') ? null : location.origin,
+        Polymer({
+          is: 'mobile-app',
+
+          properties: {
+            sobject: String,
+            searchfields: String,
+            displayfields: String,
+            onlinestatus: {
+              type: Boolean,
+              value: true
+            },
+            cloudicon: {
+              type: String,
+              value: 'cloud-done'
+            },
+            proxyhost: {
+              type: String,
+              notify: true,
+              value: (location.protocol === 'file:') ? null : location.origin
+            }
+          },
+          
           ready: function() {
             var that = this;
 
@@ -215,7 +207,7 @@ license that can be found in the LICENSE file.
         })
       </script>
 
-    </polymer-element>
+    </dom-module>
 
     <script>
       (function() {
@@ -231,7 +223,7 @@ license that can be found in the LICENSE file.
             return SFDC.isOnline() ? Force.CACHE_MODE.CACHE_FIRST : Force.CACHE_MODE.CACHE_ONLY;
           }
           // Setting up polymer expressions
-          PolymerExpressions.prototype.uppercaseFirstChar = function(value) {
+          /*PolymerExpressions.prototype.uppercaseFirstChar = function(value) {
             return (value && value.length) ? value.charAt(0).toUpperCase() : '';
           }
           var colors = ["#1abc9c", "#2ecc71", "#3498db", "#9b59b6", "#34495e", "#16a085", "#27ae60", "#2980b9", "#8e44ad", "#2c3e50", "#f1c40f", "#e67e22", "#e74c3c", "#95a5a6", "#f39c12", "#d35400", "#c0392b", "#bdc3c7", "#7f8c8d"];
@@ -240,7 +232,7 @@ license that can be found in the LICENSE file.
               var code = value.split("").reduce(function(code, val) { return code + val.charCodeAt(0); }, 0);
               return colors[code % 19];
             } else return colors[0];
-          }
+          }*/
         });
         if (window.mockStore) mockStore.useSessionStorage();
       })();

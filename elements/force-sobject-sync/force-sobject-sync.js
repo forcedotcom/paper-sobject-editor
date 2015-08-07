@@ -2,17 +2,18 @@
 
     "use strict";
 
-    var viewProps = {
-        sobject: null,
-        query: null,
-        maxsize: -1,
-        pagesize: 2000
-    };
-
-    Polymer('force-sobject-sync', _.extend({}, viewProps, {
-        observe: {
-            'sobject query': 'fetch'
+    Polymer({
+        is: 'force-sobject-sync', 
+        properties: {
+            sobject: String,
+            query: String,
+            fieldstoindex: {
+                type: String,
+                notify: true
+            }
         },
+        observers: ["fetch(sobject, query)"],
+
         ready: function() {
             document.addEventListener('sync', this.syncEvent.bind(this));
         },
@@ -26,14 +27,16 @@
                         {type:"soql", query:that.query}, 
                         store.cache.soupName, {}, 
                         function(result) {
-                            that.syncId = result._soupEntryId || result.syncId;
+                            that.syncId = result._soupEntryId;
+                            // || result.syncId;
                         }
                     );
                 });
             }
         },
         syncEvent: function(e) {
-            var syncId = e.detail._soupEntryId || e.detail.syncId;
+            var syncId = e.detail._soupEntryId;
+            // || e.detail.syncId;
             if (this.syncId >= 0 && syncId == this.syncId) {
                 if (e.detail.status == 'DONE') this.fire('sync-complete', e.detail);
                 else if (e.detail.status == 'RUNNING') {
@@ -41,6 +44,6 @@
                 }
             }
         }
-    }));
+    });
 
 })(window.SFDC);

@@ -1,5 +1,6 @@
 <!--
-Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
 This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
 The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
 The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
@@ -7,170 +8,115 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../neon-animation/neon-animation-runner-behavior.html">
+<link rel="import" href="../paper-dialog-behavior/paper-dialog-behavior.html">
+<link rel="import" href="../paper-styles/paper-styles.html">
+
 <!--
-Provides a dialog overlay.
+`<paper-dialog>` is a dialog with Material Design styling and optional animations when it is
+opened or closed. It provides styles for a header, content area, and an action area for buttons.
+You can use the `<paper-dialog-scrollable` element (in its own repository) if you need a scrolling
+content area. See `Polymer.PaperDialogBehavior` for specifics.
 
-Child elements that include a `dismissive` attribute are positioned in the lower left corner of the dialog. Elements that use the `affirmative` attribute are positioned in the lower right corner.
+For example, the following code implements a dialog with a header, scrolling content area and
+buttons.
 
-Child elements that include the `dismissive` or `affirmative` attribute will automatically toggle the dialog when clicked.
-
-One child element should have the `autofocus` attribute so that the Enter key will automatically take action. This is
-especially important for screen reader environments.
-
-Example:
-
-    <paper-dialog heading="Title for dialog">
-      <p>Lorem ipsum ....</p>
-      <p>Id qui scripta ...</p>
-      <paper-button label="More Info..." dismissive></paper-button>
-      <paper-button label="Decline" affirmative></paper-button>
-      <paper-button label="Accept" affirmative autofocus></paper-button>
+    <paper-dialog>
+      <h2>Header</h2>
+      <paper-dialog-scrollable>
+        Lorem ipsum...
+      </paper-dialog-scrollable>
+      <div class="buttons">
+        <paper-button dialog-dismiss>Cancel</paper-button>
+        <paper-button dialog-confirm>Accept</paper-button>
+      </div>
     </paper-dialog>
 
-#### Transitions
+### Styling
 
-`<paper-dialog>` can be used with `<paper-transition>` to transition the overlay open and close.
+See the docs for `Polymer.PaperDialogBehavior` for the custom properties available for styling
+this element.
 
-To use a transition, import `paper-dialog-transition.html` alongside paper-dialog:
+### Animations
 
-    <link rel="import" href="paper-dialog/paper-dialog-transition.html">
+Set the `entry-animation` and/or `exit-animation` attributes to add an animation when the dialog
+is opened or closed. See the documentation in
+[PolymerElements/neon-animation](https://github.com/PolymerElements/neon-animation) for more info.
 
-Then set the `transition` attribute:
+For example:
 
-    <paper-dialog heading="Title for dialog" transition="paper-dialog-transition-center">
+    <link rel="import" href="components/neon-animation/animations/scale-up-animation.html">
+    <link rel="import" href="components/neon-animation/animations/fade-out-animation.html">
 
-    <paper-dialog heading="Title for dialog" transition="paper-dialog-transition-bottom">
+    <paper-dialog entry-animation="scale-up-animation"
+                  exit-animation="fade-out-animation">
+      <h2>Header</h2>
+      <div>Dialog body</div>
+    </paper-dialog>
+
+### Accessibility
+
+See the docs for `Polymer.PaperDialogBehavior` for accessibility features implemented by this
+element.
 
 @group Paper Elements
 @element paper-dialog
-@homepage github.io
+@hero hero.svg
+@demo demo/index.html
 -->
-<!--
-Fired when the dialog's `opened` property changes.
 
-@event core-overlay-open
-@param {Object} detail
-@param {Object} detail.opened the opened state
--->
-<link href="../polymer/polymer.html" rel="import">
-<link href="../core-overlay/core-overlay.html" rel="import">
-<link href="../paper-shadow/paper-shadow.html" rel="import">
+<dom-module id="paper-dialog">
 
-<polymer-element name="paper-dialog" attributes="opened heading transition autoCloseDisabled backdrop layered closeSelector" role="dialog">
+  <link rel="import" type="css" href="../paper-dialog-behavior/paper-dialog-common.css">
 
   <template>
-
-    <link href="paper-dialog.css" rel="stylesheet">
-
-    <div id="shadow">
-      <paper-shadow z="3" hasPosition></paper-shadow>
-    </div>
-
-    <core-overlay id="overlay" opened="{{opened}}" autoCloseDisabled?="{{autoCloseDisabled}}" backdrop?="{{backdrop}}" layered?="{{layered}}" target="{{}}" sizingTarget="{{$.container}}" closeSelector="{{closeSelector}}" transition="{{transition}}" margin="20"></core-overlay>
-
-    <div id="container" layout vertical>
-
-      <div id="actions" layout horizontal>
-        <content select="[dismissive]"></content>
-        <div flex auto></div>
-        <content select="[affirmative]"></content>
-      </div>
-
-      <div id="main" flex auto>
-        <h1>{{heading}}</h1>
-        <content></content>
-      </div>
-
-    </div>
-
+    <content></content>
   </template>
 
-  <script>
+</dom-module>
 
-    Polymer('paper-dialog', {
+<script>
 
-      /**
-       * Set opened to true to show the dialog and to false to hide it.
-       * A dialog may be made intially opened by setting its opened attribute.
+(function() {
 
-       * @attribute opened
-       * @type boolean
-       * @default false
-       */
-      opened: false,
+  Polymer({
 
-      /**
-       * If true, the dialog has a backdrop darkening the rest of the screen.
-       * The backdrop element is attached to the document body and may be styled
-       * with the class `core-overlay-backdrop`. When opened the `core-opened`
-       * class is applied.
-       *
-       * @attribute backdrop
-       * @type boolean
-       * @default false
-       */
-      backdrop: false,
+    is: 'paper-dialog',
 
-      /**
-       * If true, the dialog is guaranteed to display above page content.
-       *
-       * @attribute layered
-       * @type boolean
-       * @default false
-      */
-      layered: false,
+    behaviors: [
+      Polymer.PaperDialogBehavior,
+      Polymer.NeonAnimationRunnerBehavior
+    ],
 
-      /**
-       * By default a dialog will close automatically if the user
-       * taps outside it or presses the escape key. Disable this
-       * behavior by setting the `autoCloseDisabled` property to true.
-       * @attribute autoCloseDisabled
-       * @type boolean
-       * @default false
-       */
-      autoCloseDisabled: false,
+    listeners: {
+      'neon-animation-finish': '_onNeonAnimationFinish'
+    },
 
-      /**
-       * This property specifies a selector matching elements that should
-       * close the dialog on tap.
-       *
-       * @attribute closeSelector
-       * @type string
-       * @default ""
-       */
-      closeSelector: '[dismissive],[affirmative]',
-
-      /**
-       * @attribute heading
-       * @type string
-       * @default ''
-       */
-      heading: '',
-
-      /**
-       * Set this property to the id of a `core-transition` element to specify
-       * the transition to use when opening/closing this dialog.
-       *
-       * @attribute transition
-       * @type string
-       * @default ''
-       */
-      transition: '',
-
-      /**
-       * Toggle the dialog's opened state.
-       * @method toggle
-       */
-      toggle: function() {
-        this.$.overlay.toggle();
-      },
-
-      headingChanged: function() {
-        this.setAttribute('aria-label', this.heading);
+    _renderOpened: function() {
+      if (this.withBackdrop) {
+        this.backdropElement.open();
       }
+      this.playAnimation('entry');
+    },
 
-    });
+    _renderClosed: function() {
+      if (this.withBackdrop) {
+        this.backdropElement.close();
+      }
+      this.playAnimation('exit');
+    },
 
-  </script>
+    _onNeonAnimationFinish: function() {
+      if (this.opened) {
+        this._finishRenderOpened();
+      } else {
+        this._finishRenderClosed();
+      }
+    }
 
-</polymer-element>
+  });
+
+})();
+
+</script>

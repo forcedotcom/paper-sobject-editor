@@ -40,7 +40,7 @@
         var that = this;
 
         // Initiate store cache creation if none initiated already for this sobject
-        if (sobject && !sobjectStores[sobject]) {
+        if (!sobjectStores[sobject]) {
             var sobjectType = SFDC.getSObjectType(sobject);
             // Initiate store creation of working cache copy based on describe info and fieldstoindex.
             var storePromise = $.when(sobjectType.describe(), fieldsToIndex)
@@ -54,12 +54,23 @@
                 }).then(function() {
                     sobjectStores[sobject] = dataStore;
                     originalSObjectStores[sobject] = originalDataStore;
-                    that.fire('store-ready');
                 });
             // Capture the store creation promise, until the real store gets assigned.
             // This will prevent creation of same store twice.
             sobjectStores[sobject] = storePromise;
         }
+
+        // Once store is created, just resolve the promise or throw error on failure.
+        Promise.resolve(sobjectStores[sobject])
+            .then(function() {
+                that._resolveReady(that);
+                that.fire('store-ready');
+            })
+            .catch(function(err) {
+                that._rejectReady(new Error("Failed soup creation."));
+                that.fire('store-error');
+            });
+
         return sobjectStores[sobject];
     }
 
@@ -68,28 +79,100 @@
     }
 
     //TBD: Add a property "autoIndex" to generate indexes based on object describe result
-    Polymer('force-sobject-store', {
-        sobject: null,
-        observe: {
-            sobject: "init",
-            fieldstoindex: "init"
+    Polymer({
+        is: 'force-sobject-store', 
+
+        /**
+         * Fired when the store cache has been successfully created and ready to use.
+         *
+         * @event store-ready
+         */
+
+        /**
+         * Fired when the store cache has been successfully removed.
+         *
+         * @event store-destroy
+         */
+
+        properties: {
+
+            /**
+             * (Required) Type of sobject that you would like to store in this cache.
+             *
+             * @attribute sobject
+             * @type String
+             */
+            sobject: String,
+
+            /**
+             * (Optional) Additional fields (given by their name) that must be indexed on the soup.
+             * Provide a space delimited list. Also the field names are case sensitive.
+             *
+             * @attribute fieldstoindex
+             * @type String
+             * @default null
+             */
+            fieldstoindex: {
+                type: String, /*TBD: Should switch to array */
+                value: null
+            },
+
+            /**
+             * (Optional) Auto create the soup once required fields are set.
+             *
+             * @attribute autocreate
+             * @type Boolean
+             */
+            autocreate: Boolean,
+
+            /**
+             * A promise that resolves when the cache is ready, or rejects
+             * if there is an error before the soup creation.
+             *
+             * @attribute cacheReady
+             * @type Promise
+             * @default `new Promise`
+            */
+            cacheReady: {
+                type: Object,
+                readOnly: true,
+                notify: true,
+                value: function() {
+                  return new Promise(function (resolve, reject) {
+                    this._resolveReady = resolve;
+                    this._rejectReady = reject;
+                  }.bind(this));
+                }
+            }
         },
-        get cacheReady() {
-            return this.init();
-        },
+        observers: [
+            "_init(sobject, fieldstoindex, autocreate)"
+        ],
+        // cache: Returns an instance of Force.StoreCache when it's ready to store/retrieve data.
         get cache() {
             var cache = sobjectStores[processName(this.sobject)];
             if (cache instanceof Force.StoreCache) return cache;
         },
+        // cacheForOriginals: Returns an instance of Force.StoreCache to be used to keep data copy for conflict resolution.
         get cacheForOriginals() {
             var cache = originalSObjectStores[processName(this.sobject)];
             if (cache instanceof Force.StoreCache) return cache;
         },
-        init: function() {
+        _init: function() {
+            if (this.autocreate) {
+                this.debounce('store-create', this.create);
+            }
+        },
+        /**
+         * Creates the soup from smartstore. Returns a promise to track the completion of process.
+         * 
+         * @method create
+         */
+        create: function() {
             var that = this;
             var sobject = processName(this.sobject);
 
-            // Create StoreCache if smartstore is available. Also check if sobject is properly set
+            // Create StoreCache if smartstore is available. Also check if sobject is properly set and no existing soup created.
             if (navigator.smartstore && sobject) {
                 var keyField = ((sobject && sobject.indexOf('__x') > 0)
                         ? 'ExternalId' : 'Id');
@@ -103,6 +186,11 @@
                 });
             }
         },
+        /**
+         * Removes the soup from smartstore. Returns a promise to track the completion of process.
+         * 
+         * @method destroy
+         */
         destroy: function() {
             var cacheDestroy, cacheForOriginalsDestroy;
             var that = this;

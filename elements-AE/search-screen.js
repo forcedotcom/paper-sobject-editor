@@ -1,7 +1,18 @@
-Polymer('search-screen', {
-  cachemode: Force.CACHE_MODE.CACHE_ONLY,
+Polymer({
+  is: 'search-screen', 
+  properties: {
+    sobject: String,
+    searchfields: String,
+    fieldstofetch: String,
+    resultHeight: Number,
+    cachePromise: Object,
+    cachemode: {
+      type: String,
+      value: Force.CACHE_MODE.CACHE_ONLY
+    }
+  },
+  behaviors: [SFDC.RoutingBehavior],
   ready: function() {
-    this.super();
     this.async(this.initialize);
     // Add online/offline event listeners to toggle the sync icon
     var _boundNetworkStatus = this.setNetworkStatus.bind(this);
@@ -121,6 +132,7 @@ Polymer('search-screen', {
       if (this.$.list.collection.size() > 0) {
         this.$.loading.style.display = "none";
         this.$.list.autosync = true;
+        this.models = this.searchresults.models;
       } else this.setupSyncQuery();
       this.$.list.removeEventListener('sync', onFetch);
     }.bind(this);
@@ -138,6 +150,7 @@ Polymer('search-screen', {
     var fieldsToFetch = this.fieldstofetch ? this.fieldstofetch.trim().split(/\s+/) : [];
     fieldsToFetch = _.union(searchFields, fieldsToFetch);
 
+    // Filter out any in-accessible fields due to FLS on user profile
     var sobjectType = SFDC.getSObjectType(this.sobject);
     sobjectType.describe()
     .then(function(describeResult) {
@@ -150,14 +163,14 @@ Polymer('search-screen', {
   },
 
   stopClick: function(e) {
-    e.preventDefault();
+    //e.preventDefault();
     if (e.currentTarget == this.$.uilist && this._searchFocued) {
       this.$.search.$.input.$.input.blur();
     }
   },
 
   attached: function() {
-    this.$.uilist.appendChild(this.querySelector('template'));
+    //this.$.uilist.appendChild(this.querySelector('template'));
   },
 
   refresh: function() {

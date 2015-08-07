@@ -1,59 +1,74 @@
-<polymer-element name="sync-status-icon" attributes="recordid, failedids">
+<dom-module id="sync-status-icon" attributes="recordid, failedids">
     <template>
         <template if="{{failed}}">
-            <core-icon icon="error" style="fill: red"></core-icon>
+            <iron-icon icon="error" style="fill: red"></iron-icon>
         </template>
     </template>
     <script>
-        Polymer('sync-status-icon', {
+        Polymer({
+            is: 'sync-status-icon',
             get failed() {
                 return _.contains(this.failedids, this.recordid);
             }
         })
     </script>
-</polymer-element>
+</dom-module>
 
-<polymer-element name="sync-screen" extends="force-route" attributes="sobject" on-route-changed="{{viewLoaded}}">
+<dom-module id="sync-screen" on-route-changed="viewLoaded">
+    <style>
+        :host /deep/ iron-icon {
+            color: #fff;
+            width: 40px; 
+            height: 40px;
+        }
+    </style>
     <template>
-        <style>
-            :host /deep/ core-icon {
-                color: #fff;
-                width: 40px; 
-                height: 40px;
-            }
-        </style>
-        <paper-shadow target="{{$.toolbar}}"></paper-shadow>
+        <paper-material>
 
-        <core-toolbar id="toolbar">
-          <core-icon id="back-icon" icon="chevron-left" on-tap="{{navigateBack}}" style="width: 45px; height: 45px; margin: -5px;" on-touchend="{{stopClick}}"></core-icon>
-          <div flex></div>
-          <div on-tap="{{doSync}}" style="color:white; line-height: 50px; width: 80px;" layout horizontal end-justified>Sync</div>
-        </core-toolbar>
+            <paper-toolbar id="toolbar">
+              <iron-icon id="back-icon" icon="chevron-left" on-tap="navigateBack" style="width: 45px; height: 45px; margin: -5px;" on-touchend="stopClick"></iron-icon>
+              <div flex></div>
+              <div on-tap="doSync" style="color:white; line-height: 50px; width: 80px;" layout horizontal end-justified>Sync</div>
+            </paper-toolbar>
+
+        </paper-material>
 
         <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;">
             
-            <force-sobject-collection id="list" sobject="{{sobject}}" querytype="cache" query="{{query}}" on-sync="{{syncComplete}}"></force-sobject-collection>
+            <force-sobject-collection id="list" sobject="{{sobject}}" querytype="cache" query="{{query}}" collection="{{collection}}" on-sync="syncComplete"></force-sobject-collection>
             <div id="listview">
-                <template repeat="{{model in $.list.collection.models}}">
-                    <a href="#edit/{{model.id}}/sync" style="text-decoration: none; color: inherit">
+                <template is="dom-repeat" items="[[collection.models]]">
+                    <a href="#edit/{{item.id}}/sync" style="text-decoration: none; color: inherit">
                         <div style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
                             <div horizontal layout>
-                                <status-icon props="{{model.attributes}}"></status-icon>
-                                <sync-status-icon recordid="{{model.id}}" failedids="{{failedIds}}"></sync-status-icon>
-                                <div flex style="margin-left: 10px">{{model.attributes.Name || (model.attributes.FirstName + ' ' + model.attributes.LastName)}}</div>
-                                <core-icon icon="chevron-right" style="fill: black"></core-icon>
+                                <status-icon props="{{item.attributes}}"></status-icon>
+                                <sync-status-icon recordid="{{item.id}}" failedids="{{failedIds}}"></sync-status-icon>
+                                <div flex style="margin-left: 10px">{{item.attributes.Name || (item.attributes.FirstName + ' ' + item.attributes.LastName)}}</div>
+                                <iron-icon icon="chevron-right" style="fill: black"></iron-icon>
                             </div>
                         </div>
                     </a>
-                    <force-sobject sobject="{{sobject}}" recordid="{{model.id}}" mergemode="{{mergemode}}"></force-sobject>
+                    <force-sobject sobject="{{sobject}}" recordid="{{item.id}}" mergemode="{{mergemode}}"></force-sobject>
                 </template>
             </div>
         </div>
     </template>
     <script type="text/javascript">
-    Polymer('sync-screen', {
-        failedIds: [],
-        query: {queryType:"exact", indexPath:"__local__", matchKey:true, order:"ascending", pageSize:25},
+    Polymer({
+        is: 'sync-screen', 
+        properties: {
+            sobject: String,
+            failedIds: {
+                type: Array,
+                value: function() { return []; },
+                notify: true
+            },
+            query: {
+                type: Object,
+                value: {queryType:"exact", indexPath:"__local__", matchKey:true, order:"ascending", pageSize:25}
+            }
+        },
+        behaviors: [SFDC.RoutingBehavior],
         get mergemode() {
             return Force.MERGE_MODE.MERGE_FAIL_IF_CHANGED;
         },
@@ -72,7 +87,7 @@
 
         doSync: function() {
             var that = this;
-            var sobjects = this.$.listview.querySelectorAll('force-sobject');
+            var sobjects = Polymer.dom(this.$.listview).querySelectorAll('force-sobject');
             var syncStatuses = [];
 
             this.failedIds = [];
@@ -122,4 +137,4 @@
         }
     });
     </script>
-</polymer-element>
+</dom-module>

@@ -27,7 +27,7 @@
 (function($j) {
 
 // Version this js was shipped with
-var SALESFORCE_MOBILE_SDK_VERSION = "3.0.0";
+var SALESFORCE_MOBILE_SDK_VERSION = "3.3.0";
 
 /*
  * JavaScript library to wrap REST API on Visualforce. Leverages Ajax Proxy
@@ -222,26 +222,32 @@ if (forcetk.Client === undefined) {
      */
     forcetk.Client.prototype.refreshAccessToken = function(callback, error) {
         var that = this;
-        if (this.authCallback == null && this.refreshToken) {
-            var url = this.loginUrl + '/services/oauth2/token';
-            return $j.ajax({
-                type: 'POST',
-                url: (this.proxyUrl !== null) ? this.proxyUrl: url,
-                cache: false,
-                processData: false,
-                data: 'grant_type=refresh_token&client_id=' + this.clientId + '&refresh_token=' + this.refreshToken,
-                success: function(response) {
-                    that.setSessionToken(response.access_token, null, response.instance_url);
-                    callback();
-                },
-                error: error,
-                dataType: "json",
-                beforeSend: function(xhr) {
-                    if (that.proxyUrl !== null) {
-                        xhr.setRequestHeader('SalesforceProxy-Endpoint', url);
+        if (typeof this.authCallback === 'undefined' || this.authCallback === null) {
+            if (this.refreshToken) {
+                var url = this.loginUrl + '/services/oauth2/token';
+                return $j.ajax({
+                    type: 'POST',
+                    url: (this.proxyUrl !== null) ? this.proxyUrl: url,
+                    cache: false,
+                    processData: false,
+                    data: 'grant_type=refresh_token&client_id=' + this.clientId + '&refresh_token=' + this.refreshToken,
+                    success: function(response) {
+                        that.setSessionToken(response.access_token, null, response.instance_url);
+                        callback();
+                    },
+                    error: error,
+                    dataType: "json",
+                    beforeSend: function(xhr) {
+                        if (that.proxyUrl !== null) {
+                            xhr.setRequestHeader('SalesforceProxy-Endpoint', url);
+                        }
                     }
-                }
-            });
+                });
+             } else {
+                 if (typeof error === 'function') {
+                     error();
+                 }
+             }
         } else {
             this.authCallback(that, callback, error);
         }
@@ -251,15 +257,15 @@ if (forcetk.Client === undefined) {
      * Set a session token and the associated metadata in the client.
      * @param sessionId a salesforce.com session ID. In a Visualforce page,
      *                   use '{!$Api.sessionId}' to obtain a session ID.
-     * @param [apiVersion="31.0"] Force.com API version
+     * @param [apiVersion="33.0"] Force.com API version
      * @param [instanceUrl] Omit this if running on Visualforce; otherwise
      *                   use the value from the OAuth token.
      */
     forcetk.Client.prototype.setSessionToken = function(sessionId, apiVersion, instanceUrl) {
         this.sessionId = sessionId;
-        this.apiVersion = (typeof apiVersion === 'undefined' || apiVersion === null) ? 'v31.0': apiVersion;
+        this.apiVersion = (typeof apiVersion === 'undefined' || apiVersion === null) ? 'v33.0': apiVersion;
         // In PhoneGap OR outside
-        if (location.protocol === 'file:' || this.proxyUrl != null) {
+        if (location.protocol === 'ms-appx:' || location.protocol === 'ms-appx-web:' || location.protocol === 'file:' || this.proxyUrl != null) {
             this.instanceUrl = instanceUrl;
         } 
         // In Visualforce
@@ -269,24 +275,16 @@ if (forcetk.Client === undefined) {
     }
 
     // Internal method to generate the key/value pairs of all the required headers for xhr.
-    forcetk.Client.prototype.getRequestHeaders = function(requestUrl, headerParams) {
+    var getRequestHeaders = function(client) {
         var headers = {};
 
-        headers[this.authzHeader] = "OAuth " + this.sessionId;
+        headers[client.authzHeader] = "Bearer " + client.sessionId;
         headers['Cache-Control'] = 'no-store';
         // See http://www.salesforce.com/us/developer/docs/chatterapi/Content/intro_requesting_bearer_token_url.htm#kanchor36
         headers["X-Connect-Bearer-Urls"] = true;
-        if (this.userAgentString !== null) {
-            headers['User-Agent'] = this.userAgentString;
-            headers['X-User-Agent'] = this.userAgentString;
+        if (client.userAgentString !== null) {
+            headers['X-User-Agent'] = client.userAgentString;
         }
-        if (this.proxyUrl !== null) headers['SalesforceProxy-Endpoint'] = requestUrl;
-
-        //Add any custom headers
-        for (paramName in (headerParams || {})) {
-            headers[paramName] = headerParams[paramName];
-        }
-
         return headers;
     }
 
@@ -314,7 +312,7 @@ if (forcetk.Client === undefined) {
             processData: false,
             dataType: "json",
             data: payload,
-            headers: this.getRequestHeaders((this.proxyUrl !== null) ? url : null, headerParams),
+            headers: getRequestHeaders(this),
             success: function() {
                 console.timeEnd(tag);
                 callback.apply(null, arguments);
@@ -341,6 +339,14 @@ if (forcetk.Client === undefined) {
                 a.href = url;
                 tag = "TIMING " + a.pathname + "(#" + ajaxRequestId + ")";
                 console.time(tag);
+
+                if (that.proxyUrl !== null) {
+                    xhr.setRequestHeader('SalesforceProxy-Endpoint', url);
+                }
+                //Add any custom headers
+                for (paramName in (headerParams || {})) {
+                    xhr.setRequestHeader(paramName, headerParams[paramName]);
+                }
             }
         });
     }
@@ -351,7 +357,7 @@ if (forcetk.Client === undefined) {
      * @param xhr xhr request to be replayed.
      */
     forcetk.Client.prototype.replay = function(xhr) {
-        xhr.headers[this.authzHeader] = "Bearer " + this.sessionId;
+        xhr.headers = getRequestHeaders(this);
         $j.ajax(xhr);
     }
 

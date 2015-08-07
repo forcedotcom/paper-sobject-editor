@@ -1,96 +1,137 @@
 <!--
-    force-ui-app element is a top level UI element that extends the force-app element and also provides the basic styling and structure for the application. This element uses polymer layout features to enable flexible sections on the page, esp. in single page view with split view panels.
-    Why: a) Manages all the UI stylesheets.
-    b) Provides simple header and content location for the app.
-    c) Provides way to create splitview or multipage app with built-in navigation.
+Copyright (c) 2015, salesforce.com, inc. All rights reserved.
+This code may only be used under the BSD style license found at https://github.com/ForceDotComLabs/mobile-ui-elements/LICENSE
+-->
 
-    @extends force-app
+<!--
+force-ui-app element is a top level UI element that provides the basic styling and structure for an application. This element uses polymer layout features to enable flexible sections on the page, esp. in single page view with split view panels. It also contains 2 content sections, one for elements in header and another for all the body elements with class `page`.
 
-    @attributes:
-    multipage: (Optional) Default: false. When true, force-ui-app shows only one direct children (class="page") at a time and allows navigation to other children.
-    hideheader: (Optional) Default: false. Show/Hide default header on the page.
-    startpage: (Optional) Default: first direct child element with class="page". Instance of the DOM element, with class="page", that should be shown first when the app loads.
+Example:
 
-    @properties:
-    pages: Returns all the direct child elements of the force-ui-app with class as "page".
+    <force-ui-app>
+      <h1>Title</h1>
+      <div class="page">Body</div>
+    </force-ui-app>
 
-    @content sections:
-    header: Selects all child elements of nodeType header.
-    content: Selects all the rest of child elements.
-
-    @methods:
-    navigateTo: Navigates the user from one page element to another page element.
-      @param target, Selector or dom element to navigate the user to.
-    navigateBack: Navigates the user to the last page element in the stack.
-
-    @events:
-    navigation-start: Thrown before starting the navigation from one page to another.
-    navigation-end: Thrown after the navigation animation ends.
+@group Salesforce Mobile Elements
+@element force-ui-app
 -->
 <link rel="import" href="../../dependencies/polymer/polymer.html">
 <link rel="import" href="../force-app/force-app.html">
-<polymer-element name="force-ui-app" attributes="multipage, startpage, hideheader">
+<dom-module id="force-ui-app">
+  <style>
+    :host {
+      display: block;
+      min-height: 200px;
+      min-width: 200px;
+      width: 100%;
+      height: 100%;
+      background-color: white;
+      z-index: 0;
+      font: 14px/1.25 "Helvetica Neue", sans-serif;
+      color: #222;
+      position: absolute;
+      top: 0; left: 0;
+    }
+    :host header[class*="bar-"] {
+      position: absolute;
+    }
+    polyfill-next-selector { content: ':host(.splitview) .content'; }
+    :host(.splitview) ::content .content {
+      position: static;
+      margin-top: 44px;
+    }
+    polyfill-next-selector { content: ':host .content'; }
+    ::content .content {
+      margin-top: 44px;
+    }
+  </style>
+  <link rel="stylesheet" href="../../dependencies/ratchet/dist/css/ratchet.css"/>
+  <link rel="stylesheet" href="../css/responsive.css"/>
+  <link rel="stylesheet" href="../css/styles.css"/>
   <template>
-    <link rel="stylesheet" href="../../dependencies/ratchet/dist/css/ratchet.shim.css"/>
-    <link rel="stylesheet" href="../css/responsive.shim.css"/>
-    <link rel="stylesheet" href="../css/styles.shim.css"/>
-    <style>
-      :host {
-        display: block;
-        min-height: 200px;
-        min-width: 200px;
-        width: 100%;
-        height: 100%;
-        background-color: white;
-        z-index: 0;
-        font: 14px/1.25 "Helvetica Neue", sans-serif;
-        color: #222;
-        position: absolute;
-        top: 0; left: 0;
-      }
-      :host header[class*="bar-"] {
-        position: absolute;
-      }
-      polyfill-next-selector { content: ':host(.splitview) .content'; }
-      :host(.splitview) ::content .content {
-        position: static;
-        margin-top: 44px;
-      }
-      polyfill-next-selector { content: ':host .content'; }
-      ::content .content {
-        margin-top: 44px;
-      }
-    </style>
-    <template if="{{!hideheader}}">
-      <header class="bar bar-nav">
-        <template if="{{multipage && pageStack.length}}">
-          <a class="icon icon-left-nav pull-left" on-click="{{navigateBack}}"></a>
+    <header class="bar bar-nav">
+        <template is="dom-if" if="[[showBackBtn]]">
+          <a class="icon icon-left-nav pull-left" on-click="navigateBack"></a>
         </template>
         <content select="a.icon, a.btn, div.segmented-control, h1"></content>
-      </header>
-    </template>
-    <div layout horizontal>
-      <content id="pages" select="*"></content>
+    </header>
+    <div class="layout horizontal">
+      <content id="pages" select=".page"></content>
     </div>
   </template>
   <script src="../js/jq-slide.js"></script>
   <script>
     (function() {
-      Polymer('force-ui-app', {
-        multipage: false,
-        startpage: '.page:first',
-        pageStack: [],
-        hideheader: false,
-        disablestyles: false,
+      Polymer({
+        is: 'force-ui-app', 
+
+        /**
+         * Fired when starting the navigation from one page to another.
+         *
+         * @event navigation-start
+         */
+
+        /**
+         * Fired when the navigation animation ends.
+         *
+         * @event navigation-end
+         */
+
+        properties: {
+
+          /**
+           * (Optional) When true, force-ui-app shows only one direct children (class="page") at a time and allows navigation to other children.
+           *
+           * @attribute multipage
+           * @type Boolean
+           * @default false
+           */
+          multipage: Boolean,
+
+          /**
+           * (Optional) Instance of the DOM element, with class="page", that should be shown first when the app loads.
+           *
+           * @attribute startpage
+           * @type String
+           * @default .page:first
+           */
+          startpage: {
+            type: String,
+            value: '.page:first'
+          },
+
+          /**
+           * Returns an array of DOM elements in the navigation stack.
+           *
+           * @attribute pageStack
+           * @type Array
+           */
+          pageStack: Array,
+
+          /**
+           * Property to show/hide the back button during navigation.
+           *
+           * @attribute showBackBtn
+           * @type Boolean
+           */
+          showBackBtn: {
+            type: Boolean,
+            notify: true
+          }
+        },
+        _showBackBtn: function() {
+          this.showBackBtn = this.multipage && this.pageStack.length;
+        },
         ready: function() {
           this.async(this.arrangePages);
         },
-        observe: {
-          multipage: 'arrangePages',
-          startpage: 'arrangePages'
-        },
+        observers: [
+          "arrangePages(startpage)",
+          "_showBackBtn(pageStack.splices)"
+        ],
         get pages() {
-          return $(this.$.pages.getDistributedNodes()).filter('.page').toArray();
+          return Polymer.dom(this.$.pages).getDistributedNodes();
         },
         arrangePages: function() {
           var $pages = $(this.pages);
@@ -106,17 +147,30 @@
             $(this).addClass('splitview');
           }
         },
+
+        /**
+         * Navigates the user to the last page element in the stack.
+         *
+         * @method navigateBack
+         */
         navigateBack: function(e) {
           if (this.multipage) {
-            navigate(this, this.activepage, this.pageStack.pop(), true);
+            navigate(this, this.activepage, this.pop('pageStack'), true);
             if (e) e.stopPropagation();
           }
         },
+
+        /**
+         * Navigates the user from one page element to another page element.
+         * 
+         * @method navigateTo
+         * @param target. Selector or dom element to navigate the user to.
+         */
         navigateTo: function(target) {
           if (this.multipage) {
             var $target = $(this.pages).filter(target);
             if ($target.length == 1) {
-              this.pageStack.push(this.activepage);
+              this.push("pageStack", this.activepage);
               navigate(this, this.activepage, $target[0]);
             }
           }
@@ -150,4 +204,4 @@
         }
     })();
   </script>
-</polymer-element>
+</dom-module>

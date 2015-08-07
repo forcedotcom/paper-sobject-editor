@@ -18,7 +18,7 @@
 <link rel="import" href="../../dependencies/polymer/polymer.html">
 <link rel="import" href="../force-sobject-collection/force-sobject-collection.html">
 <link rel="import" href="../../dependencies/core-selector/core-selector.html">
-<polymer-element name="force-selector-list" attributes="sobject query querytype" extends="core-selector">
+<dom-module id="force-selector-list" attributes="sobject query querytype" extends="core-selector">
   <template>
     <force-sobject-collection id="listsource" sobject="{{sobject}}" querytype="{{querytype}}" query="{{query}}" autosync="false"></force-sobject-collection>
     <shadow></shadow>
@@ -38,4 +38,4 @@
         }
     });
   </script>
-</polymer-element>
+</dom-module>

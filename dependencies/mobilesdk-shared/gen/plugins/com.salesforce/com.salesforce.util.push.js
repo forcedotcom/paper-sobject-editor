@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-14, salesforce.com, inc.
+ * Copyright (c) 2012-15, salesforce.com, inc.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without modification, are permitted provided
@@ -25,13 +25,13 @@
  */
 
 // Version this js was shipped with
-var SALESFORCE_MOBILE_SDK_VERSION = "3.0.0";
+var SALESFORCE_MOBILE_SDK_VERSION = "3.3.0";
 
 /**
  * Register push notification handler
  */
 var registerPushNotificationHandler = function(notificationHandler, fail) {
-    if (window.plugins && window.plugins.pushNotification) {
+    if (!window.plugins || !window.plugins.pushNotification) {
         console.err("PushPlugin not found");
         fail("PushPlugin not found");
         return;

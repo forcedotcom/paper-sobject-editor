@@ -3,8 +3,9 @@
 <head>
 <title>Users</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no;" />
-<link rel="stylesheet" href="css/styles.css"/>
 <link rel="stylesheet" href="css/ratchet.css"/>
+<link rel="stylesheet" href="css/ratchet-theme-ios.css"/> <!-- TODO import ratchet-theme.css instead and have ratchet-theme.css point to the theme for the platform -->
+<link rel="stylesheet" href="css/styles.css"/>
 </head>
 
 <body>
@@ -13,7 +14,7 @@
 
 <script src="js/jquery.min.js"></script>
 <script src="js/underscore-min.js"></script>
-<script src="js/backbone.js"></script>
+<script src="js/backbone-min.js"></script>
 <script src="js/forcetk.mobilesdk.js"></script>
 
 <!-- Local Testing -/->
@@ -36,61 +37,54 @@
 
 <!-- --------------------------------------- Search page template ------------------------------------------------- -->
 <script id="search-page" type="text/template">
-  <header class="bar-title">
+  <header class="bar bar-nav">
     <h1 class="title">Users</h1>
   </header>
+  <footer class="bar bar-footer">
+    <a class="btn btn-nav btn-positive pull-left syncdownmru">Sync mru</a>
+    <a class="btn btn-nav btn-positive pull-left syncdownsoql">Sync soql</a>
+    <a class="btn btn-nav btn-positive pull-left syncdownsosl">Sync sosl</a>
+    <a class="btn btn-nav btn-positive pull-left syncup">Sync Up</a>
+    <a class="btn btn-nav pull-right cachesize">Cache Size</a>
+    <a class="btn btn-nav pull-right inspect">DB</a>
+  </footer>
 
-  <div class="bar-standard bar-header-secondary">
+  <div class="bar bar-standard bar-header-secondary">
     <input type="search" class="search-key" placeholder="Search"/>
   </div>
 
   <div class="content">
-    <ul class="list"></ul>
+    <ul class="table-view"></ul>
   </div>
-
-  <footer class="bar-footer">
-    <a class="button syncdown">Sync Down</a>
-    <a class="button syncup">Sync Up</a>
-    <a class="button cachesize">Cache Size</a>
-    <a class="button inspect">DB</a>
-  </footer>
 </script>
 
 <!-- --------------------------------------- User list item template ---------------------------------------------- -->
 <script id="user-list-item" type="text/template">
 
-  <a href="#users/<%= Id %>" class="pad-right">
-    <div class="details-short">
-      <b><%= FirstName %> <%= LastName %></b><br/>
-      <% if (Title) { %><%= Title %><% } %> <% if (CompanyName) { %><%= CompanyName %><% } %>
-      <% if (__locally_updated__) { %><span class="count-main">modified</span><br/><% } %>
-    </div>
+  <a href="#users/<%= Id %>">
+    <span class="important"><%= FirstName %> <%= LastName %></span><br/>
+    <% if (Title) { %><%= Title %><% } %> <% if (CompanyName) { %><%= CompanyName %><% } %>
+    <% if (__locally_updated__) { %><span class="pull-right btn btn-negative">modified</span><br/><% } %>
   </a>
 </script>
 
 <!-- --------------------------------------- User page template -------------------------------------------------- -->
 <script id="user-page" type="text/template">
-  <header class="bar-title">
-    <a href="#" class="button-prev">Back</a>
-    <h1 class="title">User</h1>
-    <a class="button save">Save</a>
+  <header class="bar bar-nav">
+    <a href="#" class="btn btn-nav pull-left back">Back</a>
+    <a class="btn btn-nav btn-positive pull-right save">Save</a>
+    <h1 class="title"><%= FirstName %> <%= LastName %></h1>
   </header>
-
-  <footer class="bar-footer">
-    <span id="offlineStatus"></span>
-  </footer>
 
   <div class="content">
     <div class="content-padded">
       <div class="details">
-        <b><%= FirstName %> <%= LastName %></b><br/>
-        <%= Id %><br/>
         <input placeholder="Title" type="text" name="Title" value="<%= Title %>" /><br/>
         <input placeholder="CompanyName" type="text" name="CompanyName" value="<%= CompanyName %>" /><br/>
         <input placeholder="City" type="text" name="City" value="<%= City %>" /><br/>
         <input placeholder="Phone" type="text" name="MobilePhone" value="<%= MobilePhone %>" /><br/>
         <input placeholder="Email" type="text" name="Email" value="<%= Email %>" />
-        <% if (__locally_updated__) { %>LOCALLY MODIFIED<br/><% } %>
+        <% if (__locally_updated__) { %><span class="btn btn-negative btn-block">Locally Modified</span><% } %>
       </div>
     </div>
   </div>
@@ -101,7 +95,7 @@
 // The User Model
 app.models.User = Force.SObject.extend({
     sobjectType: "User",
-    fieldlist: ["Id", "FirstName", "LastName", "Title", "CompanyName", "Email", "MobilePhone","City"],
+    fieldlist: ["Id", "FirstName", "LastName", "Title", "CompanyName", "Email", "MobilePhone","City", "LastModifiedDate"],
     cache: function() { return app.cache;},
     cacheMode: Force.CACHE_MODE.CACHE_ONLY
 });
@@ -117,15 +111,8 @@ app.models.UserCollection = Force.SObjectCollection.extend({
 
     setCriteria: function(key) {
         this.key = key;
-        this.config = {type:"cache", 
-                       cacheQuery:{queryType:"smart", 
-                                   smartSql:"SELECT {users:_soup}"
-                                   + " FROM {users}"
-                                   + " WHERE {users:FirstName} like '" + key + "%'"
-                                   + " ORDER BY {users:LastName} "
-                                   + " LIMIT 25 ", 
-                                   pageSize:25}
-                      };
+        var querySpec = _.extend({orderPath:"LastName", pageSize:25}, (key == "" ? {queryType:"range"} : {queryType:"match", matchKey: key + "*"}));
+        this.config = {type:"cache", cacheQuery: querySpec};
     }
 });
 
@@ -138,7 +125,9 @@ app.views.SearchPage = Backbone.View.extend({
 
     events: {
         "keyup .search-key": "search",
-        "click .syncdown": "syncDown",
+        "click .syncdownmru": "syncDownMru",
+        "click .syncdownsoql": "syncDownSoql",
+        "click .syncdownsosl": "syncDownSosl",
         "click .syncup": "syncUp",
         "click .cachesize": "cacheSize",
         "click .inspect": "inspect"
@@ -157,7 +146,11 @@ app.views.SearchPage = Backbone.View.extend({
         var progress =  (typeof sync.progress === "number" && sync.progress < 100) ? " (" + Math.round(sync.progress) + "%)" : "";
 
         if (sync.type === "syncDown") {
-            $(".syncdown").html("Sync Down" + progress);
+            if (sync.target.type == "soql") {
+                this.lastSoqlSyncDownId = sync.syncId;
+            }
+            var syncType = sync.target.type.toLowerCase()
+            $(".syncdown" + syncType).html("Sync " + syncType + progress);
         }
         if (sync.type === "syncUp") {
             $(".syncup").html("Sync Up" + progress);
@@ -172,9 +165,27 @@ app.views.SearchPage = Backbone.View.extend({
         return this;
     },
 
-    syncDown: function(event) {
-        var soql = "SELECT " + this.fieldlist.join(",") + " FROM User WHERE CompanyName = 'salesforce.com' LIMIT 10000";
-        cordova.require("com.salesforce.plugin.smartsync").syncDown({type:"soql", query:soql}, "users", {}, this.handleSyncUpdate.bind(this));
+    syncDown: function(target) {
+        cordova.require("com.salesforce.plugin.smartsync").syncDown(target, "users", {mergeMode:Force.MERGE_MODE_DOWNLOAD.LEAVE_IF_CHANGED}, this.handleSyncUpdate.bind(this));
+    },
+
+    syncDownMru: function(event) {
+        this.syncDown({type:"mru", sobjectType: "User", fieldlist: this.fieldlist});
+    },
+
+    syncDownSoql: function(event) {
+        if (!_.isNumber(this.lastSoqlSyncDownId)) {
+            // First time
+            this.syncDown({type:"soql", query:"SELECT " + this.fieldlist.join(",") + " FROM User WHERE CompanyName = 'salesforce.com' LIMIT 10000"});
+        }
+        else {
+            // Subsequent times
+            cordova.require("com.salesforce.plugin.smartsync").reSync(this.lastSoqlSyncDownId, this.handleSyncUpdate.bind(this));
+        }
+    },
+
+    syncDownSosl: function(event) {
+        this.syncDown({type:"sosl", query:"FIND {salesforce.com} RETURNING User (" + this.fieldlist.join(",") + ")"});
     },
 
     syncUp: function(event) {
@@ -221,7 +232,7 @@ app.views.UserListItemView = Backbone.View.extend({
     template: _.template($("#user-list-item").html()),
 
     render: function(eventName) {
-        $(this.el).html(this.template(this.model.toJSON()));
+        $(this.el).addClass("table-view-cell").html(this.template(this.model.toJSON()));
         return this;
     },
 
@@ -274,7 +285,7 @@ app.Router = Backbone.StackRouter.extend({
 
     setupCaches: function() {
         // Cache for offline support
-        app.cache = new Force.StoreCache("users", [ {path:"FirstName", type:"string"}, {path:"LastName", type:"string"} ]);
+        app.cache = new Force.StoreCache("users", [ {path:"FirstName", type:"full_text"}, {path:"LastName", type:"full_text"}, {path:"Title", type:"full_text"} ]);
         app.cache.init();
     },
 

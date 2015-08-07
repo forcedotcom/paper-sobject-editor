@@ -1,35 +1,35 @@
-<polymer-element name="status-icon" attributes="props" noscript>
+<dom-module id="status-icon" attributes="props" noscript>
+    <style>
+        iron-icon[icon="add-circle-outline"] {
+            fill: green;
+        }
+        iron-icon[icon="create"] {
+            fill: yellow;
+        }
+        iron-icon[icon="delete"] {
+            fill: red;
+        }
+        iron-icon[icon="check-circle-outline"] {
+            fill: blue;
+        }
+    </style>
     <template>
-        <style>
-            core-icon[icon="add-circle-outline"] {
-                fill: green;
-            }
-            core-icon[icon="create"] {
-                fill: yellow;
-            }
-            core-icon[icon="delete"] {
-                fill: red;
-            }
-            core-icon[icon="check-circle-outline"] {
-                fill: blue;
-            }
-        </style>
         <template if="{{props.__sync_failed__}}">
             <span class="pull-right badge badge-negative">Failed to sync</span>
         </template>
         <template if="{{props.__local__}}">
             <template if="{{props.__locally_created__}}">
-                <core-icon icon="add-circle-outline" style="fill: blue"></core-icon>
+                <iron-icon icon="add-circle-outline" style="fill: blue"></iron-icon>
             </template>
             <template if="{{props.__locally_updated__}}">
-                <core-icon icon="create" style="fill: rgb(255, 173, 0)"></core-icon>
+                <iron-icon icon="create" style="fill: rgb(255, 173, 0)"></iron-icon>
             </template>
             <template if="{{props.__locally_deleted__}}">
-                <core-icon icon="delete" style="fill: red"></core-icon>
+                <iron-icon icon="delete" style="fill: red"></iron-icon>
             </template>
         </template>
         <template if="{{!props.__local__}}">
-            <core-icon icon="check-circle-outline" style="fill: green"></core-icon>
+            <iron-icon icon="check-circle-outline" style="fill: green"></iron-icon>
         </template>
     </template>
-</polymer-element>
+</dom-module>

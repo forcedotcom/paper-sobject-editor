@@ -1,46 +1,55 @@
-<link rel="import" href="../dependencies/core-scroll-header-panel/core-scroll-header-panel.html">
-<link rel="import" href="../dependencies/core-toolbar/core-toolbar.html">
-<link rel="import" href="../dependencies/core-icon-button/core-icon-button.html">
-<link rel="import" href="../dependencies/core-list/core-list.html">
+<link rel="import" href="../dependencies/iron-list/iron-list.html">
+<link rel="import" href="../dependencies/paper-scroll-header-panel/paper-scroll-header-panel.html">
+<link rel="import" href="../dependencies/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="../dependencies/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../dependencies/paper-toast/paper-toast.html">
-<polymer-element name="search-screen" extends="force-route" attributes="sobject searchfields fieldstofetch resultHeight">
+<dom-module id="search-screen">
+    <link rel="stylesheet" href="search-screen.css"/>
     <template>
 
-        <link rel="stylesheet" href="search-screen.css"/>
-
-        <core-scroll-header-panel id="scrollHeader" touch-action="pan-y">
+        <paper-scroll-header-panel id="scrollHeader" touch-action="pan-y">
             
-            <core-toolbar id="header" class="header-toolbar">
-                <core-icon id="menu-icon" class="icon" icon="menu" on-tap="{{showMenu}}"></core-icon>
+            <paper-toolbar id="header" class="header-toolbar">
+                <iron-icon id="menu-icon" class="icon" icon="menu" on-tap="showMenu"></iron-icon>
                 <div class="title" flex>{{sobject}}s</div>
-            </core-toolbar>
+            </paper-toolbar>
 
-            <core-toolbar id="toolbar" class="search-toolbar">
+            <paper-toolbar id="toolbar" class="search-toolbar">
 
-                <core-icon id="sync_icon" class="icon" icon="notification:sync" on-tap="{{fireSyncUp}}"></core-icon>
+                <iron-icon id="sync_icon" class="icon" icon="notification:sync" on-tap="fireSyncUp"></iron-icon>
                 <div class="search-box" flex layout horizontal center>
-                    <core-icon id="search_icon" icon="search" class="search-icon"></core-icon>
-                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" cachemode="{{cachemode}}" flex on-down="{{searchFocused}}" on-touchend="{{stopClick}}"></force-ui-search>
+                    <iron-icon id="search_icon" icon="search" class="search-icon"></iron-icon>
+                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" cachemode="{{cachemode}}" flex querytype="{{searchtype}}" query="{{searchquery}}" on-down="searchFocused" on-touchend="stopClick"></force-ui-search>
                 </div>
-                <core-icon id="create_icon" class="icon" icon="add" on-tap="{{navigateToCreate}}"></core-icon>
-                <div class="cancelBtn" on-tap="{{cancelSearch}}">Cancel</div>
+                <iron-icon id="create_icon" class="icon" icon="add" on-tap="navigateToCreate"></iron-icon>
+                <div class="cancelBtn" on-tap="cancelSearch">Cancel</div>
               
-            </core-toolbar>
+            </paper-toolbar>
 
             <div class="content">
                 <img id="loading" class="loadingInd" src="loading-gray.gif"/>
-                <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-sync-progress="{{handleSyncResponse}}" on-sync-complete="{{handleSyncResponse}}"></force-sobject-sync>
-                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="{{$.search.querytype}}" query="{{$.search.query}}" autosync="false"></force-sobject-collection>
-                <core-list id="uilist" height="{{resultHeight}}" data="{{$.list.collection.models}}" on-touchend="{{stopClick}}">
-                    <content select="*"></content>
-                </core-list>
+                <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-sync-progress="handleSyncResponse" on-sync-complete="handleSyncResponse"></force-sobject-sync>
+                <force-sobject-collection id="list" sobject="{{sobject}}" querytype="[[searchtype]]" query="[[searchquery]]" collection="{{searchresults}}" cache-promise="[[cachePromise]]"></force-sobject-collection>
+                <iron-list id="uilist" height="{{resultHeight}}" items="[[models]]" as="model" on-touchend="stopClick">
+                    <template>
+                    <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
+                      <div class="round" _style="background-color:{{model.attributes.LastName | iconColor}}">{{model.attributes.FirstName | uppercaseFirstChar}}{{model.attributes.LastName | uppercaseFirstChar}}</div>
+                      <div flex style="margin-left: 10px">
+                        <div style="font-size: 1.1em;" class="text-overflow-ellipsis"><span>{{model.attributes.FirstName}}</span> <span>{{model.attributes.LastName}}</span></div>
+                        <span  class="text-overflow-ellipsis" style="font-size: 0.9em; color: #696969; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
+                      </div>
+                      <status-icon props="{{model.attributes}}"></status-icon>
+                      <iron-icon icon="chevron-right" style="fill: black"></iron-icon>
+                    </div>
+                    </template>
+                </iron-list>
 
             </div>
 
-        </core-scroll-header-panel>
+        </paper-scroll-header-panel>
 
         <paper-toast id="status_toast" text=""></paper-toast>
 
     </template>
     <script src="search-screen.js"></script>
-</polymer-element>
+</dom-module>
