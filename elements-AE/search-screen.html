@@ -3,46 +3,48 @@
 <link rel="import" href="../dependencies/paper-toolbar/paper-toolbar.html">
 <link rel="import" href="../dependencies/paper-icon-button/paper-icon-button.html">
 <link rel="import" href="../dependencies/paper-toast/paper-toast.html">
+<link rel="import" href="../dependencies/layout/layout.html">
+<link rel="import" href="status-icon.html">
 <dom-module id="search-screen">
     <link rel="stylesheet" href="search-screen.css"/>
     <template>
 
         <paper-scroll-header-panel id="scrollHeader" touch-action="pan-y">
-            
+
             <paper-toolbar id="header" class="header-toolbar">
                 <iron-icon id="menu-icon" class="icon" icon="menu" on-tap="showMenu"></iron-icon>
-                <div class="title" flex>{{sobject}}s</div>
+                <div class="title flex">{{sobject}}s</div>
             </paper-toolbar>
 
             <paper-toolbar id="toolbar" class="search-toolbar">
 
                 <iron-icon id="sync_icon" class="icon" icon="notification:sync" on-tap="fireSyncUp"></iron-icon>
-                <div class="search-box" flex layout horizontal center>
+                <div class="search-box flex layout horizontal center">
                     <iron-icon id="search_icon" icon="search" class="search-icon"></iron-icon>
-                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" cachemode="{{cachemode}}" flex querytype="{{searchtype}}" query="{{searchquery}}" on-down="searchFocused" on-touchend="stopClick"></force-ui-search>
+                    <force-ui-search id="search" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{fieldstofetch}}" cachemode="{{cachemode}}" flex querytype="{{searchtype}}" query="{{searchquery}}" on-down="searchFocused" on-touchend="stopClick" style="line-height:40px"></force-ui-search>
                 </div>
                 <iron-icon id="create_icon" class="icon" icon="add" on-tap="navigateToCreate"></iron-icon>
                 <div class="cancelBtn" on-tap="cancelSearch">Cancel</div>
-              
+
             </paper-toolbar>
 
             <div class="content">
                 <img id="loading" class="loadingInd" src="loading-gray.gif"/>
                 <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-sync-progress="handleSyncResponse" on-sync-complete="handleSyncResponse"></force-sobject-sync>
                 <force-sobject-collection id="list" sobject="{{sobject}}" querytype="[[searchtype]]" query="[[searchquery]]" collection="{{searchresults}}" cache-promise="[[cachePromise]]"></force-sobject-collection>
-                <iron-list id="uilist" height="{{resultHeight}}" items="[[models]]" as="model" on-touchend="stopClick">
-                    <template>
-                    <div horizontal layout center style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);">
-                      <div class="round" _style="background-color:{{model.attributes.LastName | iconColor}}">{{model.attributes.FirstName | uppercaseFirstChar}}{{model.attributes.LastName | uppercaseFirstChar}}</div>
-                      <div flex style="margin-left: 10px">
-                        <div style="font-size: 1.1em;" class="text-overflow-ellipsis"><span>{{model.attributes.FirstName}}</span> <span>{{model.attributes.LastName}}</span></div>
+                <!--<iron-list id="uilist" height="{{resultHeight}}" items="[[models]]" as="model" on-touchend="stopClick" on-tap="window.location.hash="#edit/"+model.id;">-->
+                    <template  id="uilist" is="dom-repeat" items="[[models]]" as="model" height="{{resultHeight}}" on-touchend="stopClick">
+                    <div class="horizontal layout center" style="line-height: 20px; padding: 10px; border-bottom: 1px solid rgb(221, 221, 221);" on-tap="navigatetodetailscreen">
+                      <div class="round">{{getinitials(model.attributes.FirstName, model.attributes.LastName)}}</div>
+                      <div class="flex" style="margin-left: 10px">
+                        <div style="font-size: 1.1em; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;" class="text-overflow-ellipsis"><span>{{model.attributes.FirstName}}</span> <span>{{model.attributes.LastName}}</span></div>
                         <span  class="text-overflow-ellipsis" style="font-size: 0.9em; color: #696969; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
                       </div>
-                      <status-icon props="{{model.attributes}}"></status-icon>
+                      <status-icon props="model.attributes"></status-icon>
                       <iron-icon icon="chevron-right" style="fill: black"></iron-icon>
                     </div>
                     </template>
-                </iron-list>
+                <!--</iron-list>-->
 
             </div>
 

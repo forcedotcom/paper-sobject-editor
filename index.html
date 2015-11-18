@@ -7,10 +7,10 @@ license that can be found in the LICENSE file.
 <html>
 <head>
   <script>
-    if (location.protocol == 'http:' && location.hostname != 'localhost') 
+    if (location.protocol == 'http:' && location.hostname != 'localhost')
       window.location = 'https://' + location.hostname;
   </script>
-  
+
   <meta name="viewport" content="width=device-width, user-scalable=no">
 
   <!-- Platform polyfill import -->
@@ -32,8 +32,8 @@ license that can be found in the LICENSE file.
   <link href="dependencies/paper-input/paper-input.html" rel="import">
   <link href="dependencies/paper-checkbox/paper-checkbox.html" rel="import">
   <link href="dependencies/paper-button/paper-button.html" rel="import">
-  
-  
+
+
   <!-- Mobile UI Elements -->
   <link rel="import" href="elements/force-ui-app/force-ui-app.html">
   <link rel="import" href="elements/force-ui-search/force-ui-search.html">
@@ -70,7 +70,7 @@ license that can be found in the LICENSE file.
     <!-- ACCOUNTS -/->
     <mobile-app sobject="Account" searchfields="Name" displayfields="Name Phone Industry BillingCity Description"></mobile-app>
     <!-- -->
-    
+
     <!-- CONTACTS -->
     <mobile-app sobject="Contact" searchfields="FirstName LastName" displayfields="FirstName LastName Title Phone Email Department HomePhone"></mobile-app>
     <!-- -->
@@ -81,35 +81,32 @@ license that can be found in the LICENSE file.
         <force-sobject-store sobject="{{sobject}}" fieldstoindex="{{searchfields}}" cache-ready="{{cachePromise}}" autocreate></force-sobject-store>
 
         <paper-drawer-panel id="drawer_panel" responsiveWidth="10000px">
-    
+
           <div drawer style="background:rgb(243, 243, 243); padding: 10px;" layout vertical center touch-action="none">
             <div class="user-detail">
-              <img class="profile-photo" src="{{userInfo.photos.thumbnail || 'images/empty.jpeg'}}" style="height: 80px;width: 80px;border-radius: 50%;border: solid 2px rgb(78, 78, 78);margin-bottom: 10px;">
+              <img class="profile-photo" src="{{userInfo.photos.thumbnail}}" || 'images/empty.jpeg' style="height: 80px;width: 80px;border-radius: 50%;border: solid 2px rgb(78, 78, 78);margin-bottom: 10px;">
               <div  class="text-overflow-ellipsis" style="font-weight: bold;margin: 5px;">{{userInfo.display_name}}</div>
-              <div  class="text-overflow-ellipsis" style="margin: 5px;">{{userInfo.username}}</div>
+              <div  style="margin: 5px;">{{userInfo.username}}</div>
             </div>
             <div flex></div>
-            <paper-button raised on-tap="logout" style="width:220px">Logout</paper-button>
+            <paper-button raised on-tap="logout" style="width:220px;">Logout</paper-button>
           </div>
-            
           <neon-animated-pages id="pages" main transitions="slide-from-right" on-destroy="refresh" style="overflow-x:hidden">
 
-            <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" cache-promise="[[cachePromise]]" on-route-changed="showList" resultHeight="71" on-core-activate="openEdit" on-syncup="silentsync">
-              
-            </search-screen>
+            <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" cache-promise="[[cachePromise]]" on-route-changed="showList" resultHeight="71" on-syncup="silentsync"></search-screen>
 
             <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="showSync" on-sync-complete="syncComplete"></sync-screen>
 
             <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-save="refresh" on-route-changed="showDetail" displayfields="{{displayfields}}"></detail-screen>
 
           </neon-animated-pages>
-          
+
         </paper-drawer-panel>
-        
-        <force-signin id="signin" accesstoken="00DU0000000Hb57!AR0AQATwVwSwNOnHzKOlcN82z704m9AeNuBtF7TIsHcM3JeXoQPXVJFXczJrFaSkWHnn2.GAqOdd2N83BLJ0ehMcBwBWGEUY" instanceurl="https://na12.salesforce.com" consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXgW0xeFBfLMzPRJ4aNy8z7MsSSDjNj.NLu4pSY4B8V3sbYSLrhAMJWxs39jB" callbackurl="http://localhost:9000" proxyurl="[[proxyhost]]" user-info="{{userInfo}}" on-success="startRouting" on-offline="startRouting" auto></force-signin>
+
+        <force-signin id="signin" consumerkey="3MVG9QDx8IX8nP5TwrwtRg53zXgW0xeFBfLMzPRJ4aNy8z7MsSSDjNj.NLu4pSY4B8V3sbYSLrhAMJWxs39jB" callbackurl="http://localhost:9000" proxyurl="[[proxyhost]]" user-info="{{userInfo}}" on-success="startRouting" on-offline="startRouting" auto></force-signin>
 
         <force-keyvalue-store id="userInfoStore" key="user-info" value="[[userInfo]]"></force-keyvalue-store>
-        
+
         <style>
             neon-animated-pages {
                 position: absolute;
@@ -149,7 +146,7 @@ license that can be found in the LICENSE file.
               value: (location.protocol === 'file:') ? null : location.origin
             }
           },
-          
+
           ready: function() {
             var that = this;
 
@@ -248,6 +245,5 @@ license that can be found in the LICENSE file.
       ga('send', 'pageview');
 
     </script>
-
 </body>
 </html>

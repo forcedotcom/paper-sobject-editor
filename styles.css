@@ -16,8 +16,8 @@ body /deep/ .round {
   background:#1abc9c;
   border-radius: 50%;
   text-align: center;
-  display: table-cell; 
-  vertical-align: middle; 
+  display: table-cell;
+  vertical-align: middle;
   color: white;
   font-size: 19px;
   line-height: 50px;
@@ -27,16 +27,16 @@ body /deep/ textarea {
   -moz-user-select: text;
 }
 body /deep/ .text-overflow-ellipsis {
-  text-overflow: ellipsis; 
-  overflow: hidden; 
+  text-overflow: ellipsis;
+  overflow: hidden;
   white-space: nowrap;
 }
 body /deep/ .user-detail {
-  margin-top: 60px; 
-  border-bottom: solid 2px #f40009; 
+  margin-top: 60px;
+  border-bottom: solid 2px #f40009;
   padding-bottom: 10px;
 }
-body /deep/ core-toolbar.header-toolbar,
+body /deep/ paper-toolbar.header-toolbar,
 body /deep/ detail-screen::shadow #toolbar,
 body /deep/ sync-screen::shadow #toolbar,
 body /deep/ force-paper-input::shadow .focused-underline,
@@ -45,4 +45,8 @@ body /deep/ force-paper-input::shadow .cursor {
 }
 body /deep/ force-paper-input[focused]::shadow .floated-label {
     color: #f40009;
+}
+
+body /deep/ paper-material.content {
+  position: relative;
 }
