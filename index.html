@@ -84,12 +84,12 @@ license that can be found in the LICENSE file.
 
           <div drawer style="background:rgb(243, 243, 243); padding: 10px;" layout vertical center touch-action="none">
             <div class="user-detail">
-              <img class="profile-photo" src="{{userInfo.photos.thumbnail}}" || 'images/empty.jpeg' style="height: 80px;width: 80px;border-radius: 50%;border: solid 2px rgb(78, 78, 78);margin-bottom: 10px;">
-              <div  class="text-overflow-ellipsis" style="font-weight: bold;margin: 5px;">{{userInfo.display_name}}</div>
-              <div  style="margin: 5px;">{{userInfo.username}}</div>
+              <img class="profile-photo" src="{{userInfo.photos.thumbnail}}" || 'images/empty.jpeg' style="height: 80px;width: 80px;border-radius: 50%;border: solid 2px rgb(78, 78, 78);margin-bottom: 10px;margin-left: auto;margin-right: auto;display: block;">
+              <div  class="text-overflow-ellipsis" style="font-weight: bold;margin-top: 5px;margin-left: auto;margin-right: auto;display: table;">{{userInfo.display_name}}</div>
+              <div  style="margin-top: 5px;margin-left: auto;margin-right: auto;display: table;">{{userInfo.username}}</div>
             </div>
-            <div flex></div>
-            <paper-button raised on-tap="logout" style="width:220px;">Logout</paper-button>
+            <div class="flex"></div>
+            <paper-button raised on-tap="logout" style="width:220px;margin-top: 20px;">Logout</paper-button>
           </div>
           <neon-animated-pages id="pages" main transitions="slide-from-right" on-destroy="refresh" style="overflow-x:hidden">
 
