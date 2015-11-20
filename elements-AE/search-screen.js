@@ -1,5 +1,5 @@
 Polymer({
-  is: 'search-screen', 
+  is: 'search-screen',
   properties: {
     sobject: String,
     searchfields: String,
@@ -9,9 +9,19 @@ Polymer({
     cachemode: {
       type: String,
       value: Force.CACHE_MODE.CACHE_ONLY
-    }
+    },
+    selecteditem: Object,
+    firstname: String,
+    lastname: String
   },
   behaviors: [SFDC.RoutingBehavior],
+  getinitials: function(firstname, lastname){
+    var firstinitial = (firstname && firstname.length) ? firstname.charAt(0).toUpperCase() : '';
+    var lastinitial =  (lastname && lastname.length) ? lastname.charAt(0).toUpperCase() : '';
+
+    return firstinitial + lastinitial;
+  },
+
   ready: function() {
     this.async(this.initialize);
     // Add online/offline event listeners to toggle the sync icon
@@ -40,12 +50,12 @@ Polymer({
     var scrollHeader = this.$.scrollHeader;
     var input = this.$.search.$.input.$.input;
     scrollHeader.addEventListener('transitionend', function(e) {
-      // Only act when transition happened on scrollheader element, 
+      // Only act when transition happened on scrollheader element,
       // but not by a child element event bubbling up.
       if (e.target == scrollHeader) {
         scrollHeader.classList.remove('animating');
         if (scrollHeader.classList.contains('search')) {
-              scrollHeader.style.transform = 
+              scrollHeader.style.transform =
                   scrollHeader.style.webkitTransform = 'translate3d(0, 0, 0)';
               scrollHeader.style.top = '-64px';
               input.style.opacity = 1;
@@ -63,11 +73,11 @@ Polymer({
     var totalHeight = this.resultHeight * this.$.list.collection.size();
     if (!this._fetching && scrollTop > (totalHeight - this._viewportHeight)) {
       this._fetching = true;
-      this.async(function() { 
+      this.async(function() {
         var that = this;
         var promise = this.$.list.fetchMore();
         // Promise may be null if no more records are to be fetched
-        if (promise) promise.always(function() { that._fetching = false; }); 
+        if (promise) promise.always(function() { that._fetching = false; });
         else that._fetching = false;
       });
     }
@@ -90,13 +100,13 @@ Polymer({
   },
   cancelSearch: function() {
     var scrollHeader = this.$.scrollHeader;
-    this.$.search.criteria = 
+    this.$.search.criteria =
       this.$.search.$.input.$.input.value = ''; //Manually mark input value, seems like a bug on android chrome.
-    scrollHeader.style.transform = 
+    scrollHeader.style.transform =
       scrollHeader.style.webkitTransform = '';
     scrollHeader.style.top = '0px';
     this.$.search.$.input.$.input.blur();
-    this.async(function() { 
+    this.async(function() {
          scrollHeader.classList.add('animating');
          scrollHeader.classList.remove('search');
          this._searchFocued = false;
@@ -112,7 +122,7 @@ Polymer({
 
   syncComplete: function(result) {
     this.$.sync_icon.classList.remove('sync-animation');
-    if (result && result.failures > 0) 
+    if (result && result.failures > 0)
       this.$.status_toast.text = 'Sync completed with ' + result.failures + ' failures.';
     else this.$.status_toast.text = 'Sync completed successfully.';
     this.$.status_toast.show();
@@ -179,5 +189,9 @@ Polymer({
 
   navigateToCreate: function() {
     window.location.hash = "#edit";
+  },
+
+  navigatetodetailscreen: function(e) {
+    window.location.hash = "#edit/" + e.model.__data__.model.id;
   }
 });

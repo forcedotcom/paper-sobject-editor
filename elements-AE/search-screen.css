@@ -52,7 +52,7 @@ paper-scroll-header-panel.search .search-toolbar .icon {
 }
 paper-scroll-header-panel.search .cancelBtn {
     margin: 0 0 0 10px;
-    color: white; 
+    color: white;
     line-height: 50px;
     display: block;
 }
@@ -62,14 +62,15 @@ paper-toolbar {
 }
 paper-toolbar.search-toolbar {
     background-color: #bdc3c7;
+    height: 50px;
 }
 
 .title {
     font-size: 1.5em;
 }
 iron-icon.icon {
-    width: 35px; 
-    height: 35px; 
+    width: 35px;
+    height: 35px;
     margin: 0px;
 }
 .icon[icon="cloud-off"] {
@@ -80,13 +81,13 @@ iron-icon.icon {
     margin-right: 5px;
 }
 .search-box {
-    background: rgb(230, 228, 228); 
-    border-radius: 10px; 
+    background: rgb(230, 228, 228);
+    border-radius: 10px;
     padding: 0 10px;
 }
 .loadingInd {
-    position: absolute; 
-    top: 50%; left: 45%; 
+    position: absolute;
+    top: 50%; left: 45%;
     width: 32px;
 }
 
