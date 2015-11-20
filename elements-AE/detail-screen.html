@@ -1,7 +1,7 @@
 <dom-module id="detail-screen" on-route-changed="render">
     <link rel="stylesheet" href="detail.css"/>
     <template>
-        <paper-toolbar id="toolbar">
+        <paper-toolbar id="toolbar" style="background: #f40009">
           <iron-icon id="back-icon" icon="chevron-left" on-tap="navigateBack" style="width: 45px; height: 45px; margin: -5px;" on-touchend="stopClick"></iron-icon>
           <div flex></div>
           <div on-tap="doSave" style="color:white; line-height: 50px; width: 80px;" layout horizontal end-justified>
@@ -20,7 +20,7 @@
     </template>
     <script>
       Polymer({
-        is: 'detail-screen', 
+        is: 'detail-screen',
         _active: Boolean,
         properties: {
             sobject: String,
