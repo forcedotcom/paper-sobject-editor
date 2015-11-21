@@ -62,7 +62,6 @@ paper-toolbar {
 }
 paper-toolbar.search-toolbar {
     background-color: #bdc3c7;
-    height: 50px;
 }
 
 .title {
