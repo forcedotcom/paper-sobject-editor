@@ -17,6 +17,7 @@ license that can be found in the LICENSE file.
   <script src="dependencies/webcomponentsjs/webcomponents-lite.min.js"></script>
 
   <!-- Core Polymer Elements -->
+  <link rel="import" href="dependencies/iron-iconset-svg/iron-iconset-svg.html">
   <link href="dependencies/iron-icons/iron-icons.html" rel="import">
   <link href="dependencies/iron-icons/notification-icons.html" rel="import">
   <link href="dependencies/neon-animation/neon-animated-pages.html" rel="import">
@@ -24,13 +25,13 @@ license that can be found in the LICENSE file.
   <link href="dependencies/paper-scroll-header-panel/paper-scroll-header-panel.html" rel="import">
   <link href="dependencies/paper-toolbar/paper-toolbar.html" rel="import">
   <link href="dependencies/paper-drawer-panel/paper-drawer-panel.html" rel="import">
+  <link href="dependencies/polymer/polymer.html" rel="import">
 
   <!-- Paper Elements -->
   <link href="dependencies/paper-item/paper-item.html" rel="import">
   <link href="dependencies/paper-material/paper-material.html" rel="import">
   <link href="dependencies/paper-menu-button/paper-menu-button.html" rel="import">
   <link href="dependencies/paper-input/paper-input.html" rel="import">
-  <link href="dependencies/paper-checkbox/paper-checkbox.html" rel="import">
   <link href="dependencies/paper-button/paper-button.html" rel="import">
 
 
@@ -97,7 +98,7 @@ license that can be found in the LICENSE file.
 
             <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="showSync" on-sync-complete="syncComplete"></sync-screen>
 
-            <detail-screen id="detail" sobject="{{sobject}}" path="edit(/:recordid)(/:sync)" on-save="refresh" on-route-changed="showDetail" displayfields="{{displayfields}}"></detail-screen>
+            <detail-screen id="detail" sobject="{{sobject}}" path="details(/:recordid)(/:sync)" on-save="refresh" on-route-changed="showDetail" displayfields="{{displayfields}}" recordid="getRecordId" style="background: white"></detail-screen>
 
           </neon-animated-pages>
 
@@ -124,10 +125,8 @@ license that can be found in the LICENSE file.
       </template>
 
       <script>
-
         Polymer({
           is: 'mobile-app',
-
           properties: {
             sobject: String,
             searchfields: String,
@@ -144,12 +143,11 @@ license that can be found in the LICENSE file.
               type: String,
               notify: true,
               value: (location.protocol === 'file:') ? null : location.origin
-            }
+            },
+            recordid: String
           },
-
           ready: function() {
             var that = this;
-
             this.$.listview.showMenu = function() {
               that.$.drawer_panel.togglePanel();
             }
@@ -162,7 +160,11 @@ license that can be found in the LICENSE file.
             }
           },
           openEdit: function(params) {
-            window.location.hash = "#edit/" + params.detail.data.id;
+            window.location.hash = "#details/" + params.detail.data.id;
+          },
+
+          getRecordId: function(params) {
+            return params.detail.data.id;
           },
           refresh: function() {
             this.$.listview.refresh();
@@ -240,10 +242,8 @@ license that can be found in the LICENSE file.
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
       ga('create', 'UA-50565334-2', 'sfdc-sobject-editor.herokuapp.com');
       ga('send', 'pageview');
-
     </script>
 </body>
 </html>

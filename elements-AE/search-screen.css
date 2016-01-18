@@ -64,8 +64,10 @@ paper-toolbar.search-toolbar {
     background-color: #bdc3c7;
 }
 
-.title {
+.title-toolbar {
     font-size: 1.5em;
+    color: #ffffff;
+    text-align: left;
 }
 iron-icon.icon {
     width: 35px;
