@@ -15,9 +15,10 @@
     "paper-elements": "PolymerElements/paper-elements#>=1.0.0",
     "neon-animation": "PolymerElements/neon-animation#>=1.0.0",
     "iron-list": "PolymerElements/iron-list#>=1.0.0",
-    "layout": "Polymer/layout"
+    "layout": "Polymer/layout",
+    "iron-a11y-announcer": "PolymerElements/iron-a11y-announcer#>=1.0.4"
   },
   "resolutions": {
-    "polymer": "^1.0.0"
+    "polymer": "^1.2.3"
   }
 }
