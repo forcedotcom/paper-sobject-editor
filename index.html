@@ -97,7 +97,7 @@ license that can be found in the LICENSE file.
             <search-screen id="listview" path="" sobject="{{sobject}}" searchfields="{{searchfields}}" fieldstofetch="{{displayfields}}" cache-promise="[[cachePromise]]" on-route-changed="showList" resultHeight="71" on-syncup="silentsync"></search-screen>
 
             <sync-screen id="syncview" path="sync" sobject="{{sobject}}" on-route-changed="showSync" on-sync-complete="syncComplete"></sync-screen>
-
+            
             <detail-screen id="detail" sobject="{{sobject}}" path="details(/:recordid)(/:sync)" on-save="refresh" on-route-changed="showDetail" displayfields="{{displayfields}}" recordid="getRecordId" style="background: white"></detail-screen>
 
           </neon-animated-pages>
