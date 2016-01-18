@@ -2,7 +2,6 @@
 
     Polymer({
         is: 'force-ui-detail', 
-         
         properties: {
 
             /**
@@ -83,7 +82,8 @@
             },
             model: {
                 type: Object,
-                observer: "renderModel"
+                observer: "renderModel",
+                notify: true
             }
         },
         observers: [
@@ -113,6 +113,7 @@
         },
         renderModel: function() {
             // Template Info may not generated yet
+            console.log(this.model);
             if (this._templateInfo) this.async(updateViewModel);
         },
         compileTemplate: function(layoutSections) {
@@ -170,24 +171,24 @@
     var describeField = function(sobject, fieldname) {
         var sobjectType = SFDC.getSObjectType(sobject);
         // split the field path to get the base reference. eg. for field Owner.Name
-        var fieldPathParts = Path.get(fieldname);
+        //var fieldPathParts = Path.get(fieldname);
 
         var fieldPicker = function(describeInfo) {
             var fieldInfos = describeInfo.fields;
             // if relationship path, i.e. more than 1 parts after split
-            if (fieldPathParts.length > 1) {
+            //if (fieldPathParts.length > 1) {
                 // Find the corresponding relationship field.
-                var propFilter = {relationshipName: fieldPathParts[0]};
-                var referenceField = _.findWhere(fieldInfos, propFilter);
+            //    var propFilter = {relationshipName: fieldPathParts[0]};
+            //    var referenceField = _.findWhere(fieldInfos, propFilter);
                 // If the referenceField is found, then get the field info for rest of the path
-                if (referenceField) {
-                    return describeField(referenceField.referenceTo[0],
-                        fieldPathParts.slice(1).join('.'));
-                }
-            } else {
-                var propFilter = {name: fieldPathParts[0]};
+                //if (referenceField) {
+                //    return describeField(referenceField.referenceTo[0],
+                //        fieldPathParts.slice(1).join('.'));
+                //}
+            //} else {
+                var propFilter = {name: fieldname};
                 return _.findWhere(fieldInfos, propFilter);
-            }
+            //}
         }
 
         return sobjectType.describe().then(fieldPicker);
@@ -417,8 +418,9 @@
     */
     //TBD: Allow way to hide empty values
     //TBD: Allow way to show selective field types
-    var compileTemplateForLayout = function(layoutSections) {
+    var compileTemplateForLayout = function(layoutSections, model) {
 
+        var view = this;
         // Utility method to return input element type for a corresponding salesforce field type.
         var inputType = function(fieldType) {
             switch(fieldType) {
@@ -454,7 +456,7 @@
                 } else if (fieldType == 'textarea')
                     html += ('<input type="textarea" value="{{' + displayField + '::change}}"/>');
                 else
-                    html += ('<input value="{{' + displayField + '::change}}" type="' + inputType(fieldType) + '" maxlength="' + fieldInfo.length + '"/>');
+                    html += ('<paper-input label="' + fieldName + '" floatingLabel value="{{' + displayField + '}}" type="' + inputType(fieldType) + '" maxlength="' + fieldInfo.length + '" error="{{__errors__.' + fieldName + '}}" invalid?="{{__errors__.' + fieldName + '}}"></paper-input>');
             }
             else {
                 if (fieldType == 'boolean')
