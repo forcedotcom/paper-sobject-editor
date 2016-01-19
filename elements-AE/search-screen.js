@@ -90,8 +90,8 @@ Polymer({
   searchFocused: function() {
     var input = this.$.search.$.input.$.input;
     input.focus();
-    if (!this._searchFocued) {
-      this._searchFocued = true;
+    if (!this._searchFocused) {
+      this._searchFocused = true;
       input.style.opacity = 0;
       // Need to add this for iOS old webiew as the cursor acts weird otherwise
       if (navigator.userAgent.search(/iPhone/) > 0) input.style.visibility = 'hidden';
@@ -109,7 +109,7 @@ Polymer({
     this.async(function() {
          scrollHeader.classList.add('animating');
          scrollHeader.classList.remove('search');
-         this._searchFocued = false;
+         this._searchFocused = false;
     });
   },
 
@@ -174,7 +174,7 @@ Polymer({
 
   stopClick: function(e) {
     //e.preventDefault();
-    if (e.currentTarget == this.$.uilist && this._searchFocued) {
+    if (e.currentTarget == this.$.uilist && this._searchFocused) {
       this.$.search.$.input.$.input.blur();
     }
   },
@@ -184,14 +184,16 @@ Polymer({
   },
 
   refresh: function() {
+    console.log(this.$.list);
     this.$.list.fetch();
+    console.log(this.$.list);
   },
 
   navigateToCreate: function() {
-    window.location.hash = "#edit";
+    window.location.hash = "#details";
   },
 
   navigatetodetailscreen: function(e) {
-    window.location.hash = "#edit/" + e.model.__data__.model.id;
+    window.location.hash = "#details/" + e.model.__data__.model.id;
   }
 });

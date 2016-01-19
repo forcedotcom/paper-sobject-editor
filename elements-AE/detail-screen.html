@@ -1,21 +1,21 @@
 <dom-module id="detail-screen" on-route-changed="render">
     <link rel="stylesheet" href="detail.css"/>
     <template>
-        <paper-toolbar id="toolbar" style="background: #f40009">
+        <paper-toolbar id="toolbar" style="background-color: #f40009; font-size: 22px;">
           <iron-icon id="back-icon" icon="chevron-left" on-tap="navigateBack" style="width: 45px; height: 45px; margin: -5px;" on-touchend="stopClick"></iron-icon>
-          <div flex></div>
-          <div on-tap="doSave" style="color:white; line-height: 50px; width: 80px;" layout horizontal end-justified>
-            <!--template if="{{!sync && !$.detail.model.attributes.__locally_deleted__}}">Save</template>
-            <template if="{{sync}}">Overwrite</template>
-            <template if="{{$.detail.model.attributes.__locally_deleted__}}">Undelete</template-->
+          <div class="flex"></div>
+          <div style="color:white; line-height: 50px; width: 80px;" class="layout horizontal end-justified" on-tap="doSave">
+            <template is="dom-if" if="{{showSave()}}">Save</template>
+            <template is="dom-if" if="{{showOverwrite()}}">Overwrite</template>
+            <template is="dom-if" if="{{showUndelete()}}">Undelete</template>
           </div>
         </paper-toolbar>
         <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;" touch-action="pan-y">
-            <force-paper-detail id="detail" sobject="{{sobject}}" foredit="true" fieldlist="{{displayfields}}">
+            <force-paper-detail id="detail" sobject="{{sobject}}" foredit="true" fieldlist="{{displayfields}}" model="{{model}}" recordid="{{recordid}}">
             </force-paper-detail>
-            <!--template if="{{recordid && !$.detail.model.attributes.__locally_deleted__}}">
-                <div on-tap="doDelete" horizontal layout center center-justified style="background-color: white; margin: 20px; color: rgb(255, 68, 68); height: 40px; font-size: 20px;border: 1px rgb(204, 204, 204) solid;border-radius: 5px;">Delete</div>
-            </template-->
+            <template is="dom-if" if="showDelete">
+                <div on-tap="doDelete" horizontal layout center center-justified style="background-color: white; margin: 20px; color: rgb(255, 68, 68); height: 40px; font-size: 20px;border: 1px rgb(204, 204, 204) solid;border-radius: 5px; text-align: center; padding-top: 8px;">Delete</div>
+            </template>
         </div>
     </template>
     <script>
@@ -23,10 +23,24 @@
         is: 'detail-screen',
         _active: Boolean,
         properties: {
-            sobject: String,
+            sobject: {
+                type: String,
+                notify: true
+            },
             recordid: String,
             displayfields: String,
-            sync: Boolean
+            sync: {
+                type: Boolean,
+                notify: true,
+                value: true
+            },
+            path: String,
+            model: {
+                type: Object,
+                value: function() {
+                    return this.$.detail.$.force_ui_detail.$.force_sobject;
+                }
+            }
         },
         behaviors: [SFDC.RoutingBehavior],
         ready: function() {
@@ -37,9 +51,9 @@
                 else if (this.$.detail.model) this.$.detail.recordid = null;
             }.bind(this));
         },
-        get model() {
-            return (this.$ ? this.$.detail.$.force_sobject : null);
-        },
+        //get model() {
+        //    return (this.$ ? this.$.detail.$.force_sobject : null);
+        //},
         render: function() {
             this._active = true;
         },
@@ -72,16 +86,28 @@
         doSave: function() {
             var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : Force.CACHE_MODE.CACHE_ONLY;
             // If model is locally deleted, then undelete. Otherwise continue with the save
-            if (this.$.detail.$.force_sobject.fields.__locally_deleted__) {
-                this.$.detail.$.force_sobject.fields.__locally_deleted__ = false;
+            if (this.$.detail.$.force_ui_detail.$.force_sobject.fields.__locally_deleted__) {
+                this.$.detail.$.force_ui_detail.$.force_sobject.fields.__locally_deleted__= false;
             }
-            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.OVERWRITE, cacheMode));
+            this.$.detail.$.force_ui_detail.save(this.getSaveOptions(Force.MERGE_MODE.OVERWRITE, cacheMode));
         },
 
         doDelete: function() {
             var that = this;
             var saveOptions = this.getSaveOptions(null, Force.CACHE_MODE.CACHE_ONLY);
             this.$.detail.$.force_sobject.destroy(saveOptions);
+        },
+        showSave: function() {
+            return (!this.sync && !this.$.detail.model.attributes.__locally_deleted__);
+        },
+        showOverwrite: function() {
+            return this.sync;
+        },
+        showUndelete: function() {
+            return this.$.detail.model.attributes.__locally_deleted__;
+        },
+        showDelete: function() {
+            return (this.recordid && !this.$.detail.model.attributes.__locally_deleted__);
         }
       })
     </script>
