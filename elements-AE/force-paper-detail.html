@@ -2,6 +2,7 @@
 <link href="../dependencies/paper-toggle-button/paper-toggle-button.html" rel="import">
 <dom-module id="force-paper-detail" extends="force-ui-detail">
 	<template>
+		<force-ui-detail id="force_ui_detail" sobject="{{sobject}}" foredit="true" fieldlist="{{fieldlist}}" recordid="{{recordid}}" model="{{model}}"></force-ui-detail>
 		<shadow></shadow>
 	</template>
 	<script>

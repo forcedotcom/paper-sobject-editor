@@ -1,4 +1,4 @@
-<dom-module id="status-icon" attributes="props" noscript>
+<dom-module id="status-icon">
     <style>
         iron-icon[icon="add-circle-outline"] {
             fill: green;
@@ -9,27 +9,39 @@
         iron-icon[icon="delete"] {
             fill: red;
         }
-        iron-icon[icon="check-circle-outline"] {
+        iron-icon[icon="check-circle"] {
             fill: blue;
         }
     </style>
     <template>
-        <template if="{{props.__sync_failed__}}">
+        <template is="dom-if" if="{{props.__sync_failed__}}">
             <span class="pull-right badge badge-negative">Failed to sync</span>
         </template>
-        <template if="{{props.__local__}}">
-            <template if="{{props.__locally_created__}}">
+        <template is="dom-if" if="{{props.__local__}}">
+            <template is="dom-if" if="{{props.__locally_created__}}">
                 <iron-icon icon="add-circle-outline" style="fill: blue"></iron-icon>
             </template>
-            <template if="{{props.__locally_updated__}}">
+            <template is="dom-if" if="{{props.__locally_updated__}}">
                 <iron-icon icon="create" style="fill: rgb(255, 173, 0)"></iron-icon>
             </template>
-            <template if="{{props.__locally_deleted__}}">
+            <template is="dom-if" if="{{props.__locally_deleted__}}">
                 <iron-icon icon="delete" style="fill: red"></iron-icon>
             </template>
         </template>
-        <template if="{{!props.__local__}}">
-            <iron-icon icon="check-circle-outline" style="fill: green"></iron-icon>
+        <template is="dom-if" if="{{!props.__local__}}">
+            <iron-icon icon="check-circle" style="fill: green"></iron-icon>
         </template>
     </template>
+    <script>
+        Polymer({
+            is: 'status-icon',
+            properties: {
+                props: {
+                    type: Object,
+                    notify: true
+                }
+            }
+
+        })
+    </script>
 </dom-module>

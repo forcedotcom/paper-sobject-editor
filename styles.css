@@ -38,10 +38,12 @@ body /deep/ .user-detail {
 }
 body /deep/ paper-toolbar.header-toolbar,
 body /deep/ detail-screen::shadow #toolbar,
+body /deep/ force-ui-detail::shadow #toolbar,
 body /deep/ sync-screen::shadow #toolbar,
 body /deep/ force-paper-input::shadow .focused-underline,
 body /deep/ force-paper-input::shadow .cursor {
     background-color: #f40009;
+    font-size: 22px;
 }
 body /deep/ force-paper-input[focused]::shadow .floated-label {
     color: #f40009;
