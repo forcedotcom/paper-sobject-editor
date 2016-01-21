@@ -32,25 +32,20 @@
                 <img id="loading" class="loadingInd" src="loading-gray.gif"/>
                 <force-sobject-sync sobject="{{sobject}}" fieldstoindex="{{searchfields}}" query="{{syncQuery}}" on-sync-progress="handleSyncResponse" on-sync-complete="handleSyncResponse"></force-sobject-sync>
                 <force-sobject-collection id="list" sobject="{{sobject}}" querytype="[[searchtype]]" query="[[searchquery]]" collection="{{searchresults}}" cache-promise="[[cachePromise]]"></force-sobject-collection>
-                    <template  id="uilist" is="dom-repeat" items="{{models}}" as="model" height="{{resultHeight}}" on-touchend="stopClick">
-                    <div class="horizontal layout center" style="line-height: 20px; padding-top: 10px; padding-left: 10px; padding-bottom: 5px; border-bottom: 1px solid rgb(221, 221, 221);" on-tap="navigatetodetailscreen">
-                      <div class="round">{{getinitials(model.attributes.FirstName, model.attributes.LastName)}}</div>
-                      <div class="flex" style="margin-left: 10px">
-                        <div style="font-size: 1.1em; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;" class="text-overflow-ellipsis"><span>{{model.attributes.FirstName}}</span> <span>{{model.attributes.LastName}}</span></div>
-                        <span  class="text-overflow-ellipsis" style="font-size: 0.9em; color: #696969; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
-                      </div>
-                      <status-icon props="{{model.attributes}}"></status-icon>
-                      <iron-icon icon="chevron-right" style="fill: black"></iron-icon>
-                    </div>
+                <template  id="uilist" is="dom-repeat" items="{{models}}" as="model" height="{{resultHeight}}" on-touchend="stopClick">
+                        <div class="horizontal layout center" style="line-height: 20px; padding-top: 10px; padding-left: 10px; padding-bottom: 5px; border-bottom: 1px solid rgb(221, 221, 221);" on-tap="navigatetodetailscreen">
+                          <div class="round">{{getinitials(model.attributes.FirstName, model.attributes.LastName)}}</div>
+                          <div class="flex" style="margin-left: 10px">
+                            <div style="font-size: 1.1em; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;" class="text-overflow-ellipsis"><span>{{model.attributes.FirstName}}</span> <span>{{model.attributes.LastName}}</span></div>
+                            <span  class="text-overflow-ellipsis" style="font-size: 0.9em; color: #696969; display: block; padding-right: 10px;">{{model.attributes.Title}}</span>
+                          </div>
+                          <status-icon props="{{model.attributes}}"></status-icon>
+                          <iron-icon icon="chevron-right" style="fill: black"></iron-icon>
+                        </div>
                     </template>
-                <!--</iron-list>-->
-
             </div>
-
         </paper-scroll-header-panel>
-
         <paper-toast id="status_toast" text=""></paper-toast>
-
     </template>
     <script src="search-screen.js"></script>
 </dom-module>
