@@ -186,6 +186,10 @@ Polymer({
   refresh: function() {
     console.log(this.$.list);
     this.$.list.fetch();
+    for(var i=0; i<this.$.list.collection.models.length; i++) {
+      this.$.list.collection.models[i].attributes = this.$.list.collection._fetchResponse.records[i];
+    }
+    this.$.uilist.items = this.$.list.collection.models;
     console.log(this.$.list);
   },
 

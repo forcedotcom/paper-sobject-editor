@@ -11,8 +11,8 @@
           </div>
         </paper-toolbar>
         <div style="position: absolute; top: 64px; bottom: 0; right: 0; left: 0; overflow-y: scroll; -webkit-overflow-scrolling: touch;" touch-action="pan-y">
-            <force-paper-detail id="detail" sobject="{{sobject}}" foredit="true" fieldlist="{{displayfields}}" model="{{model}}" recordid="{{recordid}}">
-            </force-paper-detail>
+            <force-ui-detail id="detail" sobject="{{sobject}}" foredit="true" fieldlist="{{displayfields}}" model="{{model}}" recordid="{{recordid}}">
+            </force-ui-detail>
             <template is="dom-if" if="showDelete">
                 <div on-tap="doDelete" horizontal layout center center-justified style="background-color: white; margin: 20px; color: rgb(255, 68, 68); height: 40px; font-size: 20px;border: 1px rgb(204, 204, 204) solid;border-radius: 5px; text-align: center; padding-top: 8px;">Delete</div>
             </template>
@@ -38,7 +38,7 @@
             model: {
                 type: Object,
                 value: function() {
-                    return this.$.detail.$.force_ui_detail.$.force_sobject;
+                    return this.$.detail.$.force_sobject;
                 }
             }
         },
@@ -86,10 +86,10 @@
         doSave: function() {
             var cacheMode = this.sync ? Force.CACHE_MODE.SERVER_FIRST : Force.CACHE_MODE.CACHE_ONLY;
             // If model is locally deleted, then undelete. Otherwise continue with the save
-            if (this.$.detail.$.force_ui_detail.$.force_sobject.fields.__locally_deleted__) {
-                this.$.detail.$.force_ui_detail.$.force_sobject.fields.__locally_deleted__= false;
+            if (this.$.detail.$.force_sobject.fields.__locally_deleted__) {
+                this.$.detail.$.force_sobject.fields.__locally_deleted__= false;
             }
-            this.$.detail.$.force_ui_detail.save(this.getSaveOptions(Force.MERGE_MODE.OVERWRITE, cacheMode));
+            this.$.detail.save(this.getSaveOptions(Force.MERGE_MODE.OVERWRITE, cacheMode));
         },
 
         doDelete: function() {
