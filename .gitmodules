@@ -1,0 +1,4 @@
+
+[submodule "external/mobile-ui-elements"]
+	path = external/mobile-ui-elements
+	url = https://github.com/forcedotcom/mobile-ui-elements.git
